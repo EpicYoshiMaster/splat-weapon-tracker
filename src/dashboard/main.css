@@ -1,0 +1,78 @@
+:root {
+	--text: #ffffff;
+	--text-outline: #1a1a1a;
+
+	--regular-button: #282828;
+
+	/* Button tags */
+
+	--button: #ac3796;
+	--button-dark: #661c57;
+
+	--reset: #e40505;
+	--reset-dark: #921313;
+
+	--import: #51eb32;
+	--import-dark: #2c861a;
+
+	--export: #ee36e5;
+	--export-dark: #6e166a;
+
+	--control: #55a9f8;
+	--control-dark: #275c8d;
+
+	--standard: #f54910;
+	--standard-dark: #963515;
+
+	--salmon: #00f829;
+	--salmon-dark: #138626;
+
+	--grizzco: #e8b202;
+	--grizzco-dark: #927410;
+
+	/* Weapon Classes */
+
+	--shooter: #e0005e;
+	--shooter-dark: #80113f;
+
+	--roller:  #d53e4f;
+	--roller-dark: #691f28;
+
+	--charger: #f46d43;
+	--charger-dark: #703422;
+
+	--slosher: #fdae61;
+	--slosher-dark: #80562d;
+
+	--splatling: #ebc764;
+	--splatling-dark: #7e6931;
+
+	--dualies: #ecec5b;
+	--dualies-dark: #81812c;
+
+	--brella: #75fc40;
+	--brella-dark: #3a7a21;
+
+	--blaster: #8fff81;
+	--blaster-dark: #3f7e36;
+
+	--brush: #4fe4b5;
+	--brush-dark: #25795e;
+
+	--stringer: #309adb;
+	--stringer-dark: #1e4f6d;
+
+	--splatana: #6449dd;
+	--splatana-dark: #302369;
+}
+
+body {
+	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  	margin: 0;
+}
+
+.monospace {
+  font-family: monospace;
+}
+
+* { box-sizing: border-box; }

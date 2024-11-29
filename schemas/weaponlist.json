@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+		"standard": { "$ref": "#/$defs/weapons" },
+		"salmon": { "$ref": "#/$defs/weapons" },
+		"grizzco": { "$ref": "#/$defs/weapons" }
+    },
+	"$defs": {
+		"weapons": {
+			"type": "array",
+			"items": { "type": "number" }
+		}
+	},
+    "required": [ "standard", "salmon", "grizzco" ]
+}

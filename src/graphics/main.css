@@ -1,0 +1,68 @@
+:root {
+		--frequencies: #122d77e0;
+		--frequencies-border: #6a60f5e0;
+		--frequencies-divider: #7989e6e0;
+
+		--unseen: #44278ae0;
+		--unseen-border: #c164e6e0;
+
+		--text: #ffffff;
+		--text-outline: #1a1a1a;
+
+		--base: #999999;
+		--base-dark: #535353;
+		
+		/* Weapon Classes */
+
+		--shooter: #e0005ee0;
+		--shooter-dark: #80113fe0;
+	
+		--roller:  #d53e4fe0;
+		--roller-dark: #691f28e0;
+	
+		--charger: #f46d43e0;
+		--charger-dark: #703422e0;
+	
+		--slosher: #fdae61e0;
+		--slosher-dark: #80562de0;
+	
+		--splatling: #ebc764e0;
+		--splatling-dark: #7e6931e0;
+	
+		--dualies: #ecec5be0;
+		--dualies-dark: #81812ce0;
+	
+		--brella: #75fc40e0;
+		--brella-dark: #3a7a21e0;
+	
+		--blaster: #8fff81e0;
+		--blaster-dark: #3f7e36e0;
+	
+		--brush: #4fe4b5e0;
+		--brush-dark: #25795ee0;
+	
+		--stringer: #309adbe0;
+		--stringer-dark: #1e4f6de0;
+	
+		--splatana: #6449dde0;
+		--splatana-dark: #302369e0;
+
+		--grizzco: #e8b202e0;
+		--grizzco-dark: #927410e0;
+}
+
+@font-face {
+	font-family: Blitz Main;
+	src: url('../fonts/BlitzMain.otf');
+}
+
+body {
+  font-family: Blitz Main;
+  margin: 0;
+}
+
+.monospace {
+  font-family: monospace;
+}
+
+* { box-sizing: border-box; }

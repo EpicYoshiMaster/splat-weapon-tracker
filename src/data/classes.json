@@ -1,0 +1,62 @@
+[
+	{
+		"tag": "Shooter",
+		"name": "Shooter",
+		"weapons": []
+	},
+	{
+		"tag": "Roller",
+		"name": "Roller",
+		"weapons": []
+	},
+	{
+		"tag": "Charger",
+		"name": "Charger",
+		"weapons": []
+	},
+	{
+		"tag": "Slosher",
+		"name": "Slosher",
+		"weapons": []
+	},
+	{
+		"tag": "Spinner",
+		"name": "Splatling",
+		"weapons": []
+	},
+	{
+		"tag": "Maneuver",
+		"name": "Dualies",
+		"weapons": []
+	},
+	{
+		"tag": "Shelter",
+		"name": "Brella",
+		"weapons": []
+	},
+	{
+		"tag": "Blaster",
+		"name": "Blaster",
+		"weapons": []
+	},
+	{
+		"tag": "Brush",
+		"name": "Brush",
+		"weapons": []
+	},
+	{
+		"tag": "Stringer",
+		"name": "Stringer",
+		"weapons": []
+	},
+	{
+		"tag": "Saber",
+		"name": "Splatana",
+		"weapons": []
+	},
+	{
+		"tag": "Bear",
+		"name": "Grizzco",
+		"weapons": []
+	}
+]
