@@ -9,6 +9,7 @@ export const arrayPrimitiveEquals = <T>(a: Array<T>, b: Array<T>): boolean => {
 //Based on:
 //https://math.stackexchange.com/questions/466198/algorithm-to-get-the-maximum-size-of-n-squares-that-fit-into-a-rectangle-with-a
 export const fitSquaresToRectGrid = (width: number, height: number, num: number) => {
+	if(num <= 0) return { rows: 1, columns: 1, size: Math.min(width, height) };
 	
 	// Compute number of rows and columns, and cell size
 	const ratio = width / height;

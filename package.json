@@ -74,7 +74,6 @@
     "@babel/cli": "^7.25.9",
     "@babel/core": "^7.26.0",
     "@gsap/react": "^2.1.1",
-    "@nodecg/react-hooks": "^1.0.3",
     "@react-hook/resize-observer": "^2.0.2",
     "@types/react": "*",
     "@types/react-dom": "*",
@@ -82,11 +81,13 @@
     "file-saver": "^2.0.5",
     "fontfaceobserver": "^2.3.0",
     "gsap": "^3.12.5",
+    "klona": "^2.0.6",
     "react": "*",
     "react-dom": "*",
     "react-dropzone": "^14.3.5",
     "styled-components": "^6.1.13",
-    "ts-node": "*"
+    "ts-node": "*",
+    "type-fest": "^4.29.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

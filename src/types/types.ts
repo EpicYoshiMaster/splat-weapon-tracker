@@ -1,3 +1,10 @@
+export type View = {
+	show: boolean;
+	fade: boolean;
+	fullscreen: boolean;
+	onFade: () => void;
+}
+
 export type Weapon = {
 	id: number;
 	key: string;
