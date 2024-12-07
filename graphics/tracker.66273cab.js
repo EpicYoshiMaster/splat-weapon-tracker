@@ -151,21 +151,27 @@ var _reactDefault = parcelHelpers.interopDefault(_react);
 var _styledComponents = require("styled-components");
 var _client = require("react-dom/client");
 var _recentWeapons = require("./components/RecentWeapons");
-var _reactHooks = require("@nodecg/react-hooks");
+var _useReplicant = require("../utils/use-replicant");
 var _types = require("../types/types");
 var _weaponDatabase = require("../utils/WeaponDatabase");
 var _unseenWeapons = require("./components/UnseenWeapons");
 var _weaponFrequencies = require("./components/WeaponFrequencies");
 const NumRecentWeapons = 6;
 function Tracker() {
-    const [mode, setMode] = (0, _reactHooks.useReplicant)('mode', {
+    const [mode, setMode] = (0, _useReplicant.useReplicant)('mode', {
         defaultValue: (0, _types.WeaponMode).Salmon
     });
-    const [display, setDisplay] = (0, _reactHooks.useReplicant)('display', {
+    const [display, setDisplay] = (0, _useReplicant.useReplicant)('display', {
         defaultValue: (0, _types.DisplayMode).None
     });
-    const [activeDisplay, setActiveDisplay] = (0, _react.useState)((0, _types.DisplayMode).None);
-    const [lists, setLists] = (0, _reactHooks.useReplicant)('weapons', {
+    const [fullscreen, setFullscreen] = (0, _useReplicant.useReplicant)('fullscreen', {
+        defaultValue: false
+    });
+    const [current, setCurrent] = (0, _react.useState)({
+        active: (0, _types.DisplayMode).None,
+        fade: false
+    });
+    const [lists, setLists] = (0, _useReplicant.useReplicant)('weapons', {
         defaultValue: {
             standard: [],
             salmon: [],
@@ -213,63 +219,105 @@ function Tracker() {
         activeList
     ]);
     (0, _react.useEffect)(()=>{
-        if (!display) return;
-        if (display !== activeDisplay) {
-            if (activeDisplay === (0, _types.DisplayMode).None) setActiveDisplay(display);
-            else //Hide the currently active display
-            setActiveDisplay((0, _types.DisplayMode).None);
+        if (display === (0, _types.DisplayMode).None) return;
+        if (display !== current.active && !current.fade) {
+            //Nothing active, fade the current in
+            if (current.active === (0, _types.DisplayMode).None) {
+                console.log(`TRACKER - Fading In: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+                setCurrent({
+                    active: display,
+                    fade: true
+                });
+            } else {
+                //Something is active, fade the current out
+                console.log(`TRACKER - Fading Out Current: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+                setCurrent((current)=>{
+                    return {
+                        ...current,
+                        fade: true
+                    };
+                });
+            }
         }
     }, [
-        display
+        display,
+        current
     ]);
-    const onHideDisplay = (0, _react.useCallback)(()=>{
-        if (!display) return;
-        setActiveDisplay(display);
+    const onFade = (0, _react.useCallback)(()=>{
+        if (display === (0, _types.DisplayMode).None) return;
+        if (current.active === display) {
+            console.log(`ONFADE - Fade In Complete. PREV STATE: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+            setCurrent((current)=>{
+                return {
+                    ...current,
+                    fade: false
+                };
+            });
+        } else {
+            console.log(`ONFADE - Fading In New Current: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+            setCurrent({
+                active: display,
+                fade: true
+            });
+        }
     }, [
+        current,
         display
     ]);
     return /*#__PURE__*/ (0, _reactDefault.default).createElement(StyledTracker, {
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 71,
+            lineNumber: 106,
             columnNumber: 10
         },
         __self: this
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(Content, {
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 72,
+            lineNumber: 107,
             columnNumber: 4
         },
         __self: this
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _recentWeapons.RecentWeapons), {
-        show: activeDisplay === (0, _types.DisplayMode).Recent,
+        view: {
+            show: display === (0, _types.DisplayMode).Recent,
+            fade: current.active === (0, _types.DisplayMode).Recent && current.fade,
+            fullscreen,
+            onFade
+        },
         max: NumRecentWeapons,
         recentIds: activeList,
-        onHideDisplay: onHideDisplay,
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 73,
-            columnNumber: 5
-        },
-        __self: this
-    }), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _unseenWeapons.UnseenWeapons), {
-        show: activeDisplay === (0, _types.DisplayMode).Unseen,
-        remainingWeapons: remainingList,
-        onHideDisplay: onHideDisplay,
-        __source: {
-            fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 74,
+            lineNumber: 108,
             columnNumber: 5
         },
         __self: this
     }), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _weaponFrequencies.WeaponFrequencies), {
-        show: activeDisplay === (0, _types.DisplayMode).Frequencies,
+        view: {
+            show: display === (0, _types.DisplayMode).Frequencies,
+            fade: current.active === (0, _types.DisplayMode).Frequencies && current.fade,
+            fullscreen,
+            onFade
+        },
         frequencies: weaponFrequencies,
-        onHideDisplay: onHideDisplay,
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 75,
+            lineNumber: 114,
+            columnNumber: 5
+        },
+        __self: this
+    }), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _unseenWeapons.UnseenWeapons), {
+        view: {
+            show: display === (0, _types.DisplayMode).Unseen,
+            fade: current.active === (0, _types.DisplayMode).Unseen && current.fade,
+            fullscreen,
+            onFade
+        },
+        remainingWeapons: remainingList,
+        __source: {
+            fileName: "src/graphics/Tracker.tsx",
+            lineNumber: 120,
             columnNumber: 5
         },
         __self: this
@@ -291,13 +339,13 @@ const root = (0, _client.createRoot)(document.getElementById('root'));
 root.render(/*#__PURE__*/ (0, _reactDefault.default).createElement(Tracker, {
     __source: {
         fileName: "src/graphics/Tracker.tsx",
-        lineNumber: 88,
+        lineNumber: 138,
         columnNumber: 13
     },
     __self: undefined
 }));
 
-},{"react":"bH1AQ","styled-components":"9xpRL","react-dom/client":"i5cPj","./components/RecentWeapons":"6MuLF","@nodecg/react-hooks":"audz3","../types/types":"2nPdh","../utils/WeaponDatabase":"kbTcL","./components/UnseenWeapons":"8er4p","./components/WeaponFrequencies":"eBErS","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"bH1AQ":[function(require,module,exports,__globalThis) {
+},{"react":"bH1AQ","styled-components":"9xpRL","react-dom/client":"i5cPj","./components/RecentWeapons":"6MuLF","../types/types":"2nPdh","../utils/WeaponDatabase":"kbTcL","./components/UnseenWeapons":"8er4p","./components/WeaponFrequencies":"eBErS","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG","../utils/use-replicant":"8lJRU"}],"bH1AQ":[function(require,module,exports,__globalThis) {
 'use strict';
 module.exports = require("a569817e6ea559f6");
 
@@ -26146,45 +26194,23 @@ var _styledComponents = require("styled-components");
 var _styledComponentsDefault = parcelHelpers.interopDefault(_styledComponents);
 var _weaponDatabase = require("../../utils/WeaponDatabase");
 var _fittedText = require("./FittedText");
-var _gsapCore = require("gsap/gsap-core");
-var _react1 = require("@gsap/react");
-const RecentWeapons = ({ show, max, recentIds, onHideDisplay })=>{
-    const [active, setActive] = (0, _react.useState)(false);
-    const container = (0, _react.useRef)(null);
-    (0, _react1.useGSAP)(()=>{
-        //Transition in
-        if (show && !active) {
-            setActive(true);
-            (0, _gsapCore.gsap).timeline().set(".container", {
-                opacity: 0
-            }).to(".container", {
-                duration: 1,
-                opacity: 1,
-                ease: "power2.inOut"
-            });
-        } else if (!show && active) (0, _gsapCore.gsap).timeline().set(".container", {
-            opacity: 1
-        }).to(".container", {
+var _weaponView = require("./WeaponView");
+const RecentWeapons = ({ view, max, recentIds })=>{
+    const buildTimeline = (0, _react.useCallback)((timeline)=>{
+        return timeline.fromTo(".container", {
+            opacity: 0
+        }, {
             duration: 1,
-            opacity: 0,
+            opacity: 1,
             ease: "power2.inOut"
-        }).then(()=>{
-            setActive(false);
-            onHideDisplay();
         });
-    }, {
-        dependencies: [
-            show,
-            active
-        ],
-        scope: container
-    });
-    return /*#__PURE__*/ (0, _reactDefault.default).createElement(Wrapper, {
-        ref: container,
-        $display: active ? 'block' : 'none',
+    }, []);
+    return /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _weaponView.WeaponView), {
+        view: view,
+        buildTimeline: buildTimeline,
         __source: {
             fileName: "src/graphics/components/RecentWeapons.tsx",
-            lineNumber: 51,
+            lineNumber: 26,
             columnNumber: 10
         },
         __self: undefined
@@ -26192,7 +26218,7 @@ const RecentWeapons = ({ show, max, recentIds, onHideDisplay })=>{
         className: "container",
         __source: {
             fileName: "src/graphics/components/RecentWeapons.tsx",
-            lineNumber: 52,
+            lineNumber: 27,
             columnNumber: 4
         },
         __self: undefined
@@ -26215,7 +26241,7 @@ const RecentWeapons = ({ show, max, recentIds, onHideDisplay })=>{
             className: "weapon",
             __source: {
                 fileName: "src/graphics/components/RecentWeapons.tsx",
-                lineNumber: 68,
+                lineNumber: 43,
                 columnNumber: 18
             },
             __self: undefined
@@ -26224,7 +26250,7 @@ const RecentWeapons = ({ show, max, recentIds, onHideDisplay })=>{
             className: "image",
             __source: {
                 fileName: "src/graphics/components/RecentWeapons.tsx",
-                lineNumber: 69,
+                lineNumber: 44,
                 columnNumber: 8
             },
             __self: undefined
@@ -26239,7 +26265,7 @@ const RecentWeapons = ({ show, max, recentIds, onHideDisplay })=>{
             },
             __source: {
                 fileName: "src/graphics/components/RecentWeapons.tsx",
-                lineNumber: 70,
+                lineNumber: 45,
                 columnNumber: 8
             },
             __self: undefined
@@ -26251,7 +26277,7 @@ const RecentWeapons = ({ show, max, recentIds, onHideDisplay })=>{
             className: "weapon",
             __source: {
                 fileName: "src/graphics/components/RecentWeapons.tsx",
-                lineNumber: 76,
+                lineNumber: 51,
                 columnNumber: 16
             },
             __self: undefined
@@ -26260,7 +26286,7 @@ const RecentWeapons = ({ show, max, recentIds, onHideDisplay })=>{
             className: "image",
             __source: {
                 fileName: "src/graphics/components/RecentWeapons.tsx",
-                lineNumber: 77,
+                lineNumber: 52,
                 columnNumber: 8
             },
             __self: undefined
@@ -26275,29 +26301,22 @@ const RecentWeapons = ({ show, max, recentIds, onHideDisplay })=>{
             },
             __source: {
                 fileName: "src/graphics/components/RecentWeapons.tsx",
-                lineNumber: 78,
+                lineNumber: 53,
                 columnNumber: 8
             },
             __self: undefined
         }));
     })));
 };
-const Wrapper = (0, _styledComponentsDefault.default).div.withConfig({
-    displayName: "RecentWeapons__Wrapper",
-    componentId: "sc-1niw1n2-0"
-})([
-    "display:",
-    ";position:relative;"
-], ({ $display })=>$display);
 const Column = (0, _styledComponentsDefault.default).div.withConfig({
     displayName: "RecentWeapons__Column",
-    componentId: "sc-1niw1n2-1"
+    componentId: "sc-1niw1n2-0"
 })([
-    "padding:10px;position:relative;display:flex;width:100%;height:100%;color:white;flex-direction:column;justify-content:flex-start;row-gap:5px;opacity:0;"
+    "padding:10px;position:relative;display:flex;width:100%;height:100%;color:white;flex-direction:column;justify-content:flex-start;row-gap:5px;"
 ]);
 const WeaponRow = (0, _styledComponentsDefault.default).div.withConfig({
     displayName: "RecentWeapons__WeaponRow",
-    componentId: "sc-1niw1n2-2"
+    componentId: "sc-1niw1n2-1"
 })([
     "position:relative;height:65px;display:",
     ";flex-direction:row;align-items:center;color:var(--text);font-size:1.5rem;border:3px solid var(--",
@@ -26306,18 +26325,18 @@ const WeaponRow = (0, _styledComponentsDefault.default).div.withConfig({
 ], ({ $display })=>$display, ({ $colorTag })=>$colorTag ? `${$colorTag}` : `base`, ({ $colorTag })=>$colorTag ? `${$colorTag}` : `base`);
 const TopWeaponRow = (0, _styledComponentsDefault.default)(WeaponRow).withConfig({
     displayName: "RecentWeapons__TopWeaponRow",
-    componentId: "sc-1niw1n2-3"
+    componentId: "sc-1niw1n2-2"
 })([
     "height:135px;font-size:3rem;"
 ]);
 const WeaponImage = (0, _styledComponentsDefault.default).img.withConfig({
     displayName: "RecentWeapons__WeaponImage",
-    componentId: "sc-1niw1n2-4"
+    componentId: "sc-1niw1n2-3"
 })([
     "max-height:100%;margin:0 5px;"
 ]);
 
-},{"react":"bH1AQ","styled-components":"9xpRL","../../utils/WeaponDatabase":"kbTcL","./FittedText":"f5NVk","gsap/gsap-core":"aEpMH","@gsap/react":"kELb7","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"kbTcL":[function(require,module,exports,__globalThis) {
+},{"react":"bH1AQ","styled-components":"9xpRL","../../utils/WeaponDatabase":"kbTcL","./FittedText":"f5NVk","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG","./WeaponView":"gKIgG"}],"kbTcL":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "weaponImagePath", ()=>weaponImagePath);
@@ -26404,6 +26423,7 @@ const invertWeaponList = (weapons, ids)=>{
         return weaponClass.weapons.filter((weapon)=>!ids.includes(weapon.id));
     });
 };
+const ellipsis = `\u22EF`;
 const getWeaponFrequencies = (weapons, ids)=>{
     const frequencies = weapons.flatMap((weaponClass)=>{
         return weaponClass.weapons.map((weapon)=>{
@@ -26413,14 +26433,23 @@ const getWeaponFrequencies = (weapons, ids)=>{
             };
         });
     }).sort((a, b)=>a.count === b.count ? a.weapon.id - b.weapon.id : a.count - b.count);
-    //Condense by frequency, adding in blank counts
+    //Condense by frequency, adding in blank counts between
+    const min = frequencies.length > 0 ? frequencies[0].count : 0;
     const max = frequencies.length > 0 ? frequencies[frequencies.length - 1].count : 0;
-    return Array.from(Array(max + 1).keys()).map((count)=>{
+    return Array.from(Array(max - min + 1).keys(), (key)=>key + min).map((count)=>{
+        let countText = `${count}`;
+        const weaponsAtCount = frequencies.filter((freq)=>freq.count === count).map((freq)=>freq.weapon);
+        if (weaponsAtCount.length <= 0) {
+            const previousCountZero = count > 0 && frequencies.filter((freq)=>freq.count === count - 1).length <= 0;
+            const nextCountZero = count < max && frequencies.filter((freq)=>freq.count === count + 1).length <= 0;
+            //Notate long stretches of empty weapons to be filtered later
+            if (previousCountZero && nextCountZero) countText = ellipsis;
+        }
         return {
-            count,
-            weapons: frequencies.filter((freq)=>freq.count === count).map((freq)=>freq.weapon)
+            count: countText,
+            weapons: weaponsAtCount
         };
-    });
+    }).filter((frequency, index, array)=>frequency.count !== ellipsis || array[index + 1].count !== ellipsis);
 };
 
 },{"../data/weapons.json":"gyM61","../data/classes.json":"if1fc","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"gyM61":[function(require,module,exports,__globalThis) {
@@ -26800,7 +26829,58 @@ const useLatest = (current)=>{
 };
 exports.default = useLatest;
 
-},{"react":"bH1AQ","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"aEpMH":[function(require,module,exports,__globalThis) {
+},{"react":"bH1AQ","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"gKIgG":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "WeaponView", ()=>WeaponView);
+var _react = require("react");
+var _reactDefault = parcelHelpers.interopDefault(_react);
+var _gsapCore = require("gsap/gsap-core");
+var _react1 = require("@gsap/react");
+var _styledComponents = require("styled-components");
+var _hooks = require("../../utils/hooks");
+const WeaponView = ({ view, children, buildTimeline, timeScale, reverseTimeScale })=>{
+    const timeline = (0, _react.useRef)();
+    const container = (0, _react.useRef)(null);
+    const active = (0, _hooks.useWeaponView)({
+        view,
+        timeline: timeline.current,
+        timeScale,
+        reverseTimeScale
+    });
+    (0, _react1.useGSAP)(()=>{
+        timeline.current = buildTimeline((0, _gsapCore.gsap).timeline().fromTo(container.current, {
+            display: 'none'
+        }, {
+            duration: 0.01,
+            display: 'block'
+        }), container.current).pause();
+    }, {
+        dependencies: [
+            buildTimeline
+        ],
+        scope: container
+    });
+    return /*#__PURE__*/ (0, _reactDefault.default).createElement(ViewWrapper, {
+        ref: container,
+        $display: active ? 'block' : 'none',
+        __source: {
+            fileName: "src/graphics/components/WeaponView.tsx",
+            lineNumber: 40,
+            columnNumber: 10
+        },
+        __self: undefined
+    }, children);
+};
+const ViewWrapper = (0, _styledComponents.styled).div.withConfig({
+    displayName: "WeaponView__ViewWrapper",
+    componentId: "sc-15fraqt-0"
+})([
+    "position:relative;display:",
+    ";width:100%;height:100%;"
+], ({ $display })=>$display);
+
+},{"react":"bH1AQ","gsap/gsap-core":"aEpMH","@gsap/react":"kELb7","styled-components":"9xpRL","../../utils/hooks":"kA991","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"aEpMH":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "GSCache", ()=>GSCache);
@@ -30870,109 +30950,40 @@ var CSSPlugin = {
 });
 (0, _gsapCoreJs.gsap).registerPlugin(CSSPlugin);
 
-},{"./gsap-core.js":"aEpMH","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"audz3":[function(require,module,exports,__globalThis) {
+},{"./gsap-core.js":"aEpMH","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"kA991":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _useReplicant = require("./use-replicant");
-parcelHelpers.exportAll(_useReplicant, exports);
-var _useListenFor = require("./use-listen-for");
-parcelHelpers.exportAll(_useListenFor, exports);
-
-},{"./use-replicant":"iySid","./use-listen-for":"ffpLW","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"iySid":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "useReplicant", ()=>useReplicant);
+parcelHelpers.export(exports, "useWeaponView", ()=>useWeaponView);
 var _react = require("react");
-var _json = require("klona/json");
-const useReplicant = (replicantName, { bundle, defaultValue, persistent } = {})=>{
-    const replicant = (0, _react.useMemo)(()=>{
-        if (typeof bundle === "string") return nodecg.Replicant(replicantName, bundle, {
-            defaultValue,
-            persistent
-        });
-        return nodecg.Replicant(replicantName, {
-            defaultValue,
-            persistent
-        });
-    }, [
-        bundle,
-        defaultValue,
-        persistent,
-        replicantName
-    ]);
-    const [value, setValue] = (0, _react.useState)(replicant.value);
+const useWeaponView = ({ view, timeline, timeScale = 1, reverseTimeScale })=>{
+    const [active, setActive] = (0, _react.useState)(false);
     (0, _react.useEffect)(()=>{
-        const changeHandler = (newValue)=>{
-            setValue((oldValue)=>{
-                if (newValue !== oldValue) return newValue;
-                return (0, _json.klona)(newValue);
-            });
-        };
-        replicant.on("change", changeHandler);
-        return ()=>{
-            replicant.removeListener("change", changeHandler);
-        };
-    }, [
-        replicant
-    ]);
-    const updateValue = (0, _react.useCallback)((newValue)=>{
-        if (typeof newValue === "function") // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        newValue(replicant.value);
-        else replicant.value = newValue;
-    }, [
-        replicant
-    ]);
-    return [
-        value,
-        updateValue
-    ];
-};
-
-},{"react":"bH1AQ","klona/json":"loHAU","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"loHAU":[function(require,module,exports,__globalThis) {
-function klona(val) {
-    var k, out, tmp;
-    if (Array.isArray(val)) {
-        out = Array(k = val.length);
-        while(k--)out[k] = (tmp = val[k]) && typeof tmp === 'object' ? klona(tmp) : tmp;
-        return out;
-    }
-    if (Object.prototype.toString.call(val) === '[object Object]') {
-        out = {}; // null
-        for(k in val)if (k === '__proto__') Object.defineProperty(out, k, {
-            value: klona(val[k]),
-            configurable: true,
-            enumerable: true,
-            writable: true
-        });
-        else out[k] = (tmp = val[k]) && typeof tmp === 'object' ? klona(tmp) : tmp;
-        return out;
-    }
-    return val;
-}
-exports.klona = klona;
-
-},{}],"ffpLW":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "useListenFor", ()=>useListenFor);
-var _react = require("react");
-const useListenFor = (messageName, handler, { bundle } = {})=>{
-    (0, _react.useEffect)(()=>{
-        if (bundle) {
-            nodecg.listenFor(messageName, bundle, handler);
-            return ()=>{
-                nodecg.unlisten(messageName, bundle, handler);
-            };
+        if (!timeline) return;
+        if (view.show && view.fade) {
+            if (!active) {
+                setActive(true);
+                console.log("Setting active");
+                timeline.timeScale(timeScale).play().then(()=>{
+                    view.onFade();
+                });
+            }
+        } else if (!view.show && view.fade) {
+            if (active) {
+                setActive(false);
+                console.log("Setting inactive");
+                timeline.timeScale(reverseTimeScale ? reverseTimeScale : timeScale).reverse().then(()=>{
+                    view.onFade();
+                });
+            }
         }
-        nodecg.listenFor(messageName, handler);
-        return ()=>{
-            nodecg.unlisten(messageName, handler);
-        };
     }, [
-        handler,
-        messageName,
-        bundle
+        view,
+        active,
+        timeline,
+        timeScale,
+        reverseTimeScale
     ]);
+    return active;
 };
 
 },{"react":"bH1AQ","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"2nPdh":[function(require,module,exports,__globalThis) {
@@ -31003,97 +31014,77 @@ var _reactDefault = parcelHelpers.interopDefault(_react);
 var _styledComponents = require("styled-components");
 var _weaponDatabase = require("../../utils/WeaponDatabase");
 var _utils = require("../../utils/utils");
-var _gsapCore = require("gsap/gsap-core");
-var _react1 = require("@gsap/react");
-const UnseenWeapons = ({ show, remainingWeapons, onHideDisplay })=>{
-    const [active, setActive] = (0, _react.useState)(false);
-    const container = (0, _react.useRef)(null);
-    (0, _react1.useGSAP)(()=>{
-        //Transition in
-        if (show && !active) {
-            setActive(true);
-            (0, _gsapCore.gsap).timeline().set(".content", {
-                opacity: 0
-            }).set(".container", {
-                width: "0%",
-                height: "0%",
-                opacity: 0,
-                scale: 0
-            }).to(".container", {
-                duration: 0.25,
-                opacity: 1,
-                scale: 1
-            }).to(".container", {
-                height: "100%"
-            }).to(".container", {
-                width: "100%"
-            }).to(".content", {
-                duration: 1.5,
-                opacity: 1,
-                ease: "power2.inOut"
-            });
-        } else if (!show && active) (0, _gsapCore.gsap).timeline().set(".container", {
-            width: "100%",
-            height: "100%",
-            opacity: 1
-        }).set(".content", {
-            opacity: 1
-        }).to(".content", {
+var _weaponView = require("./WeaponView");
+const UnseenWeapons = ({ view, remainingWeapons })=>{
+    const buildTimeline = (0, _react.useCallback)((timeline)=>{
+        return timeline.set(".content", {
             opacity: 0
-        }).to(".container", {
-            width: "0%"
-        }).to(".container", {
-            height: "0%"
-        }).to(".container", {
+        }).set(".container", {
+            opacity: 1
+        }).set(".container", {
+            width: "0%",
+            height: "0%",
             opacity: 0,
             scale: 0
-        }).then(()=>{
-            setActive(false);
-            onHideDisplay();
+        }).to(".container", {
+            duration: 0.25,
+            opacity: 1,
+            scale: 1
+        }).to(".container", {
+            height: "100%"
+        }).to(".container", {
+            width: "100%"
+        }).to(".content", {
+            duration: 1.5,
+            opacity: 1,
+            ease: "power2.inOut"
         });
-    }, {
-        dependencies: [
-            show,
-            active
-        ],
-        scope: container
-    });
+    }, []);
     const rectFit = (0, _react.useMemo)(()=>{
         return (0, _utils.fitSquaresToRectGrid)(570, 380, remainingWeapons.length);
     }, [
         remainingWeapons.length
     ]);
-    return /*#__PURE__*/ (0, _reactDefault.default).createElement(Wrapper, {
-        ref: container,
-        $display: active ? 'flex' : 'none',
+    return /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _weaponView.WeaponView), {
+        view: view,
+        buildTimeline: buildTimeline,
+        timeScale: 1,
+        reverseTimeScale: 1.5,
         __source: {
             fileName: "src/graphics/components/UnseenWeapons.tsx",
-            lineNumber: 74,
+            lineNumber: 42,
             columnNumber: 10
+        },
+        __self: undefined
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement(Wrapper, {
+        __source: {
+            fileName: "src/graphics/components/UnseenWeapons.tsx",
+            lineNumber: 43,
+            columnNumber: 4
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(Container, {
         className: "container",
         __source: {
             fileName: "src/graphics/components/UnseenWeapons.tsx",
-            lineNumber: 75,
-            columnNumber: 4
+            lineNumber: 44,
+            columnNumber: 5
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(Content, {
         className: "content",
         __source: {
             fileName: "src/graphics/components/UnseenWeapons.tsx",
-            lineNumber: 76,
-            columnNumber: 5
+            lineNumber: 45,
+            columnNumber: 6
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(TitleText, {
         $content: `Unseen Weapons`,
         __source: {
             fileName: "src/graphics/components/UnseenWeapons.tsx",
-            lineNumber: 77,
-            columnNumber: 6
+            lineNumber: 46,
+            columnNumber: 7
         },
         __self: undefined
     }, "Unseen Weapons"), /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponList, {
@@ -31101,30 +31092,37 @@ const UnseenWeapons = ({ show, remainingWeapons, onHideDisplay })=>{
         $width: Math.floor(rectFit.size),
         __source: {
             fileName: "src/graphics/components/UnseenWeapons.tsx",
-            lineNumber: 78,
-            columnNumber: 6
+            lineNumber: 47,
+            columnNumber: 7
         },
         __self: undefined
-    }, remainingWeapons.map((weapon, index)=>{
+    }, remainingWeapons.length > 0 && remainingWeapons.map((weapon, index)=>{
         return /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponImage, {
             key: index,
             src: `${(0, _weaponDatabase.weaponImagePath)}${weapon.image}`,
             __source: {
                 fileName: "src/graphics/components/UnseenWeapons.tsx",
-                lineNumber: 80,
-                columnNumber: 20
+                lineNumber: 49,
+                columnNumber: 22
             },
             __self: undefined
         });
-    })))));
+    }), remainingWeapons.length <= 0 && /*#__PURE__*/ (0, _reactDefault.default).createElement(TitleText, {
+        $content: "All Weapons Found! Hooray!",
+        __source: {
+            fileName: "src/graphics/components/UnseenWeapons.tsx",
+            lineNumber: 51,
+            columnNumber: 40
+        },
+        __self: undefined
+    }, "All Weapons Found! Hooray!"))))));
 };
 const Wrapper = (0, _styledComponents.styled).div.withConfig({
     displayName: "UnseenWeapons__Wrapper",
     componentId: "sc-1ghz0f0-0"
 })([
-    "display:",
-    ";position:relative;padding:5px;width:100%;height:100%;align-items:center;"
-], ({ $display })=>$display);
+    "display:flex;position:relative;padding:5px;width:100%;height:100%;align-items:center;"
+]);
 const Container = (0, _styledComponents.styled).div.withConfig({
     displayName: "UnseenWeapons__Container",
     componentId: "sc-1ghz0f0-1"
@@ -31148,7 +31146,7 @@ const WeaponList = (0, _styledComponents.styled).div.withConfig({
     displayName: "UnseenWeapons__WeaponList",
     componentId: "sc-1ghz0f0-4"
 })([
-    "padding:0;width:100%;height:100%;display:grid;justify-content:space-evenly;grid-template-columns:repeat(",
+    "position:relative;padding:0;width:570px;height:380px;display:grid;justify-content:space-evenly;text-align:center;grid-template-columns:repeat(",
     ",",
     "px);"
 ], ({ $columns })=>$columns, ({ $width })=>$width);
@@ -31156,10 +31154,10 @@ const WeaponImage = (0, _styledComponents.styled).img.withConfig({
     displayName: "UnseenWeapons__WeaponImage",
     componentId: "sc-1ghz0f0-5"
 })([
-    "max-width:100%;aspect-ratio:1/1;"
+    "position:relative;max-width:100%;aspect-ratio:1/1;"
 ]);
 
-},{"react":"bH1AQ","styled-components":"9xpRL","../../utils/WeaponDatabase":"kbTcL","../../utils/utils":"70xAs","gsap/gsap-core":"aEpMH","@gsap/react":"kELb7","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"70xAs":[function(require,module,exports,__globalThis) {
+},{"react":"bH1AQ","styled-components":"9xpRL","../../utils/WeaponDatabase":"kbTcL","../../utils/utils":"70xAs","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG","./WeaponView":"gKIgG"}],"70xAs":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "arrayPrimitiveEquals", ()=>arrayPrimitiveEquals);
@@ -31169,6 +31167,11 @@ const arrayPrimitiveEquals = (a, b)=>{
     return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((value, index)=>value === b[index]);
 };
 const fitSquaresToRectGrid = (width, height, num)=>{
+    if (num <= 0) return {
+        rows: 1,
+        columns: 1,
+        size: Math.min(width, height)
+    };
     // Compute number of rows and columns, and cell size
     const ratio = width / height;
     const ncols_float = Math.sqrt(num * ratio);
@@ -31223,119 +31226,118 @@ var _reactDefault = parcelHelpers.interopDefault(_react);
 var _styledComponents = require("styled-components");
 var _weaponDatabase = require("../../utils/WeaponDatabase");
 var _utils = require("../../utils/utils");
-var _react1 = require("@gsap/react");
-var _gsapCore = require("gsap/gsap-core");
+var _weaponView = require("./WeaponView");
+var _fittedText = require("./FittedText");
+const BlankSize = 0.5;
 const GridWidth = 570;
 const GridHeight = 348;
-const WeaponFrequencies = ({ show, frequencies, onHideDisplay })=>{
-    const [active, setActive] = (0, _react.useState)(false);
-    const container = (0, _react.useRef)(null);
-    (0, _react1.useGSAP)(()=>{
-        //Transition in
-        if (show && !active) {
-            setActive(true);
-            (0, _gsapCore.gsap).timeline().set(".content", {
-                opacity: 0
-            }).set(".container", {
-                width: "0%",
-                height: "0%",
-                opacity: 0,
-                scale: 0
-            }).to(".container", {
-                duration: 0.25,
-                opacity: 1,
-                scale: 1
-            }).to(".container", {
-                height: "100%"
-            }).to(".container", {
-                width: "100%"
-            }).to(".content", {
-                duration: 1.5,
-                opacity: 1,
-                ease: "power2.inOut"
-            });
-        } else if (!show && active) (0, _gsapCore.gsap).timeline().set(".container", {
-            width: "100%",
-            height: "100%",
-            opacity: 1
-        }).set(".content", {
-            opacity: 1
-        }).to(".content", {
+const getColumnFontSize = (width)=>{
+    if (width < 17) return "0.6rem";
+    if (width < 20) return "0.8rem";
+    return "1rem";
+};
+const WeaponFrequencies = ({ view, frequencies })=>{
+    const buildTimeline = (0, _react.useCallback)((timeline)=>{
+        return timeline.set(".content", {
             opacity: 0
-        }).to(".container", {
-            width: "0%"
-        }).to(".container", {
-            height: "0%"
-        }).to(".container", {
+        }).set(".container", {
+            opacity: 1
+        }).set(".container", {
+            width: "0%",
+            height: "0%",
             opacity: 0,
             scale: 0
-        }).then(()=>{
-            setActive(false);
-            onHideDisplay();
+        }).to(".container", {
+            duration: 0.5,
+            opacity: 1,
+            scale: 1
+        }).to(".container", {
+            height: "100%"
+        }).to(".container", {
+            width: "100%"
+        }).to(".content", {
+            duration: 1.5,
+            opacity: 1,
+            ease: "power2.inOut"
         });
-    }, {
-        dependencies: [
-            show,
-            active
-        ],
-        scope: container
-    });
-    return /*#__PURE__*/ (0, _reactDefault.default).createElement(Wrapper, {
-        ref: container,
-        $display: active ? 'flex' : 'none',
+    }, []);
+    const columnSizes = (0, _react.useMemo)(()=>{
+        const numBlank = frequencies.filter((freq)=>freq.weapons.length === 0).length;
+        const standardColumn = GridWidth / (frequencies.length - numBlank + numBlank * BlankSize);
+        return {
+            normal: standardColumn,
+            blank: standardColumn * BlankSize
+        };
+    }, [
+        frequencies
+    ]);
+    return /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _weaponView.WeaponView), {
+        view: view,
+        buildTimeline: buildTimeline,
+        timeScale: 1,
+        reverseTimeScale: 1.5,
         __source: {
             fileName: "src/graphics/components/WeaponFrequencies.tsx",
-            lineNumber: 73,
+            lineNumber: 60,
             columnNumber: 10
+        },
+        __self: undefined
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement(Wrapper, {
+        __source: {
+            fileName: "src/graphics/components/WeaponFrequencies.tsx",
+            lineNumber: 61,
+            columnNumber: 4
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(Container, {
         className: "container",
         __source: {
             fileName: "src/graphics/components/WeaponFrequencies.tsx",
-            lineNumber: 74,
-            columnNumber: 4
+            lineNumber: 62,
+            columnNumber: 5
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(Content, {
         className: "content",
         __source: {
             fileName: "src/graphics/components/WeaponFrequencies.tsx",
-            lineNumber: 75,
-            columnNumber: 5
+            lineNumber: 63,
+            columnNumber: 6
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(TitleText, {
         $content: "Weapon Frequencies",
         __source: {
             fileName: "src/graphics/components/WeaponFrequencies.tsx",
-            lineNumber: 76,
-            columnNumber: 6
+            lineNumber: 64,
+            columnNumber: 7
         },
         __self: undefined
     }, "Weapon Frequencies"), /*#__PURE__*/ (0, _reactDefault.default).createElement(Frequencies, {
         __source: {
             fileName: "src/graphics/components/WeaponFrequencies.tsx",
-            lineNumber: 77,
-            columnNumber: 6
+            lineNumber: 65,
+            columnNumber: 7
         },
         __self: undefined
     }, frequencies.map((freq, index)=>{
-        const rectFit = (0, _utils.fitSquaresToRectGrid)(GridWidth / frequencies.length, GridHeight, freq.weapons.length);
+        const columnWidth = freq.weapons.length > 0 ? columnSizes.normal : columnSizes.blank;
+        const rectFit = (0, _utils.fitSquaresToRectGrid)(columnWidth, GridHeight, freq.weapons.length);
         return /*#__PURE__*/ (0, _reactDefault.default).createElement(FrequencyColumn, {
+            $width: columnWidth,
             key: index,
             __source: {
                 fileName: "src/graphics/components/WeaponFrequencies.tsx",
-                lineNumber: 80,
-                columnNumber: 20
+                lineNumber: 69,
+                columnNumber: 22
             },
             __self: undefined
         }, /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponColumn, {
             $last: index === frequencies.length - 1,
             __source: {
                 fileName: "src/graphics/components/WeaponFrequencies.tsx",
-                lineNumber: 81,
-                columnNumber: 9
+                lineNumber: 70,
+                columnNumber: 10
             },
             __self: undefined
         }, freq.weapons.map((weapon, index)=>{
@@ -31345,47 +31347,54 @@ const WeaponFrequencies = ({ show, frequencies, onHideDisplay })=>{
                 src: `${(0, _weaponDatabase.weaponImagePath)}${weapon.image}`,
                 __source: {
                     fileName: "src/graphics/components/WeaponFrequencies.tsx",
-                    lineNumber: 83,
-                    columnNumber: 26
+                    lineNumber: 72,
+                    columnNumber: 28
                 },
                 __self: undefined
             });
         })), /*#__PURE__*/ (0, _reactDefault.default).createElement(CountWrapper, {
+            $fontSize: getColumnFontSize(columnSizes.blank),
             __source: {
                 fileName: "src/graphics/components/WeaponFrequencies.tsx",
-                lineNumber: 86,
-                columnNumber: 9
-            },
-            __self: undefined
-        }, /*#__PURE__*/ (0, _reactDefault.default).createElement(Count, {
-            $content: `${freq.count}`,
-            __source: {
-                fileName: "src/graphics/components/WeaponFrequencies.tsx",
-                lineNumber: 87,
+                lineNumber: 75,
                 columnNumber: 10
             },
             __self: undefined
-        }, freq.count)));
-    })))));
+        }, /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _fittedText.FittedText), {
+            text: `${freq.count}`,
+            maxWidth: columnWidth,
+            align: "center",
+            font: "Blitz Main",
+            outline: {
+                width: 6,
+                colorTag: 'text-outline'
+            },
+            __source: {
+                fileName: "src/graphics/components/WeaponFrequencies.tsx",
+                lineNumber: 76,
+                columnNumber: 11
+            },
+            __self: undefined
+        })));
+    }))))));
 };
 const Wrapper = (0, _styledComponents.styled).div.withConfig({
     displayName: "WeaponFrequencies__Wrapper",
     componentId: "sc-1n6achd-0"
 })([
-    "display:",
-    ";position:relative;padding:5px;width:100%;height:100%;align-items:center;"
-], ({ $display })=>$display);
+    "display:flex;position:relative;padding:5px;width:100%;height:100%;align-items:center;"
+]);
 const Container = (0, _styledComponents.styled).div.withConfig({
     displayName: "WeaponFrequencies__Container",
     componentId: "sc-1n6achd-1"
 })([
-    "position:relative;width:100%;height:100%;background-color:var(--frequencies);border:5px solid var(--frequencies-border);border-radius:0.5rem;opacity:0;"
+    "position:relative;background-color:var(--frequencies);border:5px solid var(--frequencies-border);border-radius:0.5rem;width:100%;height:100%;opacity:0;"
 ]);
 const Content = (0, _styledComponents.styled).div.withConfig({
     displayName: "WeaponFrequencies__Content",
     componentId: "sc-1n6achd-2"
 })([
-    "display:grid;grid-template-rows:max-content 1fr;align-items:center;position:relative;padding:5px;width:100%;height:100%;color:(--text);"
+    "display:grid;grid-template-rows:max-content 1fr;align-items:center;position:relative;padding:5px;width:100%;height:100%;color:var(--text);"
 ]);
 const TitleText = (0, _styledComponents.styled).div.withConfig({
     displayName: "WeaponFrequencies__TitleText",
@@ -31404,9 +31413,9 @@ const FrequencyColumn = (0, _styledComponents.styled).div.withConfig({
     displayName: "WeaponFrequencies__FrequencyColumn",
     componentId: "sc-1n6achd-5"
 })([
-    "position:relative;width:100%;height:",
-    ";flex-basis:0;flex-grow:1;display:flex;flex-direction:column;"
-], GridHeight);
+    "position:relative;width:",
+    "px;height:100%;display:flex;flex-direction:column;"
+], ({ $width })=>$width);
 const WeaponColumn = (0, _styledComponents.styled).div.withConfig({
     displayName: "WeaponFrequencies__WeaponColumn",
     componentId: "sc-1n6achd-6"
@@ -31430,8 +31439,9 @@ const CountWrapper = (0, _styledComponents.styled).div.withConfig({
     displayName: "WeaponFrequencies__CountWrapper",
     componentId: "sc-1n6achd-8"
 })([
-    "position:relative;display:flex;align-items:flex-start;justify-content:center;"
-]);
+    "position:relative;display:flex;align-items:flex-start;justify-content:center;font-size:",
+    ";"
+], ({ $fontSize })=>$fontSize);
 const Count = (0, _styledComponents.styled).div.withConfig({
     displayName: "WeaponFrequencies__Count",
     componentId: "sc-1n6achd-9"
@@ -31440,6 +31450,87 @@ const Count = (0, _styledComponents.styled).div.withConfig({
     "\";-webkit-text-stroke:8px var(--text-outline);z-index:-1;}"
 ], ({ $content })=>$content);
 
-},{"react":"bH1AQ","styled-components":"9xpRL","../../utils/WeaponDatabase":"kbTcL","../../utils/utils":"70xAs","@gsap/react":"kELb7","gsap/gsap-core":"aEpMH","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}]},["lFqUV"], "lFqUV", "parcelRequire94c2")
+},{"react":"bH1AQ","styled-components":"9xpRL","../../utils/WeaponDatabase":"kbTcL","../../utils/utils":"70xAs","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG","./WeaponView":"gKIgG","./FittedText":"f5NVk"}],"8lJRU":[function(require,module,exports,__globalThis) {
+/**
+ * This code is a modified version of useReplicant to integrate options to ensure it is always defined (essentially forcing defaults to exist)
+ * It also fixes the warnings with using the replicant when it may not be defined
+ * MIT © Keiichiro Amemiya (Hoishin)
+ * https://github.com/nodecg/react-hooks
+ */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "useReplicant", ()=>useReplicant);
+var _react = require("react");
+var _json = require("klona/json");
+const useReplicant = (replicantName, { bundle, defaultValue, persistent })=>{
+    const replicant = (0, _react.useMemo)(()=>{
+        if (typeof bundle === "string") return nodecg.Replicant(replicantName, bundle, {
+            defaultValue,
+            persistent
+        });
+        return nodecg.Replicant(replicantName, {
+            defaultValue,
+            persistent
+        });
+    }, [
+        bundle,
+        defaultValue,
+        persistent,
+        replicantName
+    ]);
+    const [value, setValue] = (0, _react.useState)(defaultValue);
+    (0, _react.useEffect)(()=>{
+        const changeHandler = (newValue)=>{
+            setValue((oldValue)=>{
+                if (newValue !== oldValue) return newValue;
+                return (0, _json.klona)(newValue);
+            });
+        };
+        const changeWrapper = (newValue)=>newValue && changeHandler(newValue);
+        replicant.on("change", changeWrapper);
+        return ()=>{
+            replicant.removeListener("change", changeWrapper);
+        };
+    }, [
+        replicant
+    ]);
+    const updateValue = (0, _react.useCallback)((newValue)=>{
+        if (typeof newValue === "function") // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        newValue(replicant.value);
+        else replicant.value = newValue;
+    }, [
+        replicant
+    ]);
+    return [
+        value,
+        updateValue
+    ];
+};
+
+},{"react":"bH1AQ","klona/json":"elCG0","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"elCG0":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "klona", ()=>klona);
+function klona(val) {
+    var k, out, tmp;
+    if (Array.isArray(val)) {
+        out = Array(k = val.length);
+        while(k--)out[k] = (tmp = val[k]) && typeof tmp === 'object' ? klona(tmp) : tmp;
+        return out;
+    }
+    if (Object.prototype.toString.call(val) === '[object Object]') {
+        out = {}; // null
+        for(k in val)if (k === '__proto__') Object.defineProperty(out, k, {
+            value: klona(val[k]),
+            configurable: true,
+            enumerable: true,
+            writable: true
+        });
+        else out[k] = (tmp = val[k]) && typeof tmp === 'object' ? klona(tmp) : tmp;
+        return out;
+    }
+    return val;
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}]},["lFqUV"], "lFqUV", "parcelRequire94c2")
 
 //# sourceMappingURL=tracker.66273cab.js.map

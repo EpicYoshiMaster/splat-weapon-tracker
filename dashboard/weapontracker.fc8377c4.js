@@ -152,20 +152,20 @@ var _client = require("react-dom/client");
 var _styledComponents = require("styled-components");
 var _weaponDatabase = require("../utils/WeaponDatabase");
 var _layout = require("./components/Layout");
-var _reactHooks = require("@nodecg/react-hooks");
+var _useReplicant = require("../utils/use-replicant");
 var _types = require("../types/types");
 var _weaponList = require("./components/WeaponList");
 var _recentList = require("./components/RecentList");
 var _reactDropzone = require("react-dropzone");
 var _fileSaver = require("file-saver");
 function WeaponTracker() {
-    const [mode, setMode] = (0, _reactHooks.useReplicant)('mode', {
+    const [mode, setMode] = (0, _useReplicant.useReplicant)('mode', {
         defaultValue: (0, _types.WeaponMode).Salmon
     });
-    const [display, setDisplay] = (0, _reactHooks.useReplicant)('display', {
+    const [display, setDisplay] = (0, _useReplicant.useReplicant)('display', {
         defaultValue: (0, _types.DisplayMode).Recent
     });
-    const [lists, setLists] = (0, _reactHooks.useReplicant)('weapons', {
+    const [lists, setLists] = (0, _useReplicant.useReplicant)('weapons', {
         defaultValue: {
             standard: [],
             salmon: [],
@@ -662,7 +662,7 @@ root.render(/*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponTracker
     __self: undefined
 }));
 
-},{"react":"bH1AQ","react-dom/client":"i5cPj","styled-components":"9xpRL","../utils/WeaponDatabase":"kbTcL","./components/Layout":"72fYZ","@nodecg/react-hooks":"audz3","../types/types":"2nPdh","./components/WeaponList":"7EObH","./components/RecentList":"f6VhE","react-dropzone":"gDtXJ","file-saver":"khXis","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"bH1AQ":[function(require,module,exports,__globalThis) {
+},{"react":"bH1AQ","react-dom/client":"i5cPj","styled-components":"9xpRL","../utils/WeaponDatabase":"kbTcL","./components/Layout":"72fYZ","../types/types":"2nPdh","./components/WeaponList":"7EObH","./components/RecentList":"f6VhE","react-dropzone":"gDtXJ","file-saver":"khXis","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG","../utils/use-replicant":"8lJRU"}],"bH1AQ":[function(require,module,exports,__globalThis) {
 'use strict';
 module.exports = require("a569817e6ea559f6");
 
@@ -26588,6 +26588,7 @@ const invertWeaponList = (weapons, ids)=>{
         return weaponClass.weapons.filter((weapon)=>!ids.includes(weapon.id));
     });
 };
+const ellipsis = `\u22EF`;
 const getWeaponFrequencies = (weapons, ids)=>{
     const frequencies = weapons.flatMap((weaponClass)=>{
         return weaponClass.weapons.map((weapon)=>{
@@ -26597,14 +26598,23 @@ const getWeaponFrequencies = (weapons, ids)=>{
             };
         });
     }).sort((a, b)=>a.count === b.count ? a.weapon.id - b.weapon.id : a.count - b.count);
-    //Condense by frequency, adding in blank counts
+    //Condense by frequency, adding in blank counts between
+    const min = frequencies.length > 0 ? frequencies[0].count : 0;
     const max = frequencies.length > 0 ? frequencies[frequencies.length - 1].count : 0;
-    return Array.from(Array(max + 1).keys()).map((count)=>{
+    return Array.from(Array(max - min + 1).keys(), (key)=>key + min).map((count)=>{
+        let countText = `${count}`;
+        const weaponsAtCount = frequencies.filter((freq)=>freq.count === count).map((freq)=>freq.weapon);
+        if (weaponsAtCount.length <= 0) {
+            const previousCountZero = count > 0 && frequencies.filter((freq)=>freq.count === count - 1).length <= 0;
+            const nextCountZero = count < max && frequencies.filter((freq)=>freq.count === count + 1).length <= 0;
+            //Notate long stretches of empty weapons to be filtered later
+            if (previousCountZero && nextCountZero) countText = ellipsis;
+        }
         return {
-            count,
-            weapons: frequencies.filter((freq)=>freq.count === count).map((freq)=>freq.weapon)
+            count: countText,
+            weapons: weaponsAtCount
         };
-    });
+    }).filter((frequency, index, array)=>frequency.count !== ellipsis || array[index + 1].count !== ellipsis);
 };
 
 },{"../data/weapons.json":"gyM61","../data/classes.json":"if1fc","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"gyM61":[function(require,module,exports,__globalThis) {
@@ -26660,112 +26670,7 @@ const SelectButton = (0, _styledComponents.styled)(OutlineButton).withConfig({
         ""
     ]));
 
-},{"styled-components":"9xpRL","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"audz3":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _useReplicant = require("./use-replicant");
-parcelHelpers.exportAll(_useReplicant, exports);
-var _useListenFor = require("./use-listen-for");
-parcelHelpers.exportAll(_useListenFor, exports);
-
-},{"./use-replicant":"iySid","./use-listen-for":"ffpLW","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"iySid":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "useReplicant", ()=>useReplicant);
-var _react = require("react");
-var _json = require("klona/json");
-const useReplicant = (replicantName, { bundle, defaultValue, persistent } = {})=>{
-    const replicant = (0, _react.useMemo)(()=>{
-        if (typeof bundle === "string") return nodecg.Replicant(replicantName, bundle, {
-            defaultValue,
-            persistent
-        });
-        return nodecg.Replicant(replicantName, {
-            defaultValue,
-            persistent
-        });
-    }, [
-        bundle,
-        defaultValue,
-        persistent,
-        replicantName
-    ]);
-    const [value, setValue] = (0, _react.useState)(replicant.value);
-    (0, _react.useEffect)(()=>{
-        const changeHandler = (newValue)=>{
-            setValue((oldValue)=>{
-                if (newValue !== oldValue) return newValue;
-                return (0, _json.klona)(newValue);
-            });
-        };
-        replicant.on("change", changeHandler);
-        return ()=>{
-            replicant.removeListener("change", changeHandler);
-        };
-    }, [
-        replicant
-    ]);
-    const updateValue = (0, _react.useCallback)((newValue)=>{
-        if (typeof newValue === "function") // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        newValue(replicant.value);
-        else replicant.value = newValue;
-    }, [
-        replicant
-    ]);
-    return [
-        value,
-        updateValue
-    ];
-};
-
-},{"react":"bH1AQ","klona/json":"loHAU","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"loHAU":[function(require,module,exports,__globalThis) {
-function klona(val) {
-    var k, out, tmp;
-    if (Array.isArray(val)) {
-        out = Array(k = val.length);
-        while(k--)out[k] = (tmp = val[k]) && typeof tmp === 'object' ? klona(tmp) : tmp;
-        return out;
-    }
-    if (Object.prototype.toString.call(val) === '[object Object]') {
-        out = {}; // null
-        for(k in val)if (k === '__proto__') Object.defineProperty(out, k, {
-            value: klona(val[k]),
-            configurable: true,
-            enumerable: true,
-            writable: true
-        });
-        else out[k] = (tmp = val[k]) && typeof tmp === 'object' ? klona(tmp) : tmp;
-        return out;
-    }
-    return val;
-}
-exports.klona = klona;
-
-},{}],"ffpLW":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "useListenFor", ()=>useListenFor);
-var _react = require("react");
-const useListenFor = (messageName, handler, { bundle } = {})=>{
-    (0, _react.useEffect)(()=>{
-        if (bundle) {
-            nodecg.listenFor(messageName, bundle, handler);
-            return ()=>{
-                nodecg.unlisten(messageName, bundle, handler);
-            };
-        }
-        nodecg.listenFor(messageName, handler);
-        return ()=>{
-            nodecg.unlisten(messageName, handler);
-        };
-    }, [
-        handler,
-        messageName,
-        bundle
-    ]);
-};
-
-},{"react":"bH1AQ","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"2nPdh":[function(require,module,exports,__globalThis) {
+},{"styled-components":"9xpRL","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"2nPdh":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "WeaponMode", ()=>WeaponMode);
@@ -34792,6 +34697,87 @@ var global = arguments[3];
     f.saveAs = g.saveAs = g, module.exports = g;
 });
 
-},{}]},["iM5K2"], "iM5K2", "parcelRequire94c2")
+},{}],"8lJRU":[function(require,module,exports,__globalThis) {
+/**
+ * This code is a modified version of useReplicant to integrate options to ensure it is always defined (essentially forcing defaults to exist)
+ * It also fixes the warnings with using the replicant when it may not be defined
+ * MIT © Keiichiro Amemiya (Hoishin)
+ * https://github.com/nodecg/react-hooks
+ */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "useReplicant", ()=>useReplicant);
+var _react = require("react");
+var _json = require("klona/json");
+const useReplicant = (replicantName, { bundle, defaultValue, persistent })=>{
+    const replicant = (0, _react.useMemo)(()=>{
+        if (typeof bundle === "string") return nodecg.Replicant(replicantName, bundle, {
+            defaultValue,
+            persistent
+        });
+        return nodecg.Replicant(replicantName, {
+            defaultValue,
+            persistent
+        });
+    }, [
+        bundle,
+        defaultValue,
+        persistent,
+        replicantName
+    ]);
+    const [value, setValue] = (0, _react.useState)(defaultValue);
+    (0, _react.useEffect)(()=>{
+        const changeHandler = (newValue)=>{
+            setValue((oldValue)=>{
+                if (newValue !== oldValue) return newValue;
+                return (0, _json.klona)(newValue);
+            });
+        };
+        const changeWrapper = (newValue)=>newValue && changeHandler(newValue);
+        replicant.on("change", changeWrapper);
+        return ()=>{
+            replicant.removeListener("change", changeWrapper);
+        };
+    }, [
+        replicant
+    ]);
+    const updateValue = (0, _react.useCallback)((newValue)=>{
+        if (typeof newValue === "function") // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        newValue(replicant.value);
+        else replicant.value = newValue;
+    }, [
+        replicant
+    ]);
+    return [
+        value,
+        updateValue
+    ];
+};
+
+},{"react":"bH1AQ","klona/json":"elCG0","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"elCG0":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "klona", ()=>klona);
+function klona(val) {
+    var k, out, tmp;
+    if (Array.isArray(val)) {
+        out = Array(k = val.length);
+        while(k--)out[k] = (tmp = val[k]) && typeof tmp === 'object' ? klona(tmp) : tmp;
+        return out;
+    }
+    if (Object.prototype.toString.call(val) === '[object Object]') {
+        out = {}; // null
+        for(k in val)if (k === '__proto__') Object.defineProperty(out, k, {
+            value: klona(val[k]),
+            configurable: true,
+            enumerable: true,
+            writable: true
+        });
+        else out[k] = (tmp = val[k]) && typeof tmp === 'object' ? klona(tmp) : tmp;
+        return out;
+    }
+    return val;
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}]},["iM5K2"], "iM5K2", "parcelRequire94c2")
 
 //# sourceMappingURL=weapontracker.fc8377c4.js.map
