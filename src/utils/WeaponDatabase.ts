@@ -94,6 +94,8 @@ export const invertWeaponList = (weapons: WeaponClass[], ids: number[]): Weapon[
 	})
 }
 
+const ellipsis = `\u22EF`;
+
 //Personally I would like to know a Better way to do this LOL
 export const getWeaponFrequencies = (weapons: WeaponClass[], ids: number[]): WeaponFrequency[] => {
 	const frequencies = weapons.flatMap((weaponClass) => {
@@ -102,10 +104,25 @@ export const getWeaponFrequencies = (weapons: WeaponClass[], ids: number[]): Wea
 		})
 	}).sort((a, b) => a.count === b.count ? a.weapon.id - b.weapon.id : a.count - b.count);
 
-	//Condense by frequency, adding in blank counts
+	//Condense by frequency, adding in blank counts between
+	const min = frequencies.length > 0 ? frequencies[0].count : 0;
 	const max = frequencies.length > 0 ? frequencies[frequencies.length - 1].count : 0;
 
-	return Array.from(Array(max + 1).keys()).map((count) => {
-		return { count, weapons: frequencies.filter((freq) => freq.count === count).map((freq) => freq.weapon)}
-	})
+	return Array.from(Array((max - min) + 1).keys(), (key) => key + min).map((count) => {
+		let countText = `${count}`;
+
+		const weaponsAtCount = frequencies.filter((freq) => freq.count === count).map((freq) => freq.weapon);
+
+		if(weaponsAtCount.length <= 0) {
+			const previousCountZero = count > 0 && frequencies.filter((freq) => freq.count === count - 1).length <= 0;
+			const nextCountZero = count < max && frequencies.filter((freq) => freq.count === count + 1).length <= 0;
+
+			//Notate long stretches of empty weapons to be filtered later
+			if(previousCountZero && nextCountZero) {
+				countText = ellipsis;
+			}	
+		}
+
+		return { count: countText, weapons: weaponsAtCount}
+	}).filter((frequency, index, array) => frequency.count !== ellipsis || (array[index + 1].count !== ellipsis))
 }

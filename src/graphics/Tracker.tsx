@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, act } from 'react';
 import { styled } from 'styled-components'
 import { createRoot } from 'react-dom/client';
 import { RecentWeapons } from './components/RecentWeapons'
-import { useReplicant } from '@nodecg/react-hooks'
+import { useReplicant } from '../utils/use-replicant';
 import { WeaponMode, DisplayMode } from '../types/types';
 import { Weaponlist } from '../types/schemas';
 import { standardWeapons, salmonWeapons, grizzcoWeapons, invertWeaponList, getWeaponFrequencies } from '../utils/WeaponDatabase';
@@ -10,6 +10,11 @@ import { UnseenWeapons } from './components/UnseenWeapons';
 import { WeaponFrequencies } from './components/WeaponFrequencies';
 
 const NumRecentWeapons = 6;
+
+type ActiveAndFade = {
+	active: DisplayMode;
+	fade: boolean;
+}
 
 export function Tracker() {
 	const [mode, setMode] = useReplicant<WeaponMode>('mode', {
@@ -20,7 +25,11 @@ export function Tracker() {
 		defaultValue: DisplayMode.None
 	})
 
-	const [activeDisplay, setActiveDisplay] = useState<DisplayMode>(DisplayMode.None);
+	const [fullscreen, setFullscreen] = useReplicant<boolean>('fullscreen', {
+		defaultValue: false,
+	})
+
+	const [current, setCurrent] = useState<ActiveAndFade>({ active: DisplayMode.None, fade: false });
 
 	const [lists, setLists] = useReplicant<Weaponlist>('weapons', {
 		defaultValue: {
@@ -59,43 +68,69 @@ export function Tracker() {
 		return getWeaponFrequencies(weaponClasses, activeList);
 	}, [weaponClasses, activeList]);
 
-
 	useEffect(() => {
-		if(!display) return;
+		if(display === DisplayMode.None) return;
 
-		if(display !== activeDisplay) {
-			if(activeDisplay === DisplayMode.None) {
-				setActiveDisplay(display);
+		if(display !== current.active && !current.fade) {
+			//Nothing active, fade the current in
+			if(current.active === DisplayMode.None) {
+				console.log(`TRACKER - Fading In: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+				setCurrent({ active: display, fade: true });
 			}
 			else {
-				//Hide the currently active display
-				setActiveDisplay(DisplayMode.None);
+				//Something is active, fade the current out
+				console.log(`TRACKER - Fading Out Current: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+				setCurrent((current) => { return { ...current, fade: true } });
 			}
 		}
-	}, [display]);
 
-	const onHideDisplay = useCallback(() => {
-		if(!display) return;
+	}, [display, current])
 
-		setActiveDisplay(display);
-	}, [display]);
+	const onFade = useCallback(() => {
+		if(display === DisplayMode.None) return;
+
+		if(current.active === display) {
+			console.log(`ONFADE - Fade In Complete. PREV STATE: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+			setCurrent((current) => { return { ...current, fade: false } } );
+		}
+		else {
+			console.log(`ONFADE - Fading In New Current: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+			setCurrent({ active: display, fade: true });
+		}
+
+	}, [current, display]);
 
 	return (
 		<StyledTracker>
 			<Content>
 				<RecentWeapons 
-					show={activeDisplay === DisplayMode.Recent} 
+					view={{ 
+						show: display === DisplayMode.Recent, 
+						fade: current.active === DisplayMode.Recent && current.fade, 
+						fullscreen, 
+						onFade 
+					}}
+
 					max={NumRecentWeapons} 
-					recentIds={activeList}
-					onHideDisplay={onHideDisplay} />
-				<UnseenWeapons 
-					show={activeDisplay === DisplayMode.Unseen} 
-					remainingWeapons={remainingList}
-					onHideDisplay={onHideDisplay} />
+					recentIds={activeList} />				
 				<WeaponFrequencies 
-					show={activeDisplay === DisplayMode.Frequencies} 
-					frequencies={weaponFrequencies}
-					onHideDisplay={onHideDisplay} />
+					view={{ 
+						show: display === DisplayMode.Frequencies, 
+						fade: current.active === DisplayMode.Frequencies && current.fade, 
+						fullscreen, 
+						onFade 
+					}}
+
+					frequencies={weaponFrequencies} />
+				<UnseenWeapons 
+					view={{ 
+						show: display === DisplayMode.Unseen, 
+						fade: current.active === DisplayMode.Unseen && current.fade, 
+						fullscreen, 
+						onFade 
+					}}
+
+					remainingWeapons={remainingList} />
 			</Content>	
 		</StyledTracker>
 	);

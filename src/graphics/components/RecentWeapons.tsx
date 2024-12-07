@@ -2,44 +2,27 @@ import React, { useCallback, useRef, useState, useEffect } from "react"
 import styled from "styled-components"
 import { getWeaponById, defaultWeapon, weaponImagePath } from "../../utils/WeaponDatabase"
 import { FittedText } from "./FittedText";
-import { gsap } from "gsap/gsap-core";
-import { useGSAP } from '@gsap/react'
-import { Weapon } from "../../types/types";
+import { View, Weapon } from "../../types/types";
+import { WeaponView } from "./WeaponView";
 
 interface RecentWeaponsProps {
-	show: boolean;
+	view: View;
 	max: number;
 	recentIds: number[];
-	onHideDisplay: () => void;
 }
 
-export const RecentWeapons: React.FC<RecentWeaponsProps> = ({ show, max, recentIds, onHideDisplay }) => {
-	
-	const [active, setActive] = useState(false);
-	const container = useRef<HTMLDivElement>(null);
+export const RecentWeapons: React.FC<RecentWeaponsProps> = ({ view, max, recentIds }) => {
 
-	useGSAP(() => {
-		//Transition in
-		if(show && !active) {
-			setActive(true);
-			gsap.timeline()
-			.set(".container", { opacity: 0 })
-			.to(".container", { duration: 1, opacity: 1, ease: "power2.inOut" })
-		}
-		//Transition out
-		else if(!show && active) {
-			gsap.timeline()
-			.set(".container", { opacity: 1 })
-			.to(".container", { duration: 1, opacity: 0, ease: "power2.inOut" })
-			.then(() => {
-				setActive(false);
-				onHideDisplay();
-			})
-		}
-	}, { dependencies: [show, active], scope: container })
+	const buildTimeline = useCallback((timeline: gsap.core.Timeline) => {
+		return timeline.fromTo(".container", { opacity: 0 }, { 
+			duration: 1, 
+			opacity: 1, 
+			ease: "power2.inOut"
+		})
+	}, []);
 
 	return (
-		<Wrapper ref={container} $display={active ? 'block' : 'none'}>
+		<WeaponView view={view} buildTimeline={buildTimeline}>
 			<Column className="container">
 			{
 				Array.from(Array(max).keys()).map((index) => {
@@ -65,10 +48,10 @@ export const RecentWeapons: React.FC<RecentWeaponsProps> = ({ show, max, recentI
 					if(index === 0) {
 						return (
 						<TopWeaponRow 
-							key={index} 
-							$display={display} 
-							$colorTag={colorTag}
-							className="weapon">
+						key={index} 
+						$display={display} 
+						$colorTag={colorTag}
+						className="weapon">
 							<WeaponImage src={`${weaponImagePath}${weapon.image}`} className="image" />
 							<FittedText 
 							text={`${weapon.name} (${weaponCount})`} 
@@ -82,30 +65,25 @@ export const RecentWeapons: React.FC<RecentWeaponsProps> = ({ show, max, recentI
 
 					return (
 						<WeaponRow 
-							key={index} 
-							$display={display} 
-							$colorTag={colorTag}
-							className="weapon">
+						key={index} 
+						$display={display} 
+						$colorTag={colorTag}
+						className="weapon">
 							<WeaponImage src={`${weaponImagePath}${weapon.image}`} className="image" />
 							<FittedText 
-								text={`${weapon.name} (${weaponCount})`} 
-								maxWidth={475} 
-								align="left" 
-								font="Blitz Main"
-								outline={{ width: 5, colorTag: "text-outline" }} />
+							text={`${weapon.name} (${weaponCount})`} 
+							maxWidth={475} 
+							align="left" 
+							font="Blitz Main"
+							outline={{ width: 5, colorTag: "text-outline" }} />
 						</WeaponRow>
 					)
 				})
 			}
 			</Column>
-		</Wrapper>
+		</WeaponView>
 	)
 }
-
-const Wrapper = styled.div<{ $display: string }>`
-	display: ${({ $display }) => $display};
-	position: relative;	
-`;
 
 const Column = styled.div`
 	padding: 10px;
@@ -119,9 +97,6 @@ const Column = styled.div`
 	flex-direction: column;
 	justify-content: flex-start;
 	row-gap: 5px;
-
-	//FOUC
-	opacity: 0;
 `;
 
 const WeaponRow = styled.div<{ $colorTag: string, $display: string }>`

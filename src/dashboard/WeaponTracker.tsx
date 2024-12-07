@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { styled } from 'styled-components';
 import { standardWeapons, salmonWeapons, grizzcoWeapons } from '../utils/WeaponDatabase'
 import { HeadText, OutlineButton, SelectButton } from './components/Layout'
-import { useReplicant } from '@nodecg/react-hooks';
+import { useReplicant } from '../utils/use-replicant';
 import { DisplayMode, WeaponMode } from '../types/types';
 import { Weaponlist, Listexport } from '../types/schemas';
 import { WeaponList } from './components/WeaponList';

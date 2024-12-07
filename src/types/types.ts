@@ -1,3 +1,10 @@
+export type View = {
+	show: boolean;
+	fade: boolean;
+	fullscreen: boolean;
+	onFade: () => void;
+}
+
 export type Weapon = {
 	id: number;
 	key: string;
@@ -10,7 +17,7 @@ export type Weapon = {
 
 export type WeaponFrequency = {
 	weapons: Weapon[];
-	count: number;
+	count: string; //This is all the Grizzco Splatana's fault >:(
 }
 
 export type WeaponClass = {

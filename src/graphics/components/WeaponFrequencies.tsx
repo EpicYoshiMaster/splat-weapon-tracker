@@ -1,90 +1,96 @@
-import React, { useState, useRef } from "react";
+import React, { useCallback, useMemo } from "react";
 import { styled, css } from "styled-components";
-import { WeaponFrequency } from "../../types/types";
+import { View, WeaponFrequency } from "../../types/types";
 import { weaponImagePath } from "../../utils/WeaponDatabase";
 import { fitSquaresToRectGrid } from "../../utils/utils";
-import { useGSAP } from "@gsap/react";
-import { gsap } from "gsap/gsap-core";
+import { WeaponView } from "./WeaponView";
+import { FittedText } from "./FittedText";
 
 interface WeaponFrequenciesProps {
-	show: boolean;
+	view: View;
 	frequencies: WeaponFrequency[];
-	onHideDisplay: () => void;
 }
+
+const BlankSize = 0.5;
 
 const GridWidth = 570;
 const GridHeight = 380 - 32;
 
-export const WeaponFrequencies: React.FC<WeaponFrequenciesProps> = ({ show, frequencies, onHideDisplay }) => {
-	const [active, setActive] = useState(false);
-	const container = useRef<HTMLDivElement>(null);
+const getColumnFontSize = (width: number) => {
+	if(width < 17) {
+		return "0.6rem";
+	}
 
-	useGSAP(() => {
-		//Transition in
-		if(show && !active) {
-			setActive(true);
-			gsap.timeline()
-			.set(".content", { opacity: 0 })
+	if(width < 20) {
+		return "0.8rem";
+	}
+
+	return "1rem";
+}
+
+export const WeaponFrequencies: React.FC<WeaponFrequenciesProps> = ({ view, frequencies }) => {
+
+	const buildTimeline = useCallback((timeline: gsap.core.Timeline) => {
+		return timeline.set(".content", { opacity: 0 })
+			.set(".container", { opacity: 1 })
 			.set(".container", { width: "0%", height: "0%", opacity: 0, scale: 0 })
-			.to(".container", { duration: 0.25, opacity: 1, scale: 1 })
+			.to(".container", { duration: 0.5, opacity: 1, scale: 1 })
 			.to(".container", { height: "100%" })
 			.to(".container", { width: "100%" })
 			.to(".content", { duration: 1.5, opacity: 1, ease: "power2.inOut" })
-		}
-		//Transition out
-		else if(!show && active) {
-			gsap.timeline()
-			.set(".container", { width: "100%", height: "100%", opacity: 1 })
-			.set(".content", { opacity: 1 })
-			.to(".content", { opacity: 0 })
-			.to(".container", { width: "0%" })
-			.to(".container", { height: "0%" })
-			.to(".container", { opacity: 0, scale: 0 })
-			.then(() => {
-				setActive(false);
-				onHideDisplay();
-			})
-		}
-	}, { dependencies: [show, active], scope: container })
+	}, []);
+
+	const columnSizes = useMemo(() => {
+		const numBlank = frequencies.filter((freq) => freq.weapons.length === 0).length;
+
+		const standardColumn = GridWidth / ((frequencies.length - numBlank) + (numBlank * BlankSize));
+
+		return { normal: standardColumn, blank: standardColumn * BlankSize };
+	}, [frequencies])
 
 	return (
-		<Wrapper ref={container} $display={active ? 'flex' : 'none'}>
-			<Container className="container">
-				<Content className="content">
-					<TitleText $content="Weapon Frequencies">Weapon Frequencies</TitleText>
-					<Frequencies>
-					{frequencies.map((freq, index) => {
-						const rectFit = fitSquaresToRectGrid(
-							GridWidth / frequencies.length, 
-							GridHeight, 
-							freq.weapons.length);
+		<WeaponView view={view} buildTimeline={buildTimeline} timeScale={1} reverseTimeScale={1.5}>
+			<Wrapper>
+				<Container className="container">
+					<Content className="content">
+						<TitleText $content="Weapon Frequencies">Weapon Frequencies</TitleText>
+						<Frequencies>
+						{frequencies.map((freq, index) => {
+							const columnWidth = freq.weapons.length > 0 ? columnSizes.normal : columnSizes.blank;
 
-						return (
-							<FrequencyColumn key={index}>
-								<WeaponColumn $last={index === frequencies.length - 1}>
-								{freq.weapons.map((weapon, index) => {
+							const rectFit = fitSquaresToRectGrid(
+								columnWidth, 
+								GridHeight, 
+								freq.weapons.length);
 
-									return (
-									<WeaponImage $width={Math.floor(rectFit.size)} key={index} src={`${weaponImagePath}${weapon.image}`} />
-									)
-								})
-								}
-								</WeaponColumn>
-								<CountWrapper>
-									<Count $content={`${freq.count}`}>{freq.count}</Count>
-								</CountWrapper>
-							</FrequencyColumn>
-						)
-					})}
-					</Frequencies>
-				</Content>
-			</Container>
-		</Wrapper>
+							return (
+								<FrequencyColumn $width={columnWidth} key={index}>
+									<WeaponColumn $last={index === frequencies.length - 1}>
+									{freq.weapons.map((weapon, index) => {
+
+										return (
+										<WeaponImage $width={Math.floor(rectFit.size)} key={index} src={`${weaponImagePath}${weapon.image}`} />
+										)
+									})
+									}
+									</WeaponColumn>
+									<CountWrapper $fontSize={getColumnFontSize(columnSizes.blank)}>
+										<FittedText text={`${freq.count}`} maxWidth={columnWidth} align="center" font="Blitz Main" outline={{ width: 6, colorTag: 'text-outline' }}  />
+										{/*<Count $content={`${freq.count}`}>{freq.count}</Count>*/}
+									</CountWrapper>
+								</FrequencyColumn>
+							)
+						})}
+						</Frequencies>
+					</Content>
+				</Container>
+			</Wrapper>
+		</WeaponView>
 	)
 }
 
-const Wrapper = styled.div<{ $display: string }>`
-	display: ${({ $display }) => $display};
+const Wrapper = styled.div`
+	display: flex;
 	position: relative;
 	padding: 5px;	
 	width: 100%;
@@ -95,12 +101,13 @@ const Wrapper = styled.div<{ $display: string }>`
 
 const Container = styled.div`
 	position: relative;
-	width: 100%;
-	height: 100%;
 	
 	background-color: var(--frequencies);
 	border: 5px solid var(--frequencies-border);
 	border-radius: 0.5rem;
+
+	width: 100%;
+	height: 100%;
 
 	//FOUC
 	opacity: 0;
@@ -116,7 +123,7 @@ const Content = styled.div`
 	width: 100%;
 	height: 100%;
 
-	color: (--text);
+	color: var(--text);
 `;
 
 const TitleText = styled.div<{ $content: string }>`
@@ -144,12 +151,12 @@ const Frequencies = styled.div`
 	flex-direction: row;
 `;
 
-const FrequencyColumn = styled.div`
+const FrequencyColumn = styled.div<{ $width: number }>`
 	position: relative;
-	width: 100%;
-	height: ${GridHeight};
-	flex-basis: 0;
-	flex-grow: 1;
+	width: ${({ $width }) => $width}px;
+	height: 100%;
+	//flex-basis: 0;
+	//flex-grow: 1;
 	display: flex;
 	flex-direction: column;
 `;
@@ -173,11 +180,12 @@ const WeaponImage = styled.img<{ $width: number }>`
 	aspect-ratio: 1/1;
 `;
 
-const CountWrapper = styled.div`
+const CountWrapper = styled.div<{ $fontSize: string }>`
 	position: relative;
 	display: flex;
 	align-items: flex-start;
 	justify-content: center;
+	font-size: ${({ $fontSize }) => $fontSize};
 `;
 
 const Count = styled.div<{ $content: string }>`
