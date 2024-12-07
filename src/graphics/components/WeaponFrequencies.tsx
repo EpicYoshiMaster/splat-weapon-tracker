@@ -1,17 +1,32 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { styled, css } from "styled-components";
 import { View, WeaponFrequency } from "../../types/types";
 import { weaponImagePath } from "../../utils/WeaponDatabase";
 import { fitSquaresToRectGrid } from "../../utils/utils";
 import { WeaponView } from "./WeaponView";
+import { FittedText } from "./FittedText";
 
 interface WeaponFrequenciesProps {
 	view: View;
 	frequencies: WeaponFrequency[];
 }
 
+const BlankSize = 0.5;
+
 const GridWidth = 570;
 const GridHeight = 380 - 32;
+
+const getColumnFontSize = (width: number) => {
+	if(width < 17) {
+		return "0.6rem";
+	}
+
+	if(width < 20) {
+		return "0.8rem";
+	}
+
+	return "1rem";
+}
 
 export const WeaponFrequencies: React.FC<WeaponFrequenciesProps> = ({ view, frequencies }) => {
 
@@ -25,6 +40,14 @@ export const WeaponFrequencies: React.FC<WeaponFrequenciesProps> = ({ view, freq
 			.to(".content", { duration: 1.5, opacity: 1, ease: "power2.inOut" })
 	}, []);
 
+	const columnSizes = useMemo(() => {
+		const numBlank = frequencies.filter((freq) => freq.weapons.length === 0).length;
+
+		const standardColumn = GridWidth / ((frequencies.length - numBlank) + (numBlank * BlankSize));
+
+		return { normal: standardColumn, blank: standardColumn * BlankSize };
+	}, [frequencies])
+
 	return (
 		<WeaponView view={view} buildTimeline={buildTimeline} timeScale={1} reverseTimeScale={1.5}>
 			<Wrapper>
@@ -33,13 +56,15 @@ export const WeaponFrequencies: React.FC<WeaponFrequenciesProps> = ({ view, freq
 						<TitleText $content="Weapon Frequencies">Weapon Frequencies</TitleText>
 						<Frequencies>
 						{frequencies.map((freq, index) => {
+							const columnWidth = freq.weapons.length > 0 ? columnSizes.normal : columnSizes.blank;
+
 							const rectFit = fitSquaresToRectGrid(
-								GridWidth / frequencies.length, 
+								columnWidth, 
 								GridHeight, 
 								freq.weapons.length);
 
 							return (
-								<FrequencyColumn key={index}>
+								<FrequencyColumn $width={columnWidth} key={index}>
 									<WeaponColumn $last={index === frequencies.length - 1}>
 									{freq.weapons.map((weapon, index) => {
 
@@ -49,8 +74,9 @@ export const WeaponFrequencies: React.FC<WeaponFrequenciesProps> = ({ view, freq
 									})
 									}
 									</WeaponColumn>
-									<CountWrapper>
-										<Count $content={`${freq.count}`}>{freq.count}</Count>
+									<CountWrapper $fontSize={getColumnFontSize(columnSizes.blank)}>
+										<FittedText text={`${freq.count}`} maxWidth={columnWidth} align="center" font="Blitz Main" outline={{ width: 6, colorTag: 'text-outline' }}  />
+										{/*<Count $content={`${freq.count}`}>{freq.count}</Count>*/}
 									</CountWrapper>
 								</FrequencyColumn>
 							)
@@ -60,7 +86,6 @@ export const WeaponFrequencies: React.FC<WeaponFrequenciesProps> = ({ view, freq
 				</Container>
 			</Wrapper>
 		</WeaponView>
-		
 	)
 }
 
@@ -126,12 +151,12 @@ const Frequencies = styled.div`
 	flex-direction: row;
 `;
 
-const FrequencyColumn = styled.div`
+const FrequencyColumn = styled.div<{ $width: number }>`
 	position: relative;
+	width: ${({ $width }) => $width}px;
 	height: 100%;
-	width: 100%;
-	flex-basis: 0;
-	flex-grow: 1;
+	//flex-basis: 0;
+	//flex-grow: 1;
 	display: flex;
 	flex-direction: column;
 `;
@@ -155,11 +180,12 @@ const WeaponImage = styled.img<{ $width: number }>`
 	aspect-ratio: 1/1;
 `;
 
-const CountWrapper = styled.div`
+const CountWrapper = styled.div<{ $fontSize: string }>`
 	position: relative;
 	display: flex;
 	align-items: flex-start;
 	justify-content: center;
+	font-size: ${({ $fontSize }) => $fontSize};
 `;
 
 const Count = styled.div<{ $content: string }>`
