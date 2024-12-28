@@ -41,6 +41,8 @@ export const RecentList: React.FC<RecentListProps> = ({ weaponIds, onClickWeapon
 }
 
 const Column = styled.div`
+	width: 100%;
+	height: 100%;
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -56,7 +58,7 @@ const Column = styled.div`
 
 const WeaponButton = styled(Button)<{ $size: number }>`
 	position: relative;
-	margin: 0 10px 10px 0;
+	margin: 0 0 10px 0;
 	padding: 5px;
 	width: ${({ $size }) => $size}px;
 	height: ${({ $size }) => $size}px;

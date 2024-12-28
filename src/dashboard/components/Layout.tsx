@@ -18,6 +18,32 @@ export const HeadText = styled.h1<{ $colorTag?: string, $content?: string }>`
 	}
 `;
 
+export const HeadTextButton = styled.button<{ $colorTag?: string, $content?: string }>`
+	position: relative;
+	margin: 6px 0;
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: var(--${({ $colorTag }) => $colorTag ? `${$colorTag}` : `text` });
+	isolation: isolate;
+	border: none;
+	background-color: transparent;
+
+	&::before {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		content: "${({ $content }) => $content}";
+		-webkit-text-stroke: 10px var(--text-outline);
+		z-index: -1;
+	}
+
+	&:hover {
+        cursor: pointer;
+		color: var(--${({ $colorTag }) => $colorTag ? `${$colorTag}` : `text` }-highlight);
+    }
+`;
+
 export const Button = styled.button<{ $colorTag?: string }>`
 	margin: 5px 0;
 	padding: 10px 5px;
