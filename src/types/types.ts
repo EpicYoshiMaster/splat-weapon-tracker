@@ -42,5 +42,6 @@ export enum DisplayMode {
 	Recent = "Recent",
 	Unseen = "Unseen",
 	Frequencies = "Frequencies",
+	Rolls = "Rolls",
 	None = "None"
 }

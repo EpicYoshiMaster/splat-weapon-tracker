@@ -45,6 +45,7 @@ export const HeadTextButton = styled.button<{ $colorTag?: string, $content?: str
 `;
 
 export const Button = styled.button<{ $colorTag?: string }>`
+	position: relative;
 	margin: 5px 0;
 	padding: 10px 5px;
 	font-size: 1.5rem;
@@ -62,6 +63,14 @@ export const Button = styled.button<{ $colorTag?: string }>`
 	&:not(:disabled):active {
 		background-color: var(--${({ $colorTag }) => $colorTag ? `${$colorTag}` : `button`}-dark);
 	}
+
+	&:disabled {
+		border: 2px solid var(--base);
+	}
+
+	&:disabled:hover {
+		background-color: var(--base-dark);
+	}
 `;
 
 export const OutlineButton = styled(Button)<{ $content: string }>`
@@ -73,11 +82,34 @@ export const OutlineButton = styled(Button)<{ $content: string }>`
 		width: 100%;
 		left: 0;
 		content: "${({ $content }) => $content}";
-		left: 0;
 		color: var(--${({ $colorTag }) => $colorTag ? `${$colorTag}` : `button`}-dark);
 		-webkit-text-stroke: 8px var(--${({ $colorTag }) => $colorTag ? `${$colorTag}` : `button`}-dark);
 		z-index: -1;
+
+		&:disabled {
+			color: var(--base-dark);
+			-webkit-text-stroke: 8px var(--base-dark);
+		}
 	}
+
+	&:disabled {
+		&::before {
+			color: var(--base-dark);
+			-webkit-text-stroke: 8px var(--base-dark);
+		}
+	}
+`;
+
+export const Input = styled.input<{ $colorTag?: string }>`
+	padding: 10px 5px;
+	width: 60px;
+	font-size: 1.75rem;
+	font-weight: bold;
+	color: var(--text);
+
+	background-color: var(--regular-button);
+	border: 2px solid var(--${({ $colorTag }) => $colorTag ? `${$colorTag}` : `button` });
+	border-radius: 4px;
 `;
 
 export const SelectButton = styled(OutlineButton)<{ $selected: boolean }>`

@@ -2,6 +2,7 @@ import React from "react";
 import { styled } from "styled-components";
 import { Button, HeadText } from "./Layout";
 import { getWeaponById, weaponImagePath } from "../../utils/WeaponDatabase";
+import { WeaponButton } from "./WeaponButton";
 
 interface RecentListProps {
 	weaponIds: number[];
@@ -24,15 +25,14 @@ export const RecentList: React.FC<RecentListProps> = ({ weaponIds, onClickWeapon
 
 				return (
 				<WeaponButton 
-				$size={100}
-				$colorTag={colorTag}
-				key={index}
-				onClick={() => { onClickWeapon(index); }}>
-					<WeaponCountWrapper>
-						<WeaponCount $colorTag={colorTag} $content={`${weaponNumber}`} >{weaponNumber}</WeaponCount>
-					</WeaponCountWrapper>
-					<WeaponImage src={`${weaponImagePath}${weapon.image}`} alt={weapon.name} />
-				</WeaponButton>
+					key={index}
+					weapon={weapon}
+					size={100}
+					numberDisplay={weaponNumber}
+					marginRight={false}
+					marginBottom={true}
+					onClick={() => { onClickWeapon(index); }}
+				/>
 				)
 			})
 		}
@@ -54,15 +54,6 @@ const Column = styled.div`
 	@media screen and (min-height: 950px) {
 		overflow: auto;
 	}
-`;
-
-const WeaponButton = styled(Button)<{ $size: number }>`
-	position: relative;
-	margin: 0 0 10px 0;
-	padding: 5px;
-	width: ${({ $size }) => $size}px;
-	height: ${({ $size }) => $size}px;
-	aspect-ratio: 1/1;
 `;
 
 const WeaponCountWrapper = styled.div`

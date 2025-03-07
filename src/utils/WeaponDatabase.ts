@@ -94,6 +94,22 @@ export const invertWeaponList = (weapons: WeaponClass[], ids: number[]): Weapon[
 	})
 }
 
+export const getWeaponCount = (weaponId: number, weaponIds: number[]) => {
+	return weaponIds.filter((id) => id === weaponId).length;
+}
+
+export const getRandomWeapon = (weapons: WeaponClass[]): Weapon => {
+	if(weapons.length <= 0) return defaultWeapon;
+
+	const flatWeapons = weapons.flatMap((weapons) => {
+		return weapons.weapons;
+	});
+
+	const randomWeaponIndex = Math.floor(Math.random() * flatWeapons.length);
+
+	return flatWeapons[randomWeaponIndex];
+}
+
 const ellipsis = `\u22EF`;
 
 //Personally I would like to know a Better way to do this LOL
