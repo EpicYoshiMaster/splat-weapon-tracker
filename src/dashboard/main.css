@@ -1,8 +1,12 @@
 :root {
 	--text: #ffffff;
+	--text-highlight: #fd4160;
 	--text-outline: #1a1a1a;
 
 	--regular-button: #282828;
+
+	--base: #999999;
+	--base-dark: #535353;
 
 	/* Button tags */
 

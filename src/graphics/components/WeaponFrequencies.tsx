@@ -76,7 +76,6 @@ export const WeaponFrequencies: React.FC<WeaponFrequenciesProps> = ({ view, freq
 									</WeaponColumn>
 									<CountWrapper $fontSize={getColumnFontSize(columnSizes.blank)}>
 										<FittedText text={`${freq.count}`} maxWidth={columnWidth} align="center" font="Blitz Main" outline={{ width: 6, colorTag: 'text-outline' }}  />
-										{/*<Count $content={`${freq.count}`}>{freq.count}</Count>*/}
 									</CountWrapper>
 								</FrequencyColumn>
 							)

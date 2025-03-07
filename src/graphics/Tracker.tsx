@@ -4,10 +4,12 @@ import { createRoot } from 'react-dom/client';
 import { RecentWeapons } from './components/RecentWeapons'
 import { useReplicant } from '../utils/use-replicant';
 import { WeaponMode, DisplayMode } from '../types/types';
-import { Weaponlist } from '../types/schemas';
-import { standardWeapons, salmonWeapons, grizzcoWeapons, invertWeaponList, getWeaponFrequencies } from '../utils/WeaponDatabase';
+import { Weaponlist } from '../types/schemas/weaponlist';
+import { standardWeapons, salmonWeapons, grizzcoWeapons, invertWeaponList, getWeaponFrequencies, getRandomWeapon } from '../utils/WeaponDatabase';
 import { UnseenWeapons } from './components/UnseenWeapons';
 import { WeaponFrequencies } from './components/WeaponFrequencies';
+import { RollWeapons } from './components/RollWeapons';
+import { random } from 'gsap';
 
 const NumRecentWeapons = 6;
 
@@ -28,6 +30,9 @@ export function Tracker() {
 	const [fullscreen, setFullscreen] = useReplicant<boolean>('fullscreen', {
 		defaultValue: false,
 	})
+
+	const [numWeaponRolls, setNumWeaponRolls] = useReplicant<number>('weaponRolls', { defaultValue: 4 });
+	const [randomWeapons, setRandomWeapons] = useReplicant<number[]>('randomWeapons', { defaultValue: [0, 0, 0, 0, 0, 0, 0, 0]});
 
 	const [current, setCurrent] = useState<ActiveAndFade>({ active: DisplayMode.None, fade: false });
 
@@ -131,6 +136,17 @@ export function Tracker() {
 					}}
 
 					remainingWeapons={remainingList} />
+
+				<RollWeapons
+					view={{ 
+						show: display === DisplayMode.Rolls, 
+						fade: current.active === DisplayMode.Rolls && current.fade, 
+						fullscreen, 
+						onFade 
+					}}
+
+					max={numWeaponRolls} 
+					randomWeapons={randomWeapons} />
 			</Content>	
 		</StyledTracker>
 	);

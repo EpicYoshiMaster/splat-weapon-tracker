@@ -1,15 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { styled } from 'styled-components';
-import { standardWeapons, salmonWeapons, grizzcoWeapons } from '../utils/WeaponDatabase'
-import { HeadText, OutlineButton, SelectButton } from './components/Layout'
+import { standardWeapons, salmonWeapons, grizzcoWeapons, defaultWeapon, getRandomWeapon, weaponImagePath } from '../utils/WeaponDatabase'
+import { HeadText, OutlineButton, Input, SelectButton } from './components/Layout'
 import { useReplicant } from '../utils/use-replicant';
-import { DisplayMode, WeaponMode } from '../types/types';
-import { Weaponlist, Listexport } from '../types/schemas';
+import { DisplayMode, Weapon, WeaponMode } from '../types/types';
+import { Weaponlist } from '../types/schemas/weaponlist';
+import { Listexport } from '../types/schemas/listexport';
 import { WeaponList } from './components/WeaponList';
 import { RecentList } from './components/RecentList';
 import { useDropzone } from 'react-dropzone';
 import { saveAs } from 'file-saver';
+import { CollapseContainer } from './components/CollapseContainer';
+import { RollWeapons } from './components/RollWeapons';
 
 export function WeaponTracker() {
 	const [mode, setMode] = useReplicant<WeaponMode>('mode', {
@@ -27,6 +30,9 @@ export function WeaponTracker() {
 			grizzco: []
 		}
 	})
+
+	const [numWeaponRolls, setNumWeaponRolls] = useReplicant<number>('weaponRolls', { defaultValue: 4 });
+	const [randomWeapons, setRandomWeapons] = useReplicant<number[]>('randomWeapons', { defaultValue: [0, 0, 0, 0, 0, 0, 0, 0] });
 
 	const [importError, setImportError] = useState("");
 	const errorTimeout = useRef<number | null>(null);
@@ -50,7 +56,7 @@ export function WeaponTracker() {
 		switch(mode) {
 			case WeaponMode.Standard: return 85;
 			case WeaponMode.Salmon: return 100;
-			case WeaponMode.Grizzco: return 150;
+			case WeaponMode.Grizzco: return 100;
 			default: return 0;
 		}
 	}, [mode]);
@@ -184,57 +190,80 @@ export function WeaponTracker() {
 			<Modes {...getRootProps()}>
 				<Options>
 					<input {...getInputProps()} />
-					<HeadText $content="Settings">Settings</HeadText>
-					<OutlineButton
-					$content='Reset List'
-					$colorTag='reset'
-					onClick={() => { resetList(); }}>Reset List</OutlineButton>
-					<OutlineButton
-					$content='Import List'
-					$colorTag='import'
-					onClick={() => { open(); }}>Import List</OutlineButton>
-					<OutlineButton
-					$content='Export List'
-					$colorTag='export'
-					onClick={() => { exportList(); }}>Export List</OutlineButton>
-					<HeadText $content="Controls">Controls</HeadText>
-					<SelectButton
-					$content='Show Recent'
-					$colorTag='control'
-					$selected={display === DisplayMode.Recent}
-					onClick={() => { setDisplay(DisplayMode.Recent); }}>Show Recent</SelectButton>
-					<SelectButton
-					$content='Show Freqs'
-					$colorTag='control'
-					$selected={display === DisplayMode.Frequencies}
-					onClick={() => { setDisplay(DisplayMode.Frequencies); }}>Show Freqs</SelectButton>
-					<SelectButton
-					$content='Show Unseen'
-					$colorTag='control'
-					$selected={display === DisplayMode.Unseen}
-					onClick={() => { setDisplay(DisplayMode.Unseen); }}>Show Unseen</SelectButton>
-					<HeadText $content="Modes">Modes</HeadText>
-					<SelectButton 
-					$content="Standard"
-					$colorTag='standard'
-					$selected={mode === WeaponMode.Standard}
-					onClick={() => { setMode(WeaponMode.Standard); }}>Standard</SelectButton>
-					<SelectButton 
-					$content="Salmon Run"
-					$colorTag='salmon'
-					$selected={mode === WeaponMode.Salmon}
-					onClick={() => { setMode(WeaponMode.Salmon); }}>Salmon Run</SelectButton>
-					<SelectButton  
-					$content="Grizzco Only"
-					$colorTag='grizzco'
-					$selected={mode === WeaponMode.Grizzco}
-					onClick={() => { setMode(WeaponMode.Grizzco); }}>Grizzco Only</SelectButton>
-					<HeadText $content="Recents">Recents</HeadText>
+					<CollapseContainer title="Settings">
+						<OutlineButton
+						$content='Reset List'
+						$colorTag='reset'
+						onClick={() => { resetList(); }}>Reset List</OutlineButton>
+						<OutlineButton
+						$content='Import List'
+						$colorTag='import'
+						onClick={() => { open(); }}>Import List</OutlineButton>
+						<OutlineButton
+						$content='Export List'
+						$colorTag='export'
+						onClick={() => { exportList(); }}>Export List</OutlineButton>
+					</CollapseContainer>
+					<CollapseContainer title="Controls">
+						<SelectButton
+						$content='Show Recent'
+						$colorTag='control'
+						$selected={display === DisplayMode.Recent}
+						onClick={() => { setDisplay(DisplayMode.Recent); }}>Show Recent</SelectButton>
+						<SelectButton
+						$content='Show Freqs'
+						$colorTag='control'
+						$selected={display === DisplayMode.Frequencies}
+						onClick={() => { setDisplay(DisplayMode.Frequencies); }}>Show Freqs</SelectButton>
+						<SelectButton
+						$content='Show Unseen'
+						$colorTag='control'
+						$selected={display === DisplayMode.Unseen}
+						onClick={() => { setDisplay(DisplayMode.Unseen); }}>Show Unseen</SelectButton>
+						<SelectButton
+						$content='Show Rolls'
+						$colorTag='control'
+						$selected={display === DisplayMode.Rolls}
+						onClick={() => { setDisplay(DisplayMode.Rolls); }}>Show Rolls</SelectButton>
+					</CollapseContainer>
+					<CollapseContainer title="Modes">
+						<SelectButton 
+						$content="Standard"
+						$colorTag='standard'
+						$selected={mode === WeaponMode.Standard}
+						onClick={() => { setMode(WeaponMode.Standard); }}>Standard</SelectButton>
+						<SelectButton 
+						$content="Salmon Run"
+						$colorTag='salmon'
+						$selected={mode === WeaponMode.Salmon}
+						onClick={() => { setMode(WeaponMode.Salmon); }}>Salmon Run</SelectButton>
+						<SelectButton  
+						$content="Grizzco Only"
+						$colorTag='grizzco'
+						$selected={mode === WeaponMode.Grizzco}
+						onClick={() => { setMode(WeaponMode.Grizzco); }}>Grizzco Only</SelectButton>
+					</CollapseContainer>
 				</Options>
-				<RecentList weaponIds={activeList} onClickWeapon={removeFromList} />
+				<Recents>
+					<CollapseContainer title="Recents">
+						<RecentList weaponIds={activeList} onClickWeapon={removeFromList} />
+					</CollapseContainer>
+				</Recents>
 			</Modes>
 			<Weapons $size={weaponSize}>
 			{importError !== "" && (<ErrorText $colorTag='reset' $content={`Import Error: ${importError}`}>{`Import Error: ${importError}`}</ErrorText>)}
+			{display === DisplayMode.Rolls && (
+				<RollWeapons
+					weaponClasses={weaponClasses}
+					numWeaponRolls={numWeaponRolls}
+					setNumWeaponRolls={setNumWeaponRolls}
+					randomWeapons={randomWeapons}
+					setRandomWeapons={setRandomWeapons}
+					onClickWeapon={addToList}
+					weaponIds={activeList}
+					weaponSize={weaponSize}
+					 />
+			)}
 			{weaponClasses && weaponClasses.map((weaponClass, index) => {
 				return (
 					<WeaponList 
@@ -260,8 +289,10 @@ const Modes = styled.div`
 	margin: 0 10px;
 	position: relative;
 	display: grid;
+	width: 190px;
 	grid-template-rows: max-content 1fr;
 	height: 100vh;
+	justify-items: center;
 
 	//If too short, the full left column will become scrollable instead of just the recent list
 	overflow: auto;
@@ -282,6 +313,18 @@ const Options = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	width: 100%;
+`;
+
+const Recents = styled.div`
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	gap: 6px;
 `;
 
 const Weapons = styled.div<{ $size: number }>`

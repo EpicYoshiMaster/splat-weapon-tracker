@@ -1,3 +1,4 @@
+export const MAX_RANDOM_WEAPONS = 8;
 
 export const arrayPrimitiveEquals = <T>(a: Array<T>, b: Array<T>): boolean => {
 	return Array.isArray(a) &&
