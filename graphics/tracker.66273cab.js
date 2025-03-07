@@ -156,6 +156,7 @@ var _types = require("../types/types");
 var _weaponDatabase = require("../utils/WeaponDatabase");
 var _unseenWeapons = require("./components/UnseenWeapons");
 var _weaponFrequencies = require("./components/WeaponFrequencies");
+var _rollWeapons = require("./components/RollWeapons");
 const NumRecentWeapons = 6;
 function Tracker() {
     const [mode, setMode] = (0, _useReplicant.useReplicant)('mode', {
@@ -166,6 +167,21 @@ function Tracker() {
     });
     const [fullscreen, setFullscreen] = (0, _useReplicant.useReplicant)('fullscreen', {
         defaultValue: false
+    });
+    const [numWeaponRolls, setNumWeaponRolls] = (0, _useReplicant.useReplicant)('weaponRolls', {
+        defaultValue: 4
+    });
+    const [randomWeapons, setRandomWeapons] = (0, _useReplicant.useReplicant)('randomWeapons', {
+        defaultValue: [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
     });
     const [current, setCurrent] = (0, _react.useState)({
         active: (0, _types.DisplayMode).None,
@@ -267,14 +283,14 @@ function Tracker() {
     return /*#__PURE__*/ (0, _reactDefault.default).createElement(StyledTracker, {
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 106,
+            lineNumber: 114,
             columnNumber: 10
         },
         __self: this
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(Content, {
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 107,
+            lineNumber: 115,
             columnNumber: 4
         },
         __self: this
@@ -289,7 +305,7 @@ function Tracker() {
         recentIds: activeList,
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 108,
+            lineNumber: 116,
             columnNumber: 5
         },
         __self: this
@@ -303,7 +319,7 @@ function Tracker() {
         frequencies: weaponFrequencies,
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 114,
+            lineNumber: 122,
             columnNumber: 5
         },
         __self: this
@@ -317,7 +333,22 @@ function Tracker() {
         remainingWeapons: remainingList,
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 120,
+            lineNumber: 128,
+            columnNumber: 5
+        },
+        __self: this
+    }), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _rollWeapons.RollWeapons), {
+        view: {
+            show: display === (0, _types.DisplayMode).Rolls,
+            fade: current.active === (0, _types.DisplayMode).Rolls && current.fade,
+            fullscreen,
+            onFade
+        },
+        max: numWeaponRolls,
+        randomWeapons: randomWeapons,
+        __source: {
+            fileName: "src/graphics/Tracker.tsx",
+            lineNumber: 135,
             columnNumber: 5
         },
         __self: this
@@ -339,13 +370,13 @@ const root = (0, _client.createRoot)(document.getElementById('root'));
 root.render(/*#__PURE__*/ (0, _reactDefault.default).createElement(Tracker, {
     __source: {
         fileName: "src/graphics/Tracker.tsx",
-        lineNumber: 138,
+        lineNumber: 153,
         columnNumber: 13
     },
     __self: undefined
 }));
 
-},{"react":"bH1AQ","styled-components":"9xpRL","react-dom/client":"i5cPj","./components/RecentWeapons":"6MuLF","../types/types":"2nPdh","../utils/WeaponDatabase":"kbTcL","./components/UnseenWeapons":"8er4p","./components/WeaponFrequencies":"eBErS","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG","../utils/use-replicant":"8lJRU"}],"bH1AQ":[function(require,module,exports,__globalThis) {
+},{"react":"bH1AQ","styled-components":"9xpRL","react-dom/client":"i5cPj","./components/RecentWeapons":"6MuLF","../types/types":"2nPdh","../utils/WeaponDatabase":"kbTcL","./components/UnseenWeapons":"8er4p","./components/WeaponFrequencies":"eBErS","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG","../utils/use-replicant":"8lJRU","./components/RollWeapons":"d6Y17"}],"bH1AQ":[function(require,module,exports,__globalThis) {
 'use strict';
 module.exports = require("a569817e6ea559f6");
 
@@ -26346,6 +26377,8 @@ parcelHelpers.export(exports, "grizzcoWeapons", ()=>grizzcoWeapons);
 parcelHelpers.export(exports, "defaultWeapon", ()=>defaultWeapon);
 parcelHelpers.export(exports, "getWeaponById", ()=>getWeaponById);
 parcelHelpers.export(exports, "invertWeaponList", ()=>invertWeaponList);
+parcelHelpers.export(exports, "getWeaponCount", ()=>getWeaponCount);
+parcelHelpers.export(exports, "getRandomWeapon", ()=>getRandomWeapon);
 parcelHelpers.export(exports, "getWeaponFrequencies", ()=>getWeaponFrequencies);
 var _weaponsJson = require("../data/weapons.json");
 var _weaponsJsonDefault = parcelHelpers.interopDefault(_weaponsJson);
@@ -26422,6 +26455,17 @@ const invertWeaponList = (weapons, ids)=>{
     return weapons.flatMap((weaponClass)=>{
         return weaponClass.weapons.filter((weapon)=>!ids.includes(weapon.id));
     });
+};
+const getWeaponCount = (weaponId, weaponIds)=>{
+    return weaponIds.filter((id)=>id === weaponId).length;
+};
+const getRandomWeapon = (weapons)=>{
+    if (weapons.length <= 0) return defaultWeapon;
+    const flatWeapons = weapons.flatMap((weapons)=>{
+        return weapons.weapons;
+    });
+    const randomWeaponIndex = Math.floor(Math.random() * flatWeapons.length);
+    return flatWeapons[randomWeaponIndex];
 };
 const ellipsis = `\u22EF`;
 const getWeaponFrequencies = (weapons, ids)=>{
@@ -31001,6 +31045,7 @@ var DisplayMode = /*#__PURE__*/ function(DisplayMode) {
     DisplayMode["Recent"] = "Recent";
     DisplayMode["Unseen"] = "Unseen";
     DisplayMode["Frequencies"] = "Frequencies";
+    DisplayMode["Rolls"] = "Rolls";
     DisplayMode["None"] = "None";
     return DisplayMode;
 }({});
@@ -31160,9 +31205,11 @@ const WeaponImage = (0, _styledComponents.styled).img.withConfig({
 },{"react":"bH1AQ","styled-components":"9xpRL","../../utils/WeaponDatabase":"kbTcL","../../utils/utils":"70xAs","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG","./WeaponView":"gKIgG"}],"70xAs":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "MAX_RANDOM_WEAPONS", ()=>MAX_RANDOM_WEAPONS);
 parcelHelpers.export(exports, "arrayPrimitiveEquals", ()=>arrayPrimitiveEquals);
 parcelHelpers.export(exports, "fitSquaresToRectGrid", ()=>fitSquaresToRectGrid);
 parcelHelpers.export(exports, "fitSquaresToRectColumn", ()=>fitSquaresToRectColumn);
+const MAX_RANDOM_WEAPONS = 8;
 const arrayPrimitiveEquals = (a, b)=>{
     return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((value, index)=>value === b[index]);
 };
@@ -31531,6 +31578,122 @@ function klona(val) {
     return val;
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}]},["lFqUV"], "lFqUV", "parcelRequire94c2")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"d6Y17":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "RollWeapons", ()=>RollWeapons);
+var _react = require("react");
+var _reactDefault = parcelHelpers.interopDefault(_react);
+var _styledComponents = require("styled-components");
+var _styledComponentsDefault = parcelHelpers.interopDefault(_styledComponents);
+var _weaponDatabase = require("../../utils/WeaponDatabase");
+var _fittedText = require("./FittedText");
+var _weaponView = require("./WeaponView");
+const RollWeapons = ({ view, max, randomWeapons })=>{
+    const buildTimeline = (0, _react.useCallback)((timeline)=>{
+        return timeline.fromTo(".container", {
+            opacity: 0
+        }, {
+            duration: 1,
+            opacity: 1,
+            ease: "power2.inOut"
+        });
+    }, []);
+    return /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _weaponView.WeaponView), {
+        view: view,
+        buildTimeline: buildTimeline,
+        __source: {
+            fileName: "src/graphics/components/RollWeapons.tsx",
+            lineNumber: 26,
+            columnNumber: 10
+        },
+        __self: undefined
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement(Column, {
+        className: "container",
+        __source: {
+            fileName: "src/graphics/components/RollWeapons.tsx",
+            lineNumber: 27,
+            columnNumber: 4
+        },
+        __self: undefined
+    }, Array.from(Array(max).keys()).map((index)=>{
+        let display = index < randomWeapons.length ? 'flex' : 'none';
+        let weapon = (0, _weaponDatabase.defaultWeapon);
+        let weaponCount = 0;
+        let colorTag = "";
+        if (index < randomWeapons.length) {
+            const id = randomWeapons[index];
+            weapon = (0, _weaponDatabase.getWeaponById)(id);
+            if (weapon === (0, _weaponDatabase.defaultWeapon)) display = 'none';
+            weaponCount = randomWeapons.filter((weaponId, weaponIndex)=>weaponIndex >= index && weaponId === weapon.id).length;
+            colorTag = weapon.weaponClass.toLowerCase();
+        }
+        return /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponRow, {
+            key: index,
+            $display: display,
+            $colorTag: colorTag,
+            className: "weapon",
+            __source: {
+                fileName: "src/graphics/components/RollWeapons.tsx",
+                lineNumber: 42,
+                columnNumber: 16
+            },
+            __self: undefined
+        }, /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponImage, {
+            src: `${(0, _weaponDatabase.weaponImagePath)}${weapon.image}`,
+            className: "image",
+            __source: {
+                fileName: "src/graphics/components/RollWeapons.tsx",
+                lineNumber: 43,
+                columnNumber: 8
+            },
+            __self: undefined
+        }), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _fittedText.FittedText), {
+            text: `${weapon.name}`,
+            maxWidth: 475,
+            align: "left",
+            font: "Blitz Main",
+            outline: {
+                width: 5,
+                colorTag: "text-outline"
+            },
+            __source: {
+                fileName: "src/graphics/components/RollWeapons.tsx",
+                lineNumber: 44,
+                columnNumber: 8
+            },
+            __self: undefined
+        }));
+    })));
+};
+const Column = (0, _styledComponentsDefault.default).div.withConfig({
+    displayName: "RollWeapons__Column",
+    componentId: "sc-19uega9-0"
+})([
+    "padding:10px;position:relative;display:flex;width:100%;height:100%;color:white;flex-direction:column;justify-content:flex-end;row-gap:5px;"
+]);
+const WeaponRow = (0, _styledComponentsDefault.default).div.withConfig({
+    displayName: "RollWeapons__WeaponRow",
+    componentId: "sc-19uega9-1"
+})([
+    "position:relative;height:80px;display:",
+    ";flex-direction:row;align-items:center;color:var(--text);font-size:1.75rem;border:3px solid var(--",
+    ");background-color:var(--",
+    "-dark);border-radius:0.5rem;"
+], ({ $display })=>$display, ({ $colorTag })=>$colorTag ? `${$colorTag}` : `base`, ({ $colorTag })=>$colorTag ? `${$colorTag}` : `base`);
+const TopWeaponRow = (0, _styledComponentsDefault.default)(WeaponRow).withConfig({
+    displayName: "RollWeapons__TopWeaponRow",
+    componentId: "sc-19uega9-2"
+})([
+    "height:135px;font-size:3rem;"
+]);
+const WeaponImage = (0, _styledComponentsDefault.default).img.withConfig({
+    displayName: "RollWeapons__WeaponImage",
+    componentId: "sc-19uega9-3"
+})([
+    "max-height:100%;margin:0 5px;"
+]);
+
+},{"react":"bH1AQ","styled-components":"9xpRL","../../utils/WeaponDatabase":"kbTcL","./FittedText":"f5NVk","./WeaponView":"gKIgG","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}]},["lFqUV"], "lFqUV", "parcelRequire94c2")
 
 //# sourceMappingURL=tracker.66273cab.js.map

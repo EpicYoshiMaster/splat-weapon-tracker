@@ -1,7 +1,10 @@
 :root {
   --text: #fff;
+  --text-highlight: #fd4160;
   --text-outline: #1a1a1a;
   --regular-button: #282828;
+  --base: #999;
+  --base-dark: #535353;
   --button: #ac3796;
   --button-dark: #661c57;
   --reset: #e40505;

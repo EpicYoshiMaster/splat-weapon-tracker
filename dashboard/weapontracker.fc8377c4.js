@@ -158,6 +158,8 @@ var _weaponList = require("./components/WeaponList");
 var _recentList = require("./components/RecentList");
 var _reactDropzone = require("react-dropzone");
 var _fileSaver = require("file-saver");
+var _collapseContainer = require("./components/CollapseContainer");
+var _rollWeapons = require("./components/RollWeapons");
 function WeaponTracker() {
     const [mode, setMode] = (0, _useReplicant.useReplicant)('mode', {
         defaultValue: (0, _types.WeaponMode).Salmon
@@ -171,6 +173,21 @@ function WeaponTracker() {
             salmon: [],
             grizzco: []
         }
+    });
+    const [numWeaponRolls, setNumWeaponRolls] = (0, _useReplicant.useReplicant)('weaponRolls', {
+        defaultValue: 4
+    });
+    const [randomWeapons, setRandomWeapons] = (0, _useReplicant.useReplicant)('randomWeapons', {
+        defaultValue: [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
     });
     const [importError, setImportError] = (0, _react.useState)("");
     const errorTimeout = (0, _react.useRef)(null);
@@ -195,7 +212,7 @@ function WeaponTracker() {
             case (0, _types.WeaponMode).Salmon:
                 return 100;
             case (0, _types.WeaponMode).Grizzco:
-                return 150;
+                return 100;
             default:
                 return 0;
         }
@@ -406,7 +423,7 @@ function WeaponTracker() {
     return /*#__PURE__*/ (0, _reactDefault.default).createElement(Wrapper, {
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 234,
+            lineNumber: 243,
             columnNumber: 10
         },
         __self: this
@@ -414,14 +431,14 @@ function WeaponTracker() {
         ...getRootProps(),
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 235,
+            lineNumber: 244,
             columnNumber: 4
         },
         __self: this
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(Options, {
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 236,
+            lineNumber: 245,
             columnNumber: 5
         },
         __self: this
@@ -429,19 +446,19 @@ function WeaponTracker() {
         ...getInputProps(),
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 237,
+            lineNumber: 246,
             columnNumber: 6
         },
         __self: this
-    }), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.HeadText), {
-        $content: "Settings",
+    }), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _collapseContainer.CollapseContainer), {
+        title: "Settings",
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 238,
+            lineNumber: 247,
             columnNumber: 6
         },
         __self: this
-    }, "Settings"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.OutlineButton), {
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.OutlineButton), {
         $content: "Reset List",
         $colorTag: "reset",
         onClick: ()=>{
@@ -449,8 +466,8 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 239,
-            columnNumber: 6
+            lineNumber: 248,
+            columnNumber: 7
         },
         __self: this
     }, "Reset List"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.OutlineButton), {
@@ -461,8 +478,8 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 242,
-            columnNumber: 6
+            lineNumber: 251,
+            columnNumber: 7
         },
         __self: this
     }, "Import List"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.OutlineButton), {
@@ -473,19 +490,19 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 245,
-            columnNumber: 6
+            lineNumber: 254,
+            columnNumber: 7
         },
         __self: this
-    }, "Export List"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.HeadText), {
-        $content: "Controls",
+    }, "Export List")), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _collapseContainer.CollapseContainer), {
+        title: "Controls",
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 248,
+            lineNumber: 258,
             columnNumber: 6
         },
         __self: this
-    }, "Controls"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.SelectButton), {
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.SelectButton), {
         $content: "Show Recent",
         $colorTag: "control",
         $selected: display === (0, _types.DisplayMode).Recent,
@@ -494,8 +511,8 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 249,
-            columnNumber: 6
+            lineNumber: 259,
+            columnNumber: 7
         },
         __self: this
     }, "Show Recent"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.SelectButton), {
@@ -507,8 +524,8 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 252,
-            columnNumber: 6
+            lineNumber: 262,
+            columnNumber: 7
         },
         __self: this
     }, "Show Freqs"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.SelectButton), {
@@ -520,19 +537,32 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 255,
-            columnNumber: 6
+            lineNumber: 265,
+            columnNumber: 7
         },
         __self: this
-    }, "Show Unseen"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.HeadText), {
-        $content: "Modes",
+    }, "Show Unseen"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.SelectButton), {
+        $content: "Show Rolls",
+        $colorTag: "control",
+        $selected: display === (0, _types.DisplayMode).Rolls,
+        onClick: ()=>{
+            setDisplay((0, _types.DisplayMode).Rolls);
+        },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 258,
+            lineNumber: 268,
+            columnNumber: 7
+        },
+        __self: this
+    }, "Show Rolls")), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _collapseContainer.CollapseContainer), {
+        title: "Modes",
+        __source: {
+            fileName: "src/dashboard/WeaponTracker.tsx",
+            lineNumber: 272,
             columnNumber: 6
         },
         __self: this
-    }, "Modes"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.SelectButton), {
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.SelectButton), {
         $content: "Standard",
         $colorTag: "standard",
         $selected: mode === (0, _types.WeaponMode).Standard,
@@ -541,8 +571,8 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 259,
-            columnNumber: 6
+            lineNumber: 273,
+            columnNumber: 7
         },
         __self: this
     }, "Standard"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.SelectButton), {
@@ -554,8 +584,8 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 262,
-            columnNumber: 6
+            lineNumber: 276,
+            columnNumber: 7
         },
         __self: this
     }, "Salmon Run"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.SelectButton), {
@@ -567,32 +597,39 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 265,
-            columnNumber: 6
+            lineNumber: 279,
+            columnNumber: 7
         },
         __self: this
-    }, "Grizzco Only"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.HeadText), {
-        $content: "Recents",
+    }, "Grizzco Only"))), /*#__PURE__*/ (0, _reactDefault.default).createElement(Recents, {
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 268,
+            lineNumber: 284,
+            columnNumber: 5
+        },
+        __self: this
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _collapseContainer.CollapseContainer), {
+        title: "Recents",
+        __source: {
+            fileName: "src/dashboard/WeaponTracker.tsx",
+            lineNumber: 285,
             columnNumber: 6
         },
         __self: this
-    }, "Recents")), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _recentList.RecentList), {
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _recentList.RecentList), {
         weaponIds: activeList,
         onClickWeapon: removeFromList,
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 270,
-            columnNumber: 5
+            lineNumber: 286,
+            columnNumber: 7
         },
         __self: this
-    })), /*#__PURE__*/ (0, _reactDefault.default).createElement(Weapons, {
+    })))), /*#__PURE__*/ (0, _reactDefault.default).createElement(Weapons, {
         $size: weaponSize,
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 272,
+            lineNumber: 290,
             columnNumber: 4
         },
         __self: this
@@ -601,11 +638,26 @@ function WeaponTracker() {
         $content: `Import Error: ${importError}`,
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 273,
+            lineNumber: 291,
             columnNumber: 27
         },
         __self: this
-    }, `Import Error: ${importError}`), weaponClasses && weaponClasses.map((weaponClass, index)=>{
+    }, `Import Error: ${importError}`), display === (0, _types.DisplayMode).Rolls && /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _rollWeapons.RollWeapons), {
+        weaponClasses: weaponClasses,
+        numWeaponRolls: numWeaponRolls,
+        setNumWeaponRolls: setNumWeaponRolls,
+        randomWeapons: randomWeapons,
+        setRandomWeapons: setRandomWeapons,
+        onClickWeapon: addToList,
+        weaponIds: activeList,
+        weaponSize: weaponSize,
+        __source: {
+            fileName: "src/dashboard/WeaponTracker.tsx",
+            lineNumber: 292,
+            columnNumber: 38
+        },
+        __self: this
+    }), weaponClasses && weaponClasses.map((weaponClass, index)=>{
         return /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _weaponList.WeaponList), {
             weaponSize: weaponSize,
             key: index,
@@ -614,7 +666,7 @@ function WeaponTracker() {
             weaponIds: activeList,
             __source: {
                 fileName: "src/dashboard/WeaponTracker.tsx",
-                lineNumber: 275,
+                lineNumber: 294,
                 columnNumber: 16
             },
             __self: this
@@ -631,7 +683,7 @@ const Modes = (0, _styledComponents.styled).div.withConfig({
     displayName: "WeaponTracker__Modes",
     componentId: "sc-zd7xol-1"
 })([
-    "margin:0 10px;position:relative;display:grid;grid-template-rows:max-content 1fr;height:100vh;overflow:auto;@media screen and (min-height:950px){overflow:visible;}"
+    "margin:0 10px;position:relative;display:grid;width:190px;grid-template-rows:max-content 1fr;height:100vh;justify-items:center;overflow:auto;@media screen and (min-height:950px){overflow:visible;}"
 ]);
 const ErrorText = (0, _styledComponents.styled)((0, _layout.HeadText)).withConfig({
     displayName: "WeaponTracker__ErrorText",
@@ -643,11 +695,17 @@ const Options = (0, _styledComponents.styled).div.withConfig({
     displayName: "WeaponTracker__Options",
     componentId: "sc-zd7xol-3"
 })([
-    "position:relative;display:flex;flex-direction:column;align-items:center;"
+    "position:relative;display:flex;flex-direction:column;align-items:center;width:100%;"
+]);
+const Recents = (0, _styledComponents.styled).div.withConfig({
+    displayName: "WeaponTracker__Recents",
+    componentId: "sc-zd7xol-4"
+})([
+    "position:relative;display:flex;flex-direction:column;align-items:flex-start;width:100%;height:100%;min-height:0;gap:6px;"
 ]);
 const Weapons = (0, _styledComponents.styled).div.withConfig({
     displayName: "WeaponTracker__Weapons",
-    componentId: "sc-zd7xol-4"
+    componentId: "sc-zd7xol-5"
 })([
     "display:flex;flex-direction:row;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;column-gap:",
     "px;height:100vh;overflow:auto;"
@@ -656,13 +714,13 @@ const root = (0, _client.createRoot)(document.getElementById('root'));
 root.render(/*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponTracker, {
     __source: {
         fileName: "src/dashboard/WeaponTracker.tsx",
-        lineNumber: 303,
+        lineNumber: 326,
         columnNumber: 13
     },
     __self: undefined
 }));
 
-},{"react":"bH1AQ","react-dom/client":"i5cPj","styled-components":"9xpRL","../utils/WeaponDatabase":"kbTcL","./components/Layout":"72fYZ","../types/types":"2nPdh","./components/WeaponList":"7EObH","./components/RecentList":"f6VhE","react-dropzone":"gDtXJ","file-saver":"khXis","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG","../utils/use-replicant":"8lJRU"}],"bH1AQ":[function(require,module,exports,__globalThis) {
+},{"react":"bH1AQ","react-dom/client":"i5cPj","styled-components":"9xpRL","../utils/WeaponDatabase":"kbTcL","./components/Layout":"72fYZ","../types/types":"2nPdh","./components/WeaponList":"7EObH","./components/RecentList":"f6VhE","react-dropzone":"gDtXJ","file-saver":"khXis","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG","../utils/use-replicant":"8lJRU","./components/CollapseContainer":"hrG5d","./components/RollWeapons":"5xrWy"}],"bH1AQ":[function(require,module,exports,__globalThis) {
 'use strict';
 module.exports = require("a569817e6ea559f6");
 
@@ -26511,6 +26569,8 @@ parcelHelpers.export(exports, "grizzcoWeapons", ()=>grizzcoWeapons);
 parcelHelpers.export(exports, "defaultWeapon", ()=>defaultWeapon);
 parcelHelpers.export(exports, "getWeaponById", ()=>getWeaponById);
 parcelHelpers.export(exports, "invertWeaponList", ()=>invertWeaponList);
+parcelHelpers.export(exports, "getWeaponCount", ()=>getWeaponCount);
+parcelHelpers.export(exports, "getRandomWeapon", ()=>getRandomWeapon);
 parcelHelpers.export(exports, "getWeaponFrequencies", ()=>getWeaponFrequencies);
 var _weaponsJson = require("../data/weapons.json");
 var _weaponsJsonDefault = parcelHelpers.interopDefault(_weaponsJson);
@@ -26588,6 +26648,17 @@ const invertWeaponList = (weapons, ids)=>{
         return weaponClass.weapons.filter((weapon)=>!ids.includes(weapon.id));
     });
 };
+const getWeaponCount = (weaponId, weaponIds)=>{
+    return weaponIds.filter((id)=>id === weaponId).length;
+};
+const getRandomWeapon = (weapons)=>{
+    if (weapons.length <= 0) return defaultWeapon;
+    const flatWeapons = weapons.flatMap((weapons)=>{
+        return weapons.weapons;
+    });
+    const randomWeaponIndex = Math.floor(Math.random() * flatWeapons.length);
+    return flatWeapons[randomWeaponIndex];
+};
 const ellipsis = `\u22EF`;
 const getWeaponFrequencies = (weapons, ids)=>{
     const frequencies = weapons.flatMap((weaponClass)=>{
@@ -26627,8 +26698,10 @@ module.exports = JSON.parse("[{\"tag\":\"Shooter\",\"name\":\"Shooter\",\"weapon
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "HeadText", ()=>HeadText);
+parcelHelpers.export(exports, "HeadTextButton", ()=>HeadTextButton);
 parcelHelpers.export(exports, "Button", ()=>Button);
 parcelHelpers.export(exports, "OutlineButton", ()=>OutlineButton);
+parcelHelpers.export(exports, "Input", ()=>Input);
 parcelHelpers.export(exports, "SelectButton", ()=>SelectButton);
 var _styledComponents = require("styled-components");
 const HeadText = (0, _styledComponents.styled).h1.withConfig({
@@ -26639,27 +26712,43 @@ const HeadText = (0, _styledComponents.styled).h1.withConfig({
     ");isolation:isolate;&::before{position:absolute;width:100%;height:100%;left:0;content:\"",
     "\";-webkit-text-stroke:10px var(--text-outline);z-index:-1;}"
 ], ({ $colorTag })=>$colorTag ? `${$colorTag}` : `text`, ({ $content })=>$content);
-const Button = (0, _styledComponents.styled).button.withConfig({
-    displayName: "Layout__Button",
+const HeadTextButton = (0, _styledComponents.styled).button.withConfig({
+    displayName: "Layout__HeadTextButton",
     componentId: "sc-1q3sik2-1"
 })([
-    "margin:5px 0;padding:10px 5px;font-size:1.5rem;width:100%;font-weight:bold;color:var(--text);background-color:var(--regular-button);border:2px solid var(--",
+    "position:relative;margin:6px 0;font-size:1.5rem;font-weight:bold;color:var(--",
+    ");isolation:isolate;border:none;background-color:transparent;&::before{position:absolute;width:100%;height:100%;left:0;content:\"",
+    "\";-webkit-text-stroke:10px var(--text-outline);z-index:-1;}&:hover{cursor:pointer;color:var(--",
+    "-highlight);}"
+], ({ $colorTag })=>$colorTag ? `${$colorTag}` : `text`, ({ $content })=>$content, ({ $colorTag })=>$colorTag ? `${$colorTag}` : `text`);
+const Button = (0, _styledComponents.styled).button.withConfig({
+    displayName: "Layout__Button",
+    componentId: "sc-1q3sik2-2"
+})([
+    "position:relative;margin:5px 0;padding:10px 5px;font-size:1.5rem;width:100%;font-weight:bold;color:var(--text);background-color:var(--regular-button);border:2px solid var(--",
     ");border-radius:4px;&:not(:disabled):hover{background-color:var(--",
     ");}&:not(:disabled):active{background-color:var(--",
-    "-dark);}"
+    "-dark);}&:disabled{border:2px solid var(--base);}&:disabled:hover{background-color:var(--base-dark);}"
 ], ({ $colorTag })=>$colorTag ? `${$colorTag}` : `button`, ({ $colorTag })=>$colorTag ? `${$colorTag}` : `button`, ({ $colorTag })=>$colorTag ? `${$colorTag}` : `button`);
 const OutlineButton = (0, _styledComponents.styled)(Button).withConfig({
     displayName: "Layout__OutlineButton",
-    componentId: "sc-1q3sik2-2"
+    componentId: "sc-1q3sik2-3"
 })([
     "padding:15px 10px;isolation:isolate;&::before{position:absolute;width:100%;left:0;content:\"",
-    "\";left:0;color:var(--",
+    "\";color:var(--",
     "-dark);-webkit-text-stroke:8px var(--",
-    "-dark);z-index:-1;}"
+    "-dark);z-index:-1;&:disabled{color:var(--base-dark);-webkit-text-stroke:8px var(--base-dark);}}&:disabled{&::before{color:var(--base-dark);-webkit-text-stroke:8px var(--base-dark);}}"
 ], ({ $content })=>$content, ({ $colorTag })=>$colorTag ? `${$colorTag}` : `button`, ({ $colorTag })=>$colorTag ? `${$colorTag}` : `button`);
+const Input = (0, _styledComponents.styled).input.withConfig({
+    displayName: "Layout__Input",
+    componentId: "sc-1q3sik2-4"
+})([
+    "padding:10px 5px;width:60px;font-size:1.75rem;font-weight:bold;color:var(--text);background-color:var(--regular-button);border:2px solid var(--",
+    ");border-radius:4px;"
+], ({ $colorTag })=>$colorTag ? `${$colorTag}` : `button`);
 const SelectButton = (0, _styledComponents.styled)(OutlineButton).withConfig({
     displayName: "Layout__SelectButton",
-    componentId: "sc-1q3sik2-3"
+    componentId: "sc-1q3sik2-5"
 })([
     "",
     ""
@@ -26685,6 +26774,7 @@ var DisplayMode = /*#__PURE__*/ function(DisplayMode) {
     DisplayMode["Recent"] = "Recent";
     DisplayMode["Unseen"] = "Unseen";
     DisplayMode["Frequencies"] = "Frequencies";
+    DisplayMode["Rolls"] = "Rolls";
     DisplayMode["None"] = "None";
     return DisplayMode;
 }({});
@@ -26697,20 +26787,21 @@ var _react = require("react");
 var _reactDefault = parcelHelpers.interopDefault(_react);
 var _styledComponents = require("styled-components");
 var _layout = require("./Layout");
+var _weaponButton = require("./WeaponButton");
 var _weaponDatabase = require("../../utils/WeaponDatabase");
 const WeaponList = ({ weaponClass, weaponIds, weaponSize, onClickWeapon })=>{
     return /*#__PURE__*/ (0, _reactDefault.default).createElement(Wrapper, {
         $size: weaponSize,
         __source: {
             fileName: "src/dashboard/components/WeaponList.tsx",
-            lineNumber: 18,
+            lineNumber: 19,
             columnNumber: 10
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(HeadWrapper, {
         __source: {
             fileName: "src/dashboard/components/WeaponList.tsx",
-            lineNumber: 19,
+            lineNumber: 20,
             columnNumber: 4
         },
         __self: undefined
@@ -26719,65 +26810,33 @@ const WeaponList = ({ weaponClass, weaponIds, weaponSize, onClickWeapon })=>{
         $content: weaponClass.name,
         __source: {
             fileName: "src/dashboard/components/WeaponList.tsx",
-            lineNumber: 20,
+            lineNumber: 21,
             columnNumber: 5
         },
         __self: undefined
     }, weaponClass.name)), /*#__PURE__*/ (0, _reactDefault.default).createElement(Row, {
         __source: {
             fileName: "src/dashboard/components/WeaponList.tsx",
-            lineNumber: 24,
+            lineNumber: 25,
             columnNumber: 4
         },
         __self: undefined
     }, weaponClass.weapons.map((weapon, index)=>{
-        const weaponCount = weaponIds.filter((id)=>id === weapon.id).length;
-        return /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponWrapper, {
+        return /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _weaponButton.WeaponButton), {
             key: index,
+            weapon: weapon,
+            size: weaponSize,
+            numberDisplay: (0, _weaponDatabase.getWeaponCount)(weapon.id, weaponIds),
+            onClick: onClickWeapon,
+            marginRight: true,
+            marginBottom: true,
             __source: {
                 fileName: "src/dashboard/components/WeaponList.tsx",
                 lineNumber: 27,
                 columnNumber: 16
             },
             __self: undefined
-        }, /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponButton, {
-            $size: weaponSize,
-            $colorTag: weaponClass.name.toLowerCase(),
-            onClick: ()=>{
-                onClickWeapon(weapon.id);
-            },
-            __source: {
-                fileName: "src/dashboard/components/WeaponList.tsx",
-                lineNumber: 28,
-                columnNumber: 6
-            },
-            __self: undefined
-        }, /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponCountWrapper, {
-            __source: {
-                fileName: "src/dashboard/components/WeaponList.tsx",
-                lineNumber: 31,
-                columnNumber: 7
-            },
-            __self: undefined
-        }, /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponCount, {
-            $colorTag: weaponClass.name.toLowerCase(),
-            $content: `${weaponCount}`,
-            __source: {
-                fileName: "src/dashboard/components/WeaponList.tsx",
-                lineNumber: 32,
-                columnNumber: 8
-            },
-            __self: undefined
-        }, weaponCount)), /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponImage, {
-            src: `${(0, _weaponDatabase.weaponImagePath)}${weapon.image}`,
-            alt: weapon.name,
-            __source: {
-                fileName: "src/dashboard/components/WeaponList.tsx",
-                lineNumber: 34,
-                columnNumber: 7
-            },
-            __self: undefined
-        })));
+        });
     })));
 };
 const Wrapper = (0, _styledComponents.styled).div.withConfig({
@@ -26798,35 +26857,97 @@ const HeadWrapper = (0, _styledComponents.styled).div.withConfig({
 })([
     "position:relative;padding-left:5px;"
 ]);
-const WeaponWrapper = (0, _styledComponents.styled).div.withConfig({
-    displayName: "WeaponList__WeaponWrapper",
-    componentId: "sc-v5vro3-3"
+
+},{"react":"bH1AQ","styled-components":"9xpRL","./Layout":"72fYZ","../../utils/WeaponDatabase":"kbTcL","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG","./WeaponButton":"cadws"}],"cadws":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "WeaponButton", ()=>WeaponButton);
+var _react = require("react");
+var _reactDefault = parcelHelpers.interopDefault(_react);
+var _styledComponents = require("styled-components");
+var _styledComponentsDefault = parcelHelpers.interopDefault(_styledComponents);
+var _layout = require("./Layout");
+var _weaponDatabase = require("../../utils/WeaponDatabase");
+const WeaponButton = ({ weapon, size, numberDisplay, marginRight, marginBottom, onClick })=>{
+    return /*#__PURE__*/ (0, _reactDefault.default).createElement(Wrapper, {
+        $marginRight: marginRight,
+        $marginBottom: marginBottom,
+        __source: {
+            fileName: "src/dashboard/components/WeaponButton.tsx",
+            lineNumber: 22,
+            columnNumber: 10
+        },
+        __self: undefined
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement(ButtonWeapon, {
+        $size: size,
+        $colorTag: weapon.weaponClass.toLowerCase(),
+        onClick: ()=>{
+            onClick(weapon.id);
+        },
+        __source: {
+            fileName: "src/dashboard/components/WeaponButton.tsx",
+            lineNumber: 23,
+            columnNumber: 3
+        },
+        __self: undefined
+    }, numberDisplay !== undefined && /*#__PURE__*/ (0, _reactDefault.default).createElement(NumberWrapper, {
+        __source: {
+            fileName: "src/dashboard/components/WeaponButton.tsx",
+            lineNumber: 26,
+            columnNumber: 36
+        },
+        __self: undefined
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement(NumberText, {
+        $colorTag: weapon.weaponClass.toLowerCase(),
+        $content: `${numberDisplay}`,
+        __source: {
+            fileName: "src/dashboard/components/WeaponButton.tsx",
+            lineNumber: 27,
+            columnNumber: 6
+        },
+        __self: undefined
+    }, numberDisplay)), /*#__PURE__*/ (0, _reactDefault.default).createElement(Image, {
+        src: `${(0, _weaponDatabase.weaponImagePath)}${weapon.image}`,
+        alt: weapon.name,
+        __source: {
+            fileName: "src/dashboard/components/WeaponButton.tsx",
+            lineNumber: 29,
+            columnNumber: 4
+        },
+        __self: undefined
+    })));
+};
+const Wrapper = (0, _styledComponentsDefault.default).div.withConfig({
+    displayName: "WeaponButton__Wrapper",
+    componentId: "sc-5lbx0y-0"
 })([
-    "position:relative;margin:0 10px 10px 0;"
-]);
-const WeaponButton = (0, _styledComponents.styled)((0, _layout.Button)).withConfig({
-    displayName: "WeaponList__WeaponButton",
-    componentId: "sc-v5vro3-4"
+    "position:relative;margin:0;margin-right:",
+    ";margin-bottom:",
+    ";"
+], ({ $marginRight })=>$marginRight ? `10px` : `0`, ({ $marginBottom })=>$marginBottom ? `10px` : `0`);
+const ButtonWeapon = (0, _styledComponentsDefault.default)((0, _layout.Button)).withConfig({
+    displayName: "WeaponButton__ButtonWeapon",
+    componentId: "sc-5lbx0y-1"
 })([
     "position:relative;margin:0;padding:5px;width:",
     "px;height:",
     "px;aspect-ratio:1/1;"
 ], ({ $size })=>$size, ({ $size })=>$size);
-const WeaponCountWrapper = (0, _styledComponents.styled).div.withConfig({
-    displayName: "WeaponList__WeaponCountWrapper",
-    componentId: "sc-v5vro3-5"
+const NumberWrapper = (0, _styledComponentsDefault.default).div.withConfig({
+    displayName: "WeaponButton__NumberWrapper",
+    componentId: "sc-5lbx0y-2"
 })([
     "position:absolute;padding:8px;margin:0;top:0;right:0;bottom:0;left:0;width:100%;height:100%;display:flex;flex-direction:row;align-items:flex-start;justify-content:flex-start;"
 ]);
-const WeaponCount = (0, _styledComponents.styled)((0, _layout.HeadText)).withConfig({
-    displayName: "WeaponList__WeaponCount",
-    componentId: "sc-v5vro3-6"
+const NumberText = (0, _styledComponentsDefault.default)((0, _layout.HeadText)).withConfig({
+    displayName: "WeaponButton__NumberText",
+    componentId: "sc-5lbx0y-3"
 })([
     "position:relative;padding:0;margin:0;font-size:1rem;"
 ]);
-const WeaponImage = (0, _styledComponents.styled).img.withConfig({
-    displayName: "WeaponList__WeaponImage",
-    componentId: "sc-v5vro3-7"
+const Image = (0, _styledComponentsDefault.default).img.withConfig({
+    displayName: "WeaponButton__Image",
+    componentId: "sc-5lbx0y-4"
 })([
     "max-width:100%;"
 ]);
@@ -26840,11 +26961,12 @@ var _reactDefault = parcelHelpers.interopDefault(_react);
 var _styledComponents = require("styled-components");
 var _layout = require("./Layout");
 var _weaponDatabase = require("../../utils/WeaponDatabase");
+var _weaponButton = require("./WeaponButton");
 const RecentList = ({ weaponIds, onClickWeapon })=>{
     return /*#__PURE__*/ (0, _reactDefault.default).createElement(Column, {
         __source: {
             fileName: "src/dashboard/components/RecentList.tsx",
-            lineNumber: 13,
+            lineNumber: 14,
             columnNumber: 10
         },
         __self: undefined
@@ -26854,88 +26976,58 @@ const RecentList = ({ weaponIds, onClickWeapon })=>{
             key: index,
             __source: {
                 fileName: "src/dashboard/components/RecentList.tsx",
-                lineNumber: 17,
+                lineNumber: 18,
                 columnNumber: 16
             },
             __self: undefined
         }, "Error obtaining weapon ", id);
         const colorTag = weapon.weaponClass.toLowerCase();
         const weaponNumber = weaponIds.filter((weaponId, weaponIndex)=>weaponIndex >= index && weaponId === id).length;
-        return /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponButton, {
-            $size: 100,
-            $colorTag: colorTag,
+        return /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _weaponButton.WeaponButton), {
             key: index,
+            weapon: weapon,
+            size: 100,
+            numberDisplay: weaponNumber,
+            marginRight: false,
+            marginBottom: true,
             onClick: ()=>{
                 onClickWeapon(index);
             },
             __source: {
                 fileName: "src/dashboard/components/RecentList.tsx",
-                lineNumber: 21,
+                lineNumber: 22,
                 columnNumber: 14
             },
             __self: undefined
-        }, /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponCountWrapper, {
-            __source: {
-                fileName: "src/dashboard/components/RecentList.tsx",
-                lineNumber: 24,
-                columnNumber: 6
-            },
-            __self: undefined
-        }, /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponCount, {
-            $colorTag: colorTag,
-            $content: `${weaponNumber}`,
-            __source: {
-                fileName: "src/dashboard/components/RecentList.tsx",
-                lineNumber: 25,
-                columnNumber: 7
-            },
-            __self: undefined
-        }, weaponNumber)), /*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponImage, {
-            src: `${(0, _weaponDatabase.weaponImagePath)}${weapon.image}`,
-            alt: weapon.name,
-            __source: {
-                fileName: "src/dashboard/components/RecentList.tsx",
-                lineNumber: 27,
-                columnNumber: 6
-            },
-            __self: undefined
-        }));
+        });
     }));
 };
 const Column = (0, _styledComponents.styled).div.withConfig({
     displayName: "RecentList__Column",
     componentId: "sc-1j15sn-0"
 })([
-    "position:relative;display:flex;flex-direction:column;align-items:center;overflow:visible;@media screen and (min-height:950px){overflow:auto;}"
+    "width:100%;height:100%;position:relative;display:flex;flex-direction:column;align-items:center;overflow:visible;@media screen and (min-height:950px){overflow:auto;}"
 ]);
-const WeaponButton = (0, _styledComponents.styled)((0, _layout.Button)).withConfig({
-    displayName: "RecentList__WeaponButton",
-    componentId: "sc-1j15sn-1"
-})([
-    "position:relative;margin:0 10px 10px 0;padding:5px;width:",
-    "px;height:",
-    "px;aspect-ratio:1/1;"
-], ({ $size })=>$size, ({ $size })=>$size);
 const WeaponCountWrapper = (0, _styledComponents.styled).div.withConfig({
     displayName: "RecentList__WeaponCountWrapper",
-    componentId: "sc-1j15sn-2"
+    componentId: "sc-1j15sn-1"
 })([
     "position:absolute;padding:8px;margin:0;top:0;right:0;bottom:0;left:0;width:100%;height:100%;display:flex;flex-direction:row;align-items:flex-start;justify-content:flex-start;"
 ]);
 const WeaponCount = (0, _styledComponents.styled)((0, _layout.HeadText)).withConfig({
     displayName: "RecentList__WeaponCount",
-    componentId: "sc-1j15sn-3"
+    componentId: "sc-1j15sn-2"
 })([
     "position:relative;padding:0;margin:0;font-size:1rem;"
 ]);
 const WeaponImage = (0, _styledComponents.styled).img.withConfig({
     displayName: "RecentList__WeaponImage",
-    componentId: "sc-1j15sn-4"
+    componentId: "sc-1j15sn-3"
 })([
     "max-width:100%;"
 ]);
 
-},{"react":"bH1AQ","styled-components":"9xpRL","./Layout":"72fYZ","../../utils/WeaponDatabase":"kbTcL","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"gDtXJ":[function(require,module,exports,__globalThis) {
+},{"react":"bH1AQ","styled-components":"9xpRL","./Layout":"72fYZ","../../utils/WeaponDatabase":"kbTcL","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG","./WeaponButton":"cadws"}],"gDtXJ":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ErrorCode", ()=>(0, _utils.ErrorCode));
@@ -34777,6 +34869,278 @@ function klona(val) {
     }
     return val;
 }
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"hrG5d":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "CollapseContainer", ()=>CollapseContainer);
+var _react = require("react");
+var _reactDefault = parcelHelpers.interopDefault(_react);
+var _styledComponents = require("styled-components");
+var _styledComponentsDefault = parcelHelpers.interopDefault(_styledComponents);
+var _layout = require("./Layout");
+const CollapseContainer = ({ title, children })=>{
+    const [collapsed, setCollapsed] = (0, _react.useState)(false);
+    return /*#__PURE__*/ (0, _reactDefault.default).createElement(Container, {
+        __source: {
+            fileName: "src/dashboard/components/CollapseContainer.tsx",
+            lineNumber: 13,
+            columnNumber: 10
+        },
+        __self: undefined
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement(HeadRow, {
+        __source: {
+            fileName: "src/dashboard/components/CollapseContainer.tsx",
+            lineNumber: 14,
+            columnNumber: 13
+        },
+        __self: undefined
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.HeadTextButton), {
+        onClick: ()=>{
+            setCollapsed(!collapsed);
+        },
+        $content: title,
+        __source: {
+            fileName: "src/dashboard/components/CollapseContainer.tsx",
+            lineNumber: 15,
+            columnNumber: 17
+        },
+        __self: undefined
+    }, title)), !collapsed && /*#__PURE__*/ (0, _reactDefault.default).createElement(Container, {
+        __source: {
+            fileName: "src/dashboard/components/CollapseContainer.tsx",
+            lineNumber: 19,
+            columnNumber: 28
+        },
+        __self: undefined
+    }, children));
+};
+const Container = (0, _styledComponentsDefault.default).div.withConfig({
+    displayName: "CollapseContainer__Container",
+    componentId: "sc-1r3u3sl-0"
+})([
+    "display:contents;"
+]);
+const HeadRow = (0, _styledComponentsDefault.default).div.withConfig({
+    displayName: "CollapseContainer__HeadRow",
+    componentId: "sc-1r3u3sl-1"
+})([
+    "display:flex;flex-direction:row;justify-content:center;align-items:center;width:100%;"
+]);
+
+},{"react":"bH1AQ","styled-components":"9xpRL","./Layout":"72fYZ","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"5xrWy":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "RollWeapons", ()=>RollWeapons);
+var _react = require("react");
+var _reactDefault = parcelHelpers.interopDefault(_react);
+var _styledComponents = require("styled-components");
+var _styledComponentsDefault = parcelHelpers.interopDefault(_styledComponents);
+var _layout = require("./Layout");
+var _weaponDatabase = require("../../utils/WeaponDatabase");
+var _utils = require("../../utils/utils");
+var _weaponButton = require("./WeaponButton");
+const RollWeapons = ({ weaponClasses, numWeaponRolls, setNumWeaponRolls, randomWeapons, setRandomWeapons, weaponIds, weaponSize, onClickWeapon })=>{
+    const [isRolling, setIsRolling] = (0, _react.useState)(false);
+    const rollWeaponsOnce = (0, _react.useCallback)(()=>{
+        setRandomWeapons(Array((0, _utils.MAX_RANDOM_WEAPONS)).fill(0).map(()=>{
+            return (0, _weaponDatabase.getRandomWeapon)(weaponClasses).id;
+        }));
+    }, [
+        weaponClasses,
+        setRandomWeapons
+    ]);
+    //Roll once to prevent selecting weapons from different weapon modes
+    (0, _react.useEffect)(()=>{
+        rollWeaponsOnce();
+    }, [
+        weaponClasses
+    ]);
+    const rollWeapons = (0, _react.useCallback)(()=>{
+        if (isRolling) return;
+        const interval = window.setInterval(rollWeaponsOnce, 100);
+        setIsRolling(true);
+        window.setTimeout(()=>{
+            window.clearInterval(interval);
+            setIsRolling(false);
+        }, 1000);
+    }, [
+        rollWeaponsOnce,
+        isRolling
+    ]);
+    return /*#__PURE__*/ (0, _reactDefault.default).createElement(Wrapper, {
+        __source: {
+            fileName: "src/dashboard/components/RollWeapons.tsx",
+            lineNumber: 48,
+            columnNumber: 10
+        },
+        __self: undefined
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement(HeadWrapper, {
+        __source: {
+            fileName: "src/dashboard/components/RollWeapons.tsx",
+            lineNumber: 49,
+            columnNumber: 3
+        },
+        __self: undefined
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.HeadText), {
+        $colorTag: "import",
+        $content: "Weapon Rolls",
+        __source: {
+            fileName: "src/dashboard/components/RollWeapons.tsx",
+            lineNumber: 50,
+            columnNumber: 4
+        },
+        __self: undefined
+    }, "Weapon Rolls")), /*#__PURE__*/ (0, _reactDefault.default).createElement(RollDiv, {
+        __source: {
+            fileName: "src/dashboard/components/RollWeapons.tsx",
+            lineNumber: 52,
+            columnNumber: 3
+        },
+        __self: undefined
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement(RollsButton, {
+        $content: "Roll Weapons",
+        $colorTag: "import",
+        disabled: isRolling,
+        onClick: ()=>{
+            rollWeapons();
+        },
+        __source: {
+            fileName: "src/dashboard/components/RollWeapons.tsx",
+            lineNumber: 53,
+            columnNumber: 4
+        },
+        __self: undefined
+    }, "Roll Weapons"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.Input), {
+        $colorTag: "import",
+        type: "number",
+        min: "1",
+        max: "8",
+        value: numWeaponRolls,
+        onChange: (event)=>setNumWeaponRolls(Number(event.target.value)),
+        __source: {
+            fileName: "src/dashboard/components/RollWeapons.tsx",
+            lineNumber: 56,
+            columnNumber: 4
+        },
+        __self: undefined
+    }), /*#__PURE__*/ (0, _reactDefault.default).createElement(Rolls, {
+        __source: {
+            fileName: "src/dashboard/components/RollWeapons.tsx",
+            lineNumber: 57,
+            columnNumber: 4
+        },
+        __self: undefined
+    }, randomWeapons.slice(0, numWeaponRolls).map((id, index)=>{
+        return /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _weaponButton.WeaponButton), {
+            key: index,
+            weapon: (0, _weaponDatabase.getWeaponById)(id),
+            size: weaponSize,
+            onClick: onClickWeapon,
+            numberDisplay: (0, _weaponDatabase.getWeaponCount)(id, weaponIds),
+            marginRight: true,
+            marginBottom: false,
+            __source: {
+                fileName: "src/dashboard/components/RollWeapons.tsx",
+                lineNumber: 59,
+                columnNumber: 18
+            },
+            __self: undefined
+        });
+    }))));
+};
+const Wrapper = (0, _styledComponentsDefault.default).div.withConfig({
+    displayName: "RollWeapons__Wrapper",
+    componentId: "sc-1q9svn1-0"
+})([
+    "position:relative;margin-bottom:10px;width:100%;"
+]);
+const HeadWrapper = (0, _styledComponentsDefault.default).div.withConfig({
+    displayName: "RollWeapons__HeadWrapper",
+    componentId: "sc-1q9svn1-1"
+})([
+    "position:relative;padding-left:5px;"
+]);
+const RollsButton = (0, _styledComponentsDefault.default)((0, _layout.OutlineButton)).withConfig({
+    displayName: "RollWeapons__RollsButton",
+    componentId: "sc-1q9svn1-2"
+})([
+    "width:unset;margin:0;"
+]);
+const RollDiv = (0, _styledComponentsDefault.default).div.withConfig({
+    displayName: "RollWeapons__RollDiv",
+    componentId: "sc-1q9svn1-3"
+})([
+    "position:relative;display:flex;flex-direction:row;column-gap:10px;"
+]);
+const Rolls = (0, _styledComponentsDefault.default).div.withConfig({
+    displayName: "RollWeapons__Rolls",
+    componentId: "sc-1q9svn1-4"
+})([
+    "display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;"
+]);
+
+},{"react":"bH1AQ","styled-components":"9xpRL","./Layout":"72fYZ","../../utils/WeaponDatabase":"kbTcL","../../utils/utils":"70xAs","./WeaponButton":"cadws","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"70xAs":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "MAX_RANDOM_WEAPONS", ()=>MAX_RANDOM_WEAPONS);
+parcelHelpers.export(exports, "arrayPrimitiveEquals", ()=>arrayPrimitiveEquals);
+parcelHelpers.export(exports, "fitSquaresToRectGrid", ()=>fitSquaresToRectGrid);
+parcelHelpers.export(exports, "fitSquaresToRectColumn", ()=>fitSquaresToRectColumn);
+const MAX_RANDOM_WEAPONS = 8;
+const arrayPrimitiveEquals = (a, b)=>{
+    return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((value, index)=>value === b[index]);
+};
+const fitSquaresToRectGrid = (width, height, num)=>{
+    if (num <= 0) return {
+        rows: 1,
+        columns: 1,
+        size: Math.min(width, height)
+    };
+    // Compute number of rows and columns, and cell size
+    const ratio = width / height;
+    const ncols_float = Math.sqrt(num * ratio);
+    const nrows_float = num / ncols_float;
+    // Find best option filling the whole height
+    let nrows1 = Math.ceil(nrows_float);
+    let ncols1 = Math.ceil(num / nrows1);
+    while(nrows1 * ratio < ncols1){
+        nrows1++;
+        ncols1 = Math.ceil(num / nrows1);
+    }
+    const cell_size1 = height / nrows1;
+    // Find best option filling the whole width
+    let ncols2 = Math.ceil(ncols_float);
+    let nrows2 = Math.ceil(num / ncols2);
+    while(ncols2 < nrows2 * ratio){
+        ncols2++;
+        nrows2 = Math.ceil(num / ncols2);
+    }
+    const cell_size2 = width / ncols2;
+    // Find the best values
+    let rows, columns, size;
+    if (cell_size1 < cell_size2) {
+        rows = nrows2;
+        columns = ncols2;
+        size = cell_size2;
+    } else {
+        rows = nrows1;
+        columns = ncols1;
+        size = cell_size1;
+    }
+    return {
+        size,
+        rows,
+        columns
+    };
+};
+const fitSquaresToRectColumn = (width, height, num)=>{
+    if (num <= 0) return 0;
+    const min = Math.min(width, height);
+    const max = Math.max(width, height);
+    if (min * num <= max) return min;
+    return Math.max(height / num, 0);
+};
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}]},["iM5K2"], "iM5K2", "parcelRequire94c2")
 
