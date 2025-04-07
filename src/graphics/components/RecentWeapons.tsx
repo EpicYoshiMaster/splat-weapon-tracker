@@ -11,6 +11,9 @@ interface RecentWeaponsProps {
 	recentIds: number[];
 }
 
+//#C87500 00
+//#EBFF2A FF
+
 export const RecentWeapons: React.FC<RecentWeaponsProps> = ({ view, max, recentIds }) => {
 
 	const buildTimeline = useCallback((timeline: gsap.core.Timeline) => {
@@ -55,10 +58,12 @@ export const RecentWeapons: React.FC<RecentWeaponsProps> = ({ view, max, recentI
 							<WeaponImage src={`${weaponImagePath}${weapon.image}`} className="image" />
 							<FittedText 
 							text={`${weapon.name} (${weaponCount})`} 
+							//425 - 65
 							maxWidth={425} 
 							align="left" 
 							font="Blitz Main"
 							outline={{ width: 10, colorTag: "text-outline" }} />
+							{/*<TrophyImage src="/bundles/splat-weapon-tracker/images/icons/Trophy_Gold.png" />*/}
 						</TopWeaponRow>
 						)
 					}
@@ -72,10 +77,12 @@ export const RecentWeapons: React.FC<RecentWeaponsProps> = ({ view, max, recentI
 							<WeaponImage src={`${weaponImagePath}${weapon.image}`} className="image" />
 							<FittedText 
 							text={`${weapon.name} (${weaponCount})`} 
+							//475 - 15
 							maxWidth={475} 
 							align="left" 
 							font="Blitz Main"
 							outline={{ width: 5, colorTag: "text-outline" }} />
+							{/*<TrophyImage src="/bundles/splat-weapon-tracker/images/icons/Trophy_Silver.png" />*/}
 						</WeaponRow>
 					)
 				})
@@ -122,4 +129,9 @@ const TopWeaponRow = styled(WeaponRow)`
 const WeaponImage = styled.img`
 	max-height: 100%;
 	margin: 0 5px;
+`;
+
+const TrophyImage = styled.img`
+	max-height: 40%;
+	margin: 0 5px;	
 `;

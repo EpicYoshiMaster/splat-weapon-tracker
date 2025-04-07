@@ -13,6 +13,7 @@ export type Weapon = {
 	image: string;
 	coop: boolean;
 	grizzco: boolean;
+	order: boolean;
 }
 
 export type WeaponFrequency = {
@@ -35,7 +36,14 @@ export type RectangleFit = {
 export enum WeaponMode {
 	Standard = "Standard",
 	Salmon = "SalmonRun",
-	Grizzco = "GrizzcoOnly"
+	Grizzco = "GrizzcoOnly",
+	Order = "SideOrder"
+}
+
+export enum BackgroundMode {
+	Transparent = "Transparent",
+	Black = "Black",
+	White = "White"
 }
 
 export enum DisplayMode {

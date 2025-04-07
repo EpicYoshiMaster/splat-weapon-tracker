@@ -52,7 +52,7 @@ export const useReplicant = <V, T = Jsonify<V>>(
 			});
 		};
 
-		const changeWrapper = (newValue: T | undefined): void => newValue && changeHandler(newValue)
+		const changeWrapper = (newValue: T | undefined): void => { (newValue !== undefined) && changeHandler(newValue) } 
 
 		replicant.on("change", changeWrapper);
 		return () => {

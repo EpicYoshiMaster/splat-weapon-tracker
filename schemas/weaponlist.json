@@ -5,7 +5,8 @@
     "properties": {
 		"standard": { "$ref": "#/$defs/weapons" },
 		"salmon": { "$ref": "#/$defs/weapons" },
-		"grizzco": { "$ref": "#/$defs/weapons" }
+		"grizzco": { "$ref": "#/$defs/weapons" },
+		"order": { "$ref": "#/$defs/weapons" }
     },
 	"$defs": {
 		"weapons": {
@@ -13,5 +14,5 @@
 			"items": { "type": "number" }
 		}
 	},
-    "required": [ "standard", "salmon", "grizzco" ]
+    "required": [ "standard", "salmon", "grizzco", "order" ]
 }

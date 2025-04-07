@@ -7,7 +7,7 @@ const createWeaponDatabase = (): [Weapon[], WeaponClass[]] =>  {
 	const weaponClasses: WeaponClass[] = Classes;
 
 	Object.entries(Weapons).forEach(([key, value], index) => {
-		const weapon: Weapon = { id: index, key: key, name: value, image: key, weaponClass: "", coop: false, grizzco: false};
+		const weapon: Weapon = { id: index, key: key, name: value, image: key, weaponClass: "", coop: false, grizzco: false, order: false };
 
 		const coopIndex = weapon.image.indexOf("_Coop");
 
@@ -22,6 +22,10 @@ const createWeaponDatabase = (): [Weapon[], WeaponClass[]] =>  {
 		}
 		else if(coopIndex !== -1) {
 			weapon.image = weapon.image + "_00";
+		}
+
+		if(key.includes("_O", -2)) {
+			weapon.order = true;
 		}
 
 		weapon.image = `Path_Wst_${weapon.image}.png`;
@@ -69,6 +73,8 @@ export const salmonWeapons: WeaponClass[] = filterWeapons(weaponClasses, (weapon
 
 export const grizzcoWeapons: WeaponClass[] = filterWeapons(weaponClasses, (weapons) => weapons.grizzco);
 
+export const orderWeapons: WeaponClass[] = filterWeapons(weaponClasses, (weapon) => weapon.order);
+
 export const defaultWeapon: Weapon = {
 	id: -1,
 	key: "Dummy",
@@ -76,7 +82,8 @@ export const defaultWeapon: Weapon = {
 	weaponClass: "Unknown",
 	image: "Dummy.png",
 	coop: false,
-	grizzco: false
+	grizzco: false,
+	order: false
 }
 
 export const getWeaponById = (id: number): Weapon => {
@@ -92,6 +99,18 @@ export const invertWeaponList = (weapons: WeaponClass[], ids: number[]): Weapon[
 	return weapons.flatMap((weaponClass) => {
 		return weaponClass.weapons.filter(weapon => !ids.includes(weapon.id))
 	})
+}
+
+export const getTotalNumWeapons = (weapons: WeaponClass[]): number => {
+	return weapons.reduce((accum, weaponClass) => {
+		return accum + weaponClass.weapons.length;
+	}, 0)
+}
+
+export const getSeenWeapons = (weapons: WeaponClass[], ids: number[]): number => {
+	return weapons.flatMap((weaponClass) => {
+		return weaponClass.weapons.filter(weapon => ids.includes(weapon.id))
+	}).length;
 }
 
 export const getWeaponCount = (weaponId: number, weaponIds: number[]) => {
@@ -111,6 +130,14 @@ export const getRandomWeapon = (weapons: WeaponClass[]): Weapon => {
 }
 
 const ellipsis = `\u22EF`;
+
+export const getCompletionPercentage = (weapons: WeaponClass[], ids: number[]): number => {
+
+	const totalWeapons = getTotalNumWeapons(weapons);
+	const foundWeapons = getSeenWeapons(weapons, ids);
+
+	return Math.min(100, Math.max(0, (foundWeapons / totalWeapons) * 100));
+}
 
 //Personally I would like to know a Better way to do this LOL
 export const getWeaponFrequencies = (weapons: WeaponClass[], ids: number[]): WeaponFrequency[] => {

@@ -23,10 +23,18 @@
     "dashboardPanels": [
       {
         "name": "weapontracker",
-        "title": "Weapon Tracker",
+        "title": "Tracker",
         "file": "weapontracker.html",
         "headerColor": "#525F78",
         "fullbleed": true
+      },
+      {
+        "name": "trackersettings",
+        "title": "Settings",
+        "file": "settings.html",
+        "workspace": "Tracker Settings",
+        "width": 6,
+        "headerColor": "#525F78"
       }
     ],
     "graphics": [

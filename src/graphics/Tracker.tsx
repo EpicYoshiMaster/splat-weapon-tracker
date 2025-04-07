@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useMemo, useCallback, act } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { styled } from 'styled-components'
 import { createRoot } from 'react-dom/client';
 import { RecentWeapons } from './components/RecentWeapons'
 import { useReplicant } from '../utils/use-replicant';
-import { WeaponMode, DisplayMode } from '../types/types';
+import { WeaponMode, DisplayMode, BackgroundMode } from '../types/types';
 import { Weaponlist } from '../types/schemas/weaponlist';
-import { standardWeapons, salmonWeapons, grizzcoWeapons, invertWeaponList, getWeaponFrequencies, getRandomWeapon } from '../utils/WeaponDatabase';
+import { standardWeapons, salmonWeapons, grizzcoWeapons, invertWeaponList, getWeaponFrequencies, getRandomWeapon, getCompletionPercentage, orderWeapons } from '../utils/WeaponDatabase';
 import { UnseenWeapons } from './components/UnseenWeapons';
 import { WeaponFrequencies } from './components/WeaponFrequencies';
 import { RollWeapons } from './components/RollWeapons';
 import { random } from 'gsap';
+import { ProgressBar } from './components/ProgressBar';
 
 const NumRecentWeapons = 6;
 
@@ -22,6 +23,10 @@ export function Tracker() {
 	const [mode, setMode] = useReplicant<WeaponMode>('mode', {
 		defaultValue: WeaponMode.Salmon
 	});
+
+	const [progressBar, setProgressBar] = useReplicant<boolean>('progressBar', { defaultValue: true });
+
+	const [background, setBackground] = useReplicant<BackgroundMode>('background', { defaultValue: BackgroundMode.Transparent });
 
 	const [display, setDisplay] = useReplicant<DisplayMode>('display', {
 		defaultValue: DisplayMode.None
@@ -40,9 +45,20 @@ export function Tracker() {
 		defaultValue: {
 			standard: [],
 			salmon: [],
-			grizzco: []
+			grizzco: [],
+			order: []
 		}
 	})
+
+	const backgroundColor = useMemo(() => {
+		if(!background) return "transparent";
+
+		switch(background) {
+			case BackgroundMode.Transparent: return "transparent";
+			case BackgroundMode.Black: return "#000000";
+			case BackgroundMode.White: return "#ffffff";
+		}
+	}, [background])
 
 	const weaponClasses = useMemo(() => {
 		if(!mode) return [];
@@ -51,6 +67,7 @@ export function Tracker() {
 			case WeaponMode.Standard: return standardWeapons;
 			case WeaponMode.Salmon: return salmonWeapons;
 			case WeaponMode.Grizzco: return grizzcoWeapons;
+			case WeaponMode.Order: return orderWeapons;
 		}
 	}, [mode])
 
@@ -62,6 +79,7 @@ export function Tracker() {
 			case WeaponMode.Standard: return lists.standard;
 			case WeaponMode.Salmon: return lists.salmon;
 			case WeaponMode.Grizzco: return lists.grizzco;
+			case WeaponMode.Order: return lists.order;
 		}
 	}, [mode, lists]);
 
@@ -106,8 +124,13 @@ export function Tracker() {
 	}, [current, display]);
 
 	return (
-		<StyledTracker>
+		<StyledTracker $background={backgroundColor}>
 			<Content>
+				<UpperOverlay>
+					{progressBar && (
+						<ProgressBar weaponClasses={weaponClasses} weaponIds={activeList} />
+					)}
+				</UpperOverlay>
 				<RecentWeapons 
 					view={{ 
 						show: display === DisplayMode.Recent, 
@@ -152,7 +175,7 @@ export function Tracker() {
 	);
 }
 
-const StyledTracker = styled.div`
+const StyledTracker = styled.div<{ $background: string }>`
 	position: relative;
 	width: 1920px;
 	height: 1080px;	
@@ -163,13 +186,20 @@ const StyledTracker = styled.div`
 	justify-content: flex-start;
 
 	color: white;
-	background-color: transparent;
+	background-color: ${({ $background }) => $background};
 `;
 
 const Content = styled.div`
 	position: relative;
 	width: 600px;
 	height: 500px;
+`;
+
+const UpperOverlay = styled.div`
+	position: absolute;
+	bottom: 100%;
+	padding: 0 10px;
+	width: 100%;
 `;
 
 const root = createRoot(document.getElementById('root')!);

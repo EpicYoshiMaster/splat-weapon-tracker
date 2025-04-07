@@ -117,3 +117,9 @@ export const SelectButton = styled(OutlineButton)<{ $selected: boolean }>`
 	background-color: var(${$colorTag ? `--${$colorTag}` : `--button` });
 	` : css``}
 `;
+
+export const SettingsButton = styled(SelectButton)`
+	padding: 15px 5px;
+	font-size: 1.5rem;
+	max-width: 165px;
+`;
