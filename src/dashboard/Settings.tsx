@@ -1,17 +1,30 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import { styled } from 'styled-components';
 import { HeadText, SettingsButton } from './components/Layout';
-import { BackgroundMode, WeaponMode } from '../types/types';
+import { BackgroundMode, WeaponFilter, WeaponMode } from '../types/types';
 import { useReplicant } from '../utils/use-replicant';
+import { getWeaponClassNames } from '../utils/WeaponDatabase';
 
-//Enable/Disable Progress Bar
-//Change background for getting screenshots
+const weaponClassNames = getWeaponClassNames();
 
 export function Settings() {
 	const [mode, setMode] = useReplicant<WeaponMode>('mode', {
 		defaultValue: WeaponMode.Salmon
 	});
+
+	const [filter, setFilter] = useReplicant<WeaponFilter>('filter', {
+		defaultValue: { weaponClasses: weaponClassNames.slice(), firstKit: true, secondKit: true, baseKit: true, cosmeticKit: true }
+	})
+
+	const setFilterWeaponClass = useCallback((weaponClass: string) => {
+		if(filter.weaponClasses.includes(weaponClass)) {
+			setFilter({ ...filter, weaponClasses: filter.weaponClasses.filter((value) => value !== weaponClass)})
+		}
+		else {
+			setFilter({ ...filter, weaponClasses: [...filter.weaponClasses, weaponClass]})
+		}
+	}, [filter]);
 
 	const [progressBar, setProgressBar] = useReplicant<boolean>('progressBar', { defaultValue: true });
 
@@ -19,7 +32,7 @@ export function Settings() {
 
 	return (
 		<Wrapper>
-				<HeadText $content="Modes">Modes</HeadText>
+				<HeadText $content="Mode">Mode</HeadText>
 				<Row>
 					<SettingsButton
 					$content="Standard"
@@ -41,6 +54,38 @@ export function Settings() {
 					$colorTag='order'
 					$selected={mode === WeaponMode.Order}
 					onClick={() => { setMode(WeaponMode.Order); }}>Side Order</SettingsButton>
+				</Row>
+				<HeadText $content="Filters">Filters</HeadText>
+				<Row>
+					{weaponClassNames.map((weaponClass, index) => (
+						<SettingsButton
+							key={index}
+							$content={weaponClass}
+							$colorTag={weaponClass.toLowerCase()}
+							$selected={filter.weaponClasses.includes(weaponClass)}
+							onClick={() => { setFilterWeaponClass(weaponClass);  }}>{weaponClass}</SettingsButton>
+					))
+					}
+					<SettingsButton
+						$content="First Kits"
+						$colorTag='first'
+						$selected={filter.firstKit}
+						onClick={() => { setFilter({ ...filter, firstKit: !filter.firstKit }); }}>First Kits</SettingsButton>
+					<SettingsButton
+						$content="Second Kits"
+						$colorTag='second'
+						$selected={filter.secondKit}
+						onClick={() => { setFilter({ ...filter, secondKit: !filter.secondKit }); }}>Second Kits</SettingsButton>
+					<SettingsButton
+						$content="Base Kits"
+						$colorTag='standard'
+						$selected={filter.baseKit}
+						onClick={() => { setFilter({ ...filter, baseKit: !filter.baseKit }); }}>Base Kits</SettingsButton>
+					<SettingsButton
+						$content="Cosmetics"
+						$colorTag='order'
+						$selected={filter.cosmeticKit}
+						onClick={() => { setFilter({ ...filter, cosmeticKit: !filter.cosmeticKit }); }}>Cosmetics</SettingsButton>
 				</Row>
 				<HeadText $content="Progress Bar">Progress Bar</HeadText>
 				<Row>
@@ -85,6 +130,7 @@ const Wrapper = styled.div`
 	display: grid;
 	grid-template-columns: max-content 1fr;
 	align-items: center;
+	text-align: right;
 	gap: 15px;
 `;
 
@@ -93,6 +139,7 @@ const Row = styled.div`
 	width: 100%;
 	display: flex;
 	flex-direction: row;
+	flex-wrap: wrap;
 	gap: 5px;
 `;
 

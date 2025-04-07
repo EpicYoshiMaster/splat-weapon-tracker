@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { styled, css } from 'styled-components';
-import { standardWeapons, salmonWeapons, grizzcoWeapons, defaultWeapon, getRandomWeapon, weaponImagePath, orderWeapons } from '../utils/WeaponDatabase'
+import { standardWeapons, salmonWeapons, grizzcoWeapons, defaultWeapon, getRandomWeapon, weaponImagePath, orderWeapons, filterWeaponsByProperties, getWeaponClassNames } from '../utils/WeaponDatabase'
 import { HeadText, OutlineButton, Input, SelectButton } from './components/Layout'
 import { useReplicant } from '../utils/use-replicant';
-import { DisplayMode, Weapon, WeaponMode } from '../types/types';
+import { DisplayMode, Weapon, WeaponClass, WeaponFilter, WeaponMode } from '../types/types';
 import { Weaponlist } from '../types/schemas/weaponlist';
 import { Listexport } from '../types/schemas/listexport';
 import { WeaponList } from './components/WeaponList';
@@ -18,6 +18,10 @@ export function WeaponTracker() {
 	const [mode, setMode] = useReplicant<WeaponMode>('mode', {
 		defaultValue: WeaponMode.Salmon
 	});
+
+	const [filter, setFilter] = useReplicant<WeaponFilter>('filter', {
+		defaultValue: { weaponClasses: getWeaponClassNames().slice(), firstKit: true, secondKit: true, baseKit: true, cosmeticKit: true }
+	})
 
 	const [display, setDisplay] = useReplicant<DisplayMode>('display', {
 		defaultValue: DisplayMode.Recent
@@ -166,17 +170,20 @@ export function WeaponTracker() {
 		}
 	}, [mode, lists]);
 
-	const weaponClasses = useMemo(() => {
+	const weaponClasses: WeaponClass[] = useMemo(() => {
 		if(!mode) return [];
 
+		let selectedClasses;
+
 		switch(mode) {
-			case WeaponMode.Standard: return standardWeapons;
-			case WeaponMode.Salmon: return salmonWeapons;
-			case WeaponMode.Grizzco: return grizzcoWeapons;
-			case WeaponMode.Order: return orderWeapons;
+			case WeaponMode.Standard: selectedClasses = standardWeapons; break;
+			case WeaponMode.Salmon: selectedClasses = salmonWeapons; break;
+			case WeaponMode.Grizzco: selectedClasses = grizzcoWeapons; break;
+			case WeaponMode.Order: selectedClasses = orderWeapons; break;
 		}
 
-	}, [mode])
+		return filterWeaponsByProperties(selectedClasses, filter);
+	}, [mode, filter])
 
 	const activeList = useMemo(() => {
 		if(!mode) return [];

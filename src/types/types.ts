@@ -14,6 +14,18 @@ export type Weapon = {
 	coop: boolean;
 	grizzco: boolean;
 	order: boolean;
+	firstKit: boolean;
+	secondKit: boolean;
+	baseKit: boolean;
+	cosmeticKit: boolean;
+}
+
+export type WeaponFilter = {
+	weaponClasses: string[];
+	firstKit: boolean;
+	secondKit: boolean;
+	baseKit: boolean;
+	cosmeticKit: boolean;
 }
 
 export type WeaponFrequency = {

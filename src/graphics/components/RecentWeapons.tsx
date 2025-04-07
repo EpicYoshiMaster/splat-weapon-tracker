@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState, useEffect } from "react"
+import React, { useCallback } from "react"
 import styled from "styled-components"
 import { getWeaponById, defaultWeapon, weaponImagePath } from "../../utils/WeaponDatabase"
 import { FittedText } from "./FittedText";

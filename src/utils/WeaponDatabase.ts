@@ -1,31 +1,62 @@
 import Weapons from '../data/weapons.json'
 import Classes from '../data/classes.json'
-import { Weapon, WeaponClass, WeaponFrequency } from '../types/types'
+import { Weapon, WeaponClass, WeaponFilter, WeaponFrequency } from '../types/types'
 
 const createWeaponDatabase = (): [Weapon[], WeaponClass[]] =>  {
 	const weapons: Weapon[] = [];
 	const weaponClasses: WeaponClass[] = Classes;
 
 	Object.entries(Weapons).forEach(([key, value], index) => {
-		const weapon: Weapon = { id: index, key: key, name: value, image: key, weaponClass: "", coop: false, grizzco: false, order: false };
+		const weapon: Weapon = { id: index, key: key, name: value, image: key, weaponClass: "", coop: false, grizzco: false, order: false, firstKit: false, secondKit: false, baseKit: false, cosmeticKit: false };
 
 		const coopIndex = weapon.image.indexOf("_Coop");
 
+		//Salmon Run
 		if(coopIndex !== -1) {
 			weapon.coop = true;
+			weapon.firstKit = true;
+			weapon.baseKit = true;
 
 			weapon.image = weapon.image.substring(0, coopIndex);
 		}
 
+		//Grizzco Weapon
 		if(key.includes("Bear")) {
 			weapon.grizzco = true;
+			weapon.firstKit = true;
+			weapon.baseKit = true;
 		}
 		else if(coopIndex !== -1) {
 			weapon.image = weapon.image + "_00";
 		}
 
-		if(key.includes("_O", -2)) {
+		//Side Order
+		if(key.includes("_O")) {
 			weapon.order = true;
+			weapon.cosmeticKit = true;
+
+			if(key.includes("_Oct")) {
+				weapon.secondKit = true;
+			}
+			else {
+				weapon.firstKit = true;
+			}
+		}
+
+		//Hero Mode
+		if(key.includes("_H", key.length - 2)) {
+			weapon.cosmeticKit = true;
+			weapon.firstKit = true;
+		}
+
+		if(key.includes("_00")) {
+			weapon.firstKit = true;
+			weapon.baseKit = true;
+		}
+
+		if(key.includes("_01")) {
+			weapon.secondKit = true;
+			weapon.baseKit = true;
 		}
 
 		weapon.image = `Path_Wst_${weapon.image}.png`;
@@ -57,10 +88,25 @@ const createWeaponDatabase = (): [Weapon[], WeaponClass[]] =>  {
 
 type WeaponFunction = (weapon: Weapon) => boolean;
 
-const filterWeapons = (classes: WeaponClass[], filter: WeaponFunction) => {
+const filterWeapons = (classes: WeaponClass[], filter: WeaponFunction): WeaponClass[] => {
 	return classes.map((weaponClass) => {
 		return { ...weaponClass, weapons: weaponClass.weapons.filter(filter)}
 	}).filter((weaponClass) => weaponClass.weapons.length > 0)
+}
+
+const weaponFilter = (weapon: Weapon, filter: WeaponFilter) => {
+	if(!weapon) return false;
+	if(!filter.weaponClasses.includes(weapon.weaponClass)) return false;
+	if(!filter.firstKit && weapon.firstKit) return false;
+	if(!filter.secondKit && weapon.secondKit) return false;
+	if(!filter.baseKit && weapon.baseKit) return false;
+	if(!filter.cosmeticKit && weapon.cosmeticKit) return false;
+
+	return true;
+}
+
+export const filterWeaponsByProperties = (classes: WeaponClass[], filter: WeaponFilter): WeaponClass[] => {
+	return filterWeapons(classes, (weapon) => weaponFilter(weapon, filter))
 }
 
 const [weapons, weaponClasses] = createWeaponDatabase();
@@ -83,7 +129,17 @@ export const defaultWeapon: Weapon = {
 	image: "Dummy.png",
 	coop: false,
 	grizzco: false,
-	order: false
+	order: false,
+	firstKit: false,
+	secondKit: false,
+	baseKit: false,
+	cosmeticKit: false
+}
+
+export const getWeaponClassNames = (): string[] => {
+	return Classes.map((weaponClass) => {
+		return weaponClass.name;
+	})
 }
 
 export const getWeaponById = (id: number): Weapon => {
@@ -92,6 +148,14 @@ export const getWeaponById = (id: number): Weapon => {
 	}
 
 	return defaultWeapon;
+}
+
+export const filterWeaponIdsByProperties = (weaponIds: number[], filter: WeaponFilter): number[] => {
+	return weaponIds.filter((id) => {
+		const weapon = getWeaponById(id);
+
+		return weaponFilter(weapon, filter);
+	})
 }
 
 //Returns all weapons within the given classes not found in ids

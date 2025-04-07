@@ -3,9 +3,9 @@ import { styled } from 'styled-components'
 import { createRoot } from 'react-dom/client';
 import { RecentWeapons } from './components/RecentWeapons'
 import { useReplicant } from '../utils/use-replicant';
-import { WeaponMode, DisplayMode, BackgroundMode } from '../types/types';
+import { WeaponMode, DisplayMode, BackgroundMode, WeaponFilter, WeaponClass } from '../types/types';
 import { Weaponlist } from '../types/schemas/weaponlist';
-import { standardWeapons, salmonWeapons, grizzcoWeapons, invertWeaponList, getWeaponFrequencies, getRandomWeapon, getCompletionPercentage, orderWeapons } from '../utils/WeaponDatabase';
+import { standardWeapons, salmonWeapons, grizzcoWeapons, invertWeaponList, getWeaponFrequencies, getRandomWeapon, getCompletionPercentage, orderWeapons, filterWeaponIdsByProperties, getWeaponClassNames, filterWeaponsByProperties } from '../utils/WeaponDatabase';
 import { UnseenWeapons } from './components/UnseenWeapons';
 import { WeaponFrequencies } from './components/WeaponFrequencies';
 import { RollWeapons } from './components/RollWeapons';
@@ -23,6 +23,10 @@ export function Tracker() {
 	const [mode, setMode] = useReplicant<WeaponMode>('mode', {
 		defaultValue: WeaponMode.Salmon
 	});
+
+	const [filter, setFilter] = useReplicant<WeaponFilter>('filter', {
+		defaultValue: { weaponClasses: getWeaponClassNames().slice(), firstKit: true, secondKit: true, baseKit: true, cosmeticKit: true }
+	})
 
 	const [progressBar, setProgressBar] = useReplicant<boolean>('progressBar', { defaultValue: true });
 
@@ -60,28 +64,36 @@ export function Tracker() {
 		}
 	}, [background])
 
-	const weaponClasses = useMemo(() => {
+	const weaponClasses: WeaponClass[] = useMemo(() => {
 		if(!mode) return [];
 
+		let selectedClasses;
+
 		switch(mode) {
-			case WeaponMode.Standard: return standardWeapons;
-			case WeaponMode.Salmon: return salmonWeapons;
-			case WeaponMode.Grizzco: return grizzcoWeapons;
-			case WeaponMode.Order: return orderWeapons;
+			case WeaponMode.Standard: selectedClasses = standardWeapons; break;
+			case WeaponMode.Salmon: selectedClasses = salmonWeapons; break;
+			case WeaponMode.Grizzco: selectedClasses = grizzcoWeapons; break;
+			case WeaponMode.Order: selectedClasses = orderWeapons; break;
 		}
-	}, [mode])
+
+		return filterWeaponsByProperties(selectedClasses, filter);
+	}, [mode, filter])
 
 	const activeList = useMemo(() => {
 		if(!mode) return [];
 		if(!lists) return [];
 
+		let weaponList;
+
 		switch(mode) {
-			case WeaponMode.Standard: return lists.standard;
-			case WeaponMode.Salmon: return lists.salmon;
-			case WeaponMode.Grizzco: return lists.grizzco;
-			case WeaponMode.Order: return lists.order;
+			case WeaponMode.Standard: weaponList = lists.standard; break;
+			case WeaponMode.Salmon: weaponList = lists.salmon; break;
+			case WeaponMode.Grizzco: weaponList = lists.grizzco; break;
+			case WeaponMode.Order: weaponList = lists.order; break;
 		}
-	}, [mode, lists]);
+
+		return filterWeaponIdsByProperties(weaponList, filter);
+	}, [mode, lists, filter]);
 
 	const remainingList = useMemo(() => {
 		return invertWeaponList(weaponClasses, activeList);
