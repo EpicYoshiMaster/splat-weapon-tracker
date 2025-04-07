@@ -77,13 +77,13 @@ const Column = styled.div`
 	color: white;
 
 	flex-direction: column;
-	justify-content: flex-end;
-	row-gap: 5px;
+	justify-content: flex-start;
+	row-gap: 6px;
 `;
 
 const WeaponRow = styled.div<{ $colorTag: string, $display: string }>`
 	position: relative;
-	height: 80px;
+	height: 55px;
 	display: ${({ $display }) => $display};
 	flex-direction: row;
 	align-items: center;
@@ -94,11 +94,6 @@ const WeaponRow = styled.div<{ $colorTag: string, $display: string }>`
 	background-color: var(--${({ $colorTag }) => $colorTag ? `${$colorTag}` : `base`}-dark);
 
 	border-radius: 0.5rem;
-`;
-
-const TopWeaponRow = styled(WeaponRow)`
-	height: 135px;
-	font-size: 3rem;
 `;
 
 const WeaponImage = styled.img`

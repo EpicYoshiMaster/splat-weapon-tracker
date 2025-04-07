@@ -7,6 +7,6 @@
  */
 
 export interface Listexport {
-	mode: 'Standard' | 'SalmonRun' | 'GrizzcoOnly';
+	mode: 'Standard' | 'SalmonRun' | 'GrizzcoOnly' | 'SideOrder';
 	weaponIds: number[];
 }

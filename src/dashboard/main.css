@@ -33,6 +33,24 @@
 
 	--grizzco: #e8b202;
 	--grizzco-dark: #927410;
+	
+	--order: #cccccce0;
+	--order-dark: #949393e0;
+
+	--transparent: #9fdff3e0;
+	--transparent-dark: #4f8ea1e0;
+
+	--black: #6b6b6be0;
+	--black-dark: #383838e0;
+
+	--white: #c0c0c0e0;
+	--white-dark: #868686e0;
+
+	--first: #dab70ae0;
+	--first-dark: #726212e0;
+
+	--second: #8f0ecfe0;
+	--second-dark: #531374e0;
 
 	/* Weapon Classes */
 

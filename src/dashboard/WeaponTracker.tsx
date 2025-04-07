@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-import { styled } from 'styled-components';
-import { standardWeapons, salmonWeapons, grizzcoWeapons, defaultWeapon, getRandomWeapon, weaponImagePath } from '../utils/WeaponDatabase'
+import { styled, css } from 'styled-components';
+import { standardWeapons, salmonWeapons, grizzcoWeapons, defaultWeapon, getRandomWeapon, weaponImagePath, orderWeapons, filterWeaponsByProperties, getWeaponClassNames } from '../utils/WeaponDatabase'
 import { HeadText, OutlineButton, Input, SelectButton } from './components/Layout'
 import { useReplicant } from '../utils/use-replicant';
-import { DisplayMode, Weapon, WeaponMode } from '../types/types';
+import { DisplayMode, Weapon, WeaponClass, WeaponFilter, WeaponMode } from '../types/types';
 import { Weaponlist } from '../types/schemas/weaponlist';
 import { Listexport } from '../types/schemas/listexport';
 import { WeaponList } from './components/WeaponList';
@@ -19,6 +19,10 @@ export function WeaponTracker() {
 		defaultValue: WeaponMode.Salmon
 	});
 
+	const [filter, setFilter] = useReplicant<WeaponFilter>('filter', {
+		defaultValue: { weaponClasses: getWeaponClassNames().slice(), firstKit: true, secondKit: true, baseKit: true, cosmeticKit: true }
+	})
+
 	const [display, setDisplay] = useReplicant<DisplayMode>('display', {
 		defaultValue: DisplayMode.Recent
 	})
@@ -27,7 +31,8 @@ export function WeaponTracker() {
 		defaultValue: {
 			standard: [],
 			salmon: [],
-			grizzco: []
+			grizzco: [],
+			order: []
 		}
 	})
 
@@ -36,6 +41,15 @@ export function WeaponTracker() {
 
 	const [importError, setImportError] = useState("");
 	const errorTimeout = useRef<number | null>(null);
+
+	useEffect(() => {
+		if(!lists) return;
+
+		if(!lists.standard) setLists({ ...lists, standard: [] });
+		if(!lists.salmon) setLists({ ...lists, salmon: [] });
+		if(!lists.grizzco) setLists({ ...lists, grizzco: [] });
+		if(!lists.order) setLists({ ...lists, order: [] });
+	}, [lists]);
 
 	useEffect(() => {
 		if(importError !== "") {
@@ -57,6 +71,7 @@ export function WeaponTracker() {
 			case WeaponMode.Standard: return 85;
 			case WeaponMode.Salmon: return 100;
 			case WeaponMode.Grizzco: return 100;
+			case WeaponMode.Order: return 100;
 			default: return 0;
 		}
 	}, [mode]);
@@ -69,6 +84,7 @@ export function WeaponTracker() {
 			case WeaponMode.Standard: setLists({ ...lists, standard: []}); break;
 			case WeaponMode.Salmon: setLists({ ...lists, salmon: []}); break;
 			case WeaponMode.Grizzco: setLists({ ...lists, grizzco: []}); break;
+			case WeaponMode.Order: setLists({ ...lists, order: []}); break;
 		}
 	}, [mode, lists]);
 
@@ -111,6 +127,7 @@ export function WeaponTracker() {
 						case WeaponMode.Standard: setLists({ ...lists, standard: importedJSON.weaponIds}); break;
 						case WeaponMode.Salmon: setLists({ ...lists, salmon: importedJSON.weaponIds}); break;
 						case WeaponMode.Grizzco: setLists({ ...lists, grizzco: importedJSON.weaponIds}); break;
+						case WeaponMode.Order: setLists({ ...lists, order: importedJSON.weaponIds }); break;
 						default: setImportError(`List file contained unknown Weapon Mode "${importedJSON.mode}"`);
 					}
 				}
@@ -137,6 +154,7 @@ export function WeaponTracker() {
 			case WeaponMode.Standard: setLists({ ...lists, standard: lists.standard.filter((item, itemIndex) => itemIndex !== index)}); break;
 			case WeaponMode.Salmon: setLists({ ...lists, salmon: lists.salmon.filter((item, itemIndex) => itemIndex !== index)}); break;
 			case WeaponMode.Grizzco: setLists({ ...lists, grizzco: lists.grizzco.filter((item, itemIndex) => itemIndex !== index)}); break;
+			case WeaponMode.Order: setLists({ ...lists, order: lists.order.filter((item, itemIndex) => itemIndex !== index)}); break;
 		}
 	}, [mode, lists]);
 
@@ -148,20 +166,24 @@ export function WeaponTracker() {
 			case WeaponMode.Standard: setLists({ ...lists, standard: [id].concat(lists.standard)}); break;
 			case WeaponMode.Salmon: setLists({ ...lists, salmon: [id].concat(lists.salmon)}); break;
 			case WeaponMode.Grizzco: setLists({ ...lists, grizzco: [id].concat(lists.grizzco)}); break;
+			case WeaponMode.Order: setLists({ ...lists, order: [id].concat(lists.order)}); break;
 		}
 	}, [mode, lists]);
 
-	const weaponClasses = useMemo(() => {
+	const weaponClasses: WeaponClass[] = useMemo(() => {
 		if(!mode) return [];
 
+		let selectedClasses;
+
 		switch(mode) {
-			case WeaponMode.Standard: return standardWeapons;
-			case WeaponMode.Salmon: return salmonWeapons;
-			case WeaponMode.Grizzco: return grizzcoWeapons;
-			default: return [];
+			case WeaponMode.Standard: selectedClasses = standardWeapons; break;
+			case WeaponMode.Salmon: selectedClasses = salmonWeapons; break;
+			case WeaponMode.Grizzco: selectedClasses = grizzcoWeapons; break;
+			case WeaponMode.Order: selectedClasses = orderWeapons; break;
 		}
 
-	}, [mode])
+		return filterWeaponsByProperties(selectedClasses, filter);
+	}, [mode, filter])
 
 	const activeList = useMemo(() => {
 		if(!mode) return [];
@@ -171,7 +193,7 @@ export function WeaponTracker() {
 			case WeaponMode.Standard: return lists.standard;
 			case WeaponMode.Salmon: return lists.salmon;
 			case WeaponMode.Grizzco: return lists.grizzco;
-			default: return [];
+			case WeaponMode.Order: return lists.order;
 		}
 	}, [mode, lists]);
 
@@ -226,23 +248,6 @@ export function WeaponTracker() {
 						$selected={display === DisplayMode.Rolls}
 						onClick={() => { setDisplay(DisplayMode.Rolls); }}>Show Rolls</SelectButton>
 					</CollapseContainer>
-					<CollapseContainer title="Modes">
-						<SelectButton 
-						$content="Standard"
-						$colorTag='standard'
-						$selected={mode === WeaponMode.Standard}
-						onClick={() => { setMode(WeaponMode.Standard); }}>Standard</SelectButton>
-						<SelectButton 
-						$content="Salmon Run"
-						$colorTag='salmon'
-						$selected={mode === WeaponMode.Salmon}
-						onClick={() => { setMode(WeaponMode.Salmon); }}>Salmon Run</SelectButton>
-						<SelectButton  
-						$content="Grizzco Only"
-						$colorTag='grizzco'
-						$selected={mode === WeaponMode.Grizzco}
-						onClick={() => { setMode(WeaponMode.Grizzco); }}>Grizzco Only</SelectButton>
-					</CollapseContainer>
 				</Options>
 				<Recents>
 					<CollapseContainer title="Recents">
@@ -250,7 +255,7 @@ export function WeaponTracker() {
 					</CollapseContainer>
 				</Recents>
 			</Modes>
-			<Weapons $size={weaponSize}>
+			<Weapons $size={weaponSize} $smallGap={mode === WeaponMode.Order}>
 			{importError !== "" && (<ErrorText $colorTag='reset' $content={`Import Error: ${importError}`}>{`Import Error: ${importError}`}</ErrorText>)}
 			{display === DisplayMode.Rolls && (
 				<RollWeapons
@@ -305,7 +310,7 @@ const Modes = styled.div`
 const ErrorText = styled(HeadText)`
 	position: relative;
 	margin-left: 5px;
-	width: 100%;	
+	width: 100%;
 `;
 
 const Options = styled.div`
@@ -327,13 +332,14 @@ const Recents = styled.div`
 	gap: 6px;
 `;
 
-const Weapons = styled.div<{ $size: number }>`
+const Weapons = styled.div<{ $size: number, $smallGap: boolean }>`
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
 	align-items: flex-start;
 	align-content: flex-start;
 	column-gap: ${({ $size }) => $size + 10}px;
+	${({ $smallGap }) => $smallGap ? css`column-gap: 10px;` : css``}
 	height: 100vh;
 
 	overflow: auto;

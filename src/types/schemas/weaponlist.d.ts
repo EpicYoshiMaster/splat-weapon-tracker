@@ -12,4 +12,5 @@ export interface Weaponlist {
 	standard: Weapons;
 	salmon: Weapons;
 	grizzco: Weapons;
+	order: Weapons;
 }

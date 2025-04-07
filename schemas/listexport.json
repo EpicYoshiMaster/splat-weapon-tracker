@@ -5,7 +5,7 @@
     "properties": {
 		"mode": { 
 			"type": "string",
-			"enum": ["Standard", "SalmonRun", "GrizzcoOnly"]
+			"enum": ["Standard", "SalmonRun", "GrizzcoOnly", "SideOrder"]
 		},
 		"weaponIds": { 
 			"type": "array",

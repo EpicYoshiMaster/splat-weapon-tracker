@@ -14,13 +14,13 @@ export const RecentList: React.FC<RecentListProps> = ({ weaponIds, onClickWeapon
 		<Column>
 		{
 			weaponIds && weaponIds.map((id, index) => {
+				console.log(weaponIds);
 				const weapon = getWeaponById(id);
 
 				if(!weapon) {
 					return <div key={index}>Error obtaining weapon {id}</div>
 				}
 
-				const colorTag = weapon.weaponClass.toLowerCase();
 				const weaponNumber = weaponIds.filter((weaponId, weaponIndex) => weaponIndex >= index && weaponId === id).length;
 
 				return (
@@ -54,37 +54,4 @@ const Column = styled.div`
 	@media screen and (min-height: 950px) {
 		overflow: auto;
 	}
-`;
-
-const WeaponCountWrapper = styled.div`
-	position: absolute;
-	padding: 8px;
-	margin: 0;
-
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-
-	width: 100%;
-	height: 100%;
-
-
-	display: flex;
-	flex-direction: row;
-
-	align-items: flex-start;
-	justify-content: flex-start;
-`;
-
-const WeaponCount = styled(HeadText)`
-	position: relative;
-	padding: 0;
-	margin: 0;
-
-	font-size: 1rem;
-`;
-
-const WeaponImage = styled.img`
-	max-width: 100%;
 `;
