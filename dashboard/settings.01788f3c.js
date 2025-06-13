@@ -164,8 +164,11 @@ function Settings() {
             weaponClasses: weaponClassNames.slice(),
             firstKit: true,
             secondKit: true,
+            thirdKit: true,
             baseKit: true,
-            cosmeticKit: true
+            cosmeticKit: true,
+            seen: true,
+            unseen: true
         }
     });
     const setFilterWeaponClass = (0, _react.useCallback)((weaponClass)=>{
@@ -192,7 +195,7 @@ function Settings() {
     return /*#__PURE__*/ (0, _reactDefault.default).createElement(Wrapper, {
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 41,
+            lineNumber: 44,
             columnNumber: 10
         },
         __self: this
@@ -200,14 +203,14 @@ function Settings() {
         $content: "Mode",
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 42,
+            lineNumber: 45,
             columnNumber: 5
         },
         __self: this
     }, "Mode"), /*#__PURE__*/ (0, _reactDefault.default).createElement(Row, {
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 43,
+            lineNumber: 46,
             columnNumber: 5
         },
         __self: this
@@ -220,7 +223,7 @@ function Settings() {
         },
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 44,
+            lineNumber: 47,
             columnNumber: 6
         },
         __self: this
@@ -233,7 +236,7 @@ function Settings() {
         },
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 47,
+            lineNumber: 50,
             columnNumber: 6
         },
         __self: this
@@ -246,7 +249,7 @@ function Settings() {
         },
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 50,
+            lineNumber: 53,
             columnNumber: 6
         },
         __self: this
@@ -259,7 +262,7 @@ function Settings() {
         },
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 53,
+            lineNumber: 56,
             columnNumber: 6
         },
         __self: this
@@ -267,14 +270,14 @@ function Settings() {
         $content: "Filters",
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 57,
+            lineNumber: 60,
             columnNumber: 5
         },
         __self: this
     }, "Filters"), /*#__PURE__*/ (0, _reactDefault.default).createElement(Row, {
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 58,
+            lineNumber: 61,
             columnNumber: 5
         },
         __self: this
@@ -288,7 +291,7 @@ function Settings() {
             },
             __source: {
                 fileName: "src/dashboard/Settings.tsx",
-                lineNumber: 59,
+                lineNumber: 62,
                 columnNumber: 52
             },
             __self: this
@@ -304,7 +307,7 @@ function Settings() {
         },
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 62,
+            lineNumber: 65,
             columnNumber: 6
         },
         __self: this
@@ -320,11 +323,27 @@ function Settings() {
         },
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 68,
+            lineNumber: 71,
             columnNumber: 6
         },
         __self: this
     }, "Second Kits"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.SettingsButton), {
+        $content: "Third Kits",
+        $colorTag: "third",
+        $selected: filter.thirdKit,
+        onClick: ()=>{
+            setFilter({
+                ...filter,
+                thirdKit: !filter.thirdKit
+            });
+        },
+        __source: {
+            fileName: "src/dashboard/Settings.tsx",
+            lineNumber: 77,
+            columnNumber: 6
+        },
+        __self: this
+    }, "Third Kits"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.SettingsButton), {
         $content: "Base Kits",
         $colorTag: "standard",
         $selected: filter.baseKit,
@@ -336,7 +355,7 @@ function Settings() {
         },
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 74,
+            lineNumber: 83,
             columnNumber: 6
         },
         __self: this
@@ -352,22 +371,69 @@ function Settings() {
         },
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 80,
+            lineNumber: 89,
             columnNumber: 6
         },
         __self: this
     }, "Cosmetics")), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.HeadText), {
+        $content: "Dashboard Filters",
+        __source: {
+            fileName: "src/dashboard/Settings.tsx",
+            lineNumber: 97,
+            columnNumber: 5
+        },
+        __self: this
+    }, "Dashboard Filters"), /*#__PURE__*/ (0, _reactDefault.default).createElement(Row, {
+        __source: {
+            fileName: "src/dashboard/Settings.tsx",
+            lineNumber: 98,
+            columnNumber: 5
+        },
+        __self: this
+    }, /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.SettingsButton), {
+        $content: "Unseen",
+        $colorTag: "reset",
+        $selected: filter.unseen,
+        onClick: ()=>{
+            setFilter({
+                ...filter,
+                unseen: !filter.unseen
+            });
+        },
+        __source: {
+            fileName: "src/dashboard/Settings.tsx",
+            lineNumber: 99,
+            columnNumber: 6
+        },
+        __self: this
+    }, "Unseen"), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.SettingsButton), {
+        $content: "Seen",
+        $colorTag: "import",
+        $selected: filter.seen,
+        onClick: ()=>{
+            setFilter({
+                ...filter,
+                seen: !filter.seen
+            });
+        },
+        __source: {
+            fileName: "src/dashboard/Settings.tsx",
+            lineNumber: 105,
+            columnNumber: 6
+        },
+        __self: this
+    }, "Seen")), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _layout.HeadText), {
         $content: "Progress Bar",
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 87,
+            lineNumber: 112,
             columnNumber: 5
         },
         __self: this
     }, "Progress Bar"), /*#__PURE__*/ (0, _reactDefault.default).createElement(Row, {
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 88,
+            lineNumber: 113,
             columnNumber: 5
         },
         __self: this
@@ -380,7 +446,7 @@ function Settings() {
         },
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 89,
+            lineNumber: 114,
             columnNumber: 6
         },
         __self: this
@@ -393,7 +459,7 @@ function Settings() {
         },
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 92,
+            lineNumber: 117,
             columnNumber: 6
         },
         __self: this
@@ -401,14 +467,14 @@ function Settings() {
         $content: "Background",
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 96,
+            lineNumber: 121,
             columnNumber: 5
         },
         __self: this
     }, "Background"), /*#__PURE__*/ (0, _reactDefault.default).createElement(Row, {
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 97,
+            lineNumber: 122,
             columnNumber: 5
         },
         __self: this
@@ -421,7 +487,7 @@ function Settings() {
         },
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 98,
+            lineNumber: 123,
             columnNumber: 6
         },
         __self: this
@@ -434,7 +500,7 @@ function Settings() {
         },
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 101,
+            lineNumber: 126,
             columnNumber: 6
         },
         __self: this
@@ -447,7 +513,7 @@ function Settings() {
         },
         __source: {
             fileName: "src/dashboard/Settings.tsx",
-            lineNumber: 104,
+            lineNumber: 129,
             columnNumber: 6
         },
         __self: this
@@ -457,7 +523,7 @@ const Wrapper = (0, _styledComponents.styled).div.withConfig({
     displayName: "Settings__Wrapper",
     componentId: "sc-16kq4wv-0"
 })([
-    "position:relative;width:100%;padding:15px 5px;display:grid;grid-template-columns:max-content 1fr;align-items:center;text-align:right;gap:15px;"
+    "position:relative;width:100%;padding:15px 5px;display:grid;grid-template-columns:140px 1fr;align-items:center;text-align:right;gap:15px;"
 ]);
 const Row = (0, _styledComponents.styled).div.withConfig({
     displayName: "Settings__Row",
@@ -469,7 +535,7 @@ const root = (0, _client.createRoot)(document.getElementById('root'));
 root.render(/*#__PURE__*/ (0, _reactDefault.default).createElement(Settings, {
     __source: {
         fileName: "src/dashboard/Settings.tsx",
-        lineNumber: 119,
+        lineNumber: 144,
         columnNumber: 13
     },
     __self: undefined

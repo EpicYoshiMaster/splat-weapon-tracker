@@ -168,8 +168,11 @@ function Tracker() {
             weaponClasses: (0, _weaponDatabase.getWeaponClassNames)().slice(),
             firstKit: true,
             secondKit: true,
+            thirdKit: true,
             baseKit: true,
-            cosmeticKit: true
+            cosmeticKit: true,
+            seen: true,
+            unseen: true
         }
     });
     const [progressBar, setProgressBar] = (0, _useReplicant.useReplicant)('progressBar', {
@@ -224,28 +227,6 @@ function Tracker() {
     }, [
         background
     ]);
-    const weaponClasses = (0, _react.useMemo)(()=>{
-        if (!mode) return [];
-        let selectedClasses;
-        switch(mode){
-            case (0, _types.WeaponMode).Standard:
-                selectedClasses = (0, _weaponDatabase.standardWeapons);
-                break;
-            case (0, _types.WeaponMode).Salmon:
-                selectedClasses = (0, _weaponDatabase.salmonWeapons);
-                break;
-            case (0, _types.WeaponMode).Grizzco:
-                selectedClasses = (0, _weaponDatabase.grizzcoWeapons);
-                break;
-            case (0, _types.WeaponMode).Order:
-                selectedClasses = (0, _weaponDatabase.orderWeapons);
-                break;
-        }
-        return (0, _weaponDatabase.filterWeaponsByProperties)(selectedClasses, filter);
-    }, [
-        mode,
-        filter
-    ]);
     const activeList = (0, _react.useMemo)(()=>{
         if (!mode) return [];
         if (!lists) return [];
@@ -270,6 +251,28 @@ function Tracker() {
         lists,
         filter
     ]);
+    const weaponClasses = (0, _react.useMemo)(()=>{
+        if (!mode) return [];
+        let selectedClasses;
+        switch(mode){
+            case (0, _types.WeaponMode).Standard:
+                selectedClasses = (0, _weaponDatabase.standardWeapons);
+                break;
+            case (0, _types.WeaponMode).Salmon:
+                selectedClasses = (0, _weaponDatabase.salmonWeapons);
+                break;
+            case (0, _types.WeaponMode).Grizzco:
+                selectedClasses = (0, _weaponDatabase.grizzcoWeapons);
+                break;
+            case (0, _types.WeaponMode).Order:
+                selectedClasses = (0, _weaponDatabase.orderWeapons);
+                break;
+        }
+        return (0, _weaponDatabase.filterWeaponsByProperties)(selectedClasses, filter);
+    }, [
+        mode,
+        filter
+    ]);
     const remainingList = (0, _react.useMemo)(()=>{
         return (0, _weaponDatabase.invertWeaponList)(weaponClasses, activeList);
     }, [
@@ -286,22 +289,19 @@ function Tracker() {
         if (display === (0, _types.DisplayMode).None) return;
         if (display !== current.active && !current.fade) {
             //Nothing active, fade the current in
-            if (current.active === (0, _types.DisplayMode).None) {
-                console.log(`TRACKER - Fading In: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
-                setCurrent({
-                    active: display,
+            if (current.active === (0, _types.DisplayMode).None) //console.log(`TRACKER - Fading In: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+            setCurrent({
+                active: display,
+                fade: true
+            });
+            else //Something is active, fade the current out
+            //console.log(`TRACKER - Fading Out Current: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+            setCurrent((current)=>{
+                return {
+                    ...current,
                     fade: true
-                });
-            } else {
-                //Something is active, fade the current out
-                console.log(`TRACKER - Fading Out Current: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
-                setCurrent((current)=>{
-                    return {
-                        ...current,
-                        fade: true
-                    };
-                });
-            }
+                };
+            });
         }
     }, [
         display,
@@ -309,21 +309,18 @@ function Tracker() {
     ]);
     const onFade = (0, _react.useCallback)(()=>{
         if (display === (0, _types.DisplayMode).None) return;
-        if (current.active === display) {
-            console.log(`ONFADE - Fade In Complete. PREV STATE: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
-            setCurrent((current)=>{
-                return {
-                    ...current,
-                    fade: false
-                };
-            });
-        } else {
-            console.log(`ONFADE - Fading In New Current: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
-            setCurrent({
-                active: display,
-                fade: true
-            });
-        }
+        if (current.active === display) //console.log(`ONFADE - Fade In Complete. PREV STATE: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+        setCurrent((current)=>{
+            return {
+                ...current,
+                fade: false
+            };
+        });
+        else //console.log(`ONFADE - Fading In New Current: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+        setCurrent({
+            active: display,
+            fade: true
+        });
     }, [
         current,
         display
@@ -332,21 +329,21 @@ function Tracker() {
         $background: backgroundColor,
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 158,
+            lineNumber: 161,
             columnNumber: 10
         },
         __self: this
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(Content, {
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 159,
+            lineNumber: 162,
             columnNumber: 4
         },
         __self: this
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(UpperOverlay, {
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 160,
+            lineNumber: 163,
             columnNumber: 5
         },
         __self: this
@@ -355,7 +352,7 @@ function Tracker() {
         weaponIds: activeList,
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 161,
+            lineNumber: 164,
             columnNumber: 22
         },
         __self: this
@@ -370,7 +367,7 @@ function Tracker() {
         recentIds: activeList,
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 163,
+            lineNumber: 166,
             columnNumber: 5
         },
         __self: this
@@ -384,7 +381,7 @@ function Tracker() {
         frequencies: weaponFrequencies,
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 169,
+            lineNumber: 172,
             columnNumber: 5
         },
         __self: this
@@ -398,7 +395,7 @@ function Tracker() {
         remainingWeapons: remainingList,
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 175,
+            lineNumber: 178,
             columnNumber: 5
         },
         __self: this
@@ -413,7 +410,7 @@ function Tracker() {
         randomWeapons: randomWeapons,
         __source: {
             fileName: "src/graphics/Tracker.tsx",
-            lineNumber: 182,
+            lineNumber: 185,
             columnNumber: 5
         },
         __self: this
@@ -442,7 +439,7 @@ const root = (0, _client.createRoot)(document.getElementById('root'));
 root.render(/*#__PURE__*/ (0, _reactDefault.default).createElement(Tracker, {
     __source: {
         fileName: "src/graphics/Tracker.tsx",
-        lineNumber: 206,
+        lineNumber: 209,
         columnNumber: 13
     },
     __self: undefined
@@ -26471,12 +26468,14 @@ var _weaponsJson = require("../data/weapons.json");
 var _weaponsJsonDefault = parcelHelpers.interopDefault(_weaponsJson);
 var _classesJson = require("../data/classes.json");
 var _classesJsonDefault = parcelHelpers.interopDefault(_classesJson);
+const thirdKitOffset = 10000;
 const createWeaponDatabase = ()=>{
     const weapons = [];
     const weaponClasses = (0, _classesJsonDefault.default);
+    let skipIndex = 0; //Third kits require some jank to remain backwards compatible OKAY??
     Object.entries((0, _weaponsJsonDefault.default)).forEach(([key, value], index)=>{
         const weapon = {
-            id: index,
+            id: index - skipIndex,
             key: key,
             name: value,
             image: key,
@@ -26486,6 +26485,7 @@ const createWeaponDatabase = ()=>{
             order: false,
             firstKit: false,
             secondKit: false,
+            thirdKit: false,
             baseKit: false,
             cosmeticKit: false
         };
@@ -26523,6 +26523,16 @@ const createWeaponDatabase = ()=>{
             weapon.secondKit = true;
             weapon.baseKit = true;
         }
+        if (key.includes("_02")) {
+            //Who would have thought I'd be adding these
+            weapon.thirdKit = true;
+            weapon.baseKit = true;
+            //Essentially make this a very big ID (to be unique) that can still be retraced back to where it was by removing the offset
+            //if they somehow added FOURTH kits sometime later um. sorry have fun haha.
+            //this is to preserve the original ID orders
+            weapon.id += thirdKitOffset - 1;
+            skipIndex += 1;
+        }
         weapon.image = `Path_Wst_${weapon.image}.png`;
         if (weapon.grizzco) {
             //Display grizzco weapons separately
@@ -26552,17 +26562,20 @@ const filterWeapons = (classes, filter)=>{
         };
     }).filter((weaponClass)=>weaponClass.weapons.length > 0);
 };
-const weaponFilter = (weapon, filter)=>{
+const weaponFilter = (weapon, filter, weaponIds)=>{
     if (!weapon) return false;
     if (!filter.weaponClasses.includes(weapon.weaponClass)) return false;
     if (!filter.firstKit && weapon.firstKit) return false;
     if (!filter.secondKit && weapon.secondKit) return false;
+    if (!filter.thirdKit && weapon.thirdKit) return false;
     if (!filter.baseKit && weapon.baseKit) return false;
     if (!filter.cosmeticKit && weapon.cosmeticKit) return false;
+    if (!filter.unseen && weaponIds && !weaponIds.includes(weapon.id)) return false;
+    if (!filter.seen && weaponIds && weaponIds.includes(weapon.id)) return false;
     return true;
 };
-const filterWeaponsByProperties = (classes, filter)=>{
-    return filterWeapons(classes, (weapon)=>weaponFilter(weapon, filter));
+const filterWeaponsByProperties = (classes, filter, weaponIds)=>{
+    return filterWeapons(classes, (weapon)=>weaponFilter(weapon, filter, weaponIds));
 };
 const [weapons, weaponClasses] = createWeaponDatabase();
 const weaponImagePath = `/bundles/splat-weapon-tracker/images/weapons/`;
@@ -26581,6 +26594,7 @@ const defaultWeapon = {
     order: false,
     firstKit: false,
     secondKit: false,
+    thirdKit: false,
     baseKit: false,
     cosmeticKit: false
 };
@@ -26590,7 +26604,8 @@ const getWeaponClassNames = ()=>{
     });
 };
 const getWeaponById = (id)=>{
-    if (id >= 0 && id < weapons.length) return weapons[id];
+    const weapon = weapons.find((weapon)=>weapon.id === id);
+    if (weapon) return weapon;
     return defaultWeapon;
 };
 const filterWeaponIdsByProperties = (weaponIds, filter)=>{
@@ -26639,7 +26654,13 @@ const getWeaponFrequencies = (weapons, ids)=>{
                 count: ids.filter((id)=>weapon.id === id).length
             };
         });
-    }).sort((a, b)=>a.count === b.count ? a.weapon.id - b.weapon.id : a.count - b.count);
+    }).sort((a, b)=>{
+        if (a.count === b.count) {
+            const compareIdA = a.weapon.thirdKit ? a.weapon.id - thirdKitOffset + 0.5 : a.weapon.id;
+            const compareIdB = b.weapon.thirdKit ? b.weapon.id - thirdKitOffset + 0.5 : b.weapon.id;
+            return compareIdA - compareIdB;
+        } else return a.count - b.count;
+    });
     //Condense by frequency, adding in blank counts between
     const min = frequencies.length > 0 ? frequencies[0].count : 0;
     const max = frequencies.length > 0 ? frequencies[frequencies.length - 1].count : 0;
@@ -26660,7 +26681,7 @@ const getWeaponFrequencies = (weapons, ids)=>{
 };
 
 },{"../data/weapons.json":"gyM61","../data/classes.json":"if1fc","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG"}],"gyM61":[function(require,module,exports,__globalThis) {
-module.exports = JSON.parse("{\"Shooter_First_00\":\"Splattershot Jr.\",\"Shooter_First_01\":\"Custom Splattershot Jr.\",\"Shooter_First_Coop\":\"Splattershot Jr.\",\"Shooter_Normal_00\":\"Splattershot\",\"Shooter_Normal_01\":\"Tentatek Splattershot\",\"Shooter_Normal_Coop\":\"Splattershot\",\"Shooter_Normal_H\":\"Hero Shot Replica\",\"Shooter_Normal_O\":\"Order Shot Replica\",\"Shooter_Normal_Oct\":\"Octo Shot Replica\",\"Shooter_Expert_00\":\"Splattershot Pro\",\"Shooter_Expert_01\":\"Forge Splattershot Pro\",\"Shooter_Expert_Coop\":\"Splattershot Pro\",\"Shooter_QuickLong_00\":\"Splattershot Nova\",\"Shooter_QuickLong_01\":\"Annaki Splattershot Nova\",\"Shooter_QuickLong_Coop\":\"Splattershot Nova\",\"Shooter_Short_00\":\"Sploosh-o-matic\",\"Shooter_Short_01\":\"Neo Sploosh-o-matic\",\"Shooter_Short_Coop\":\"Sploosh-o-matic\",\"Shooter_Precision_00\":\"Splash-o-matic\",\"Shooter_Precision_01\":\"Neo Splash-o-matic\",\"Shooter_Precision_Coop\":\"Splash-o-matic\",\"Shooter_Blaze_00\":\"Aerospray MG\",\"Shooter_Blaze_01\":\"Aerospray RG\",\"Shooter_Blaze_Coop\":\"Aerospray MG\",\"Shooter_QuickMiddle_00\":\"N-ZAP '85\",\"Shooter_QuickMiddle_01\":\"N-ZAP '89\",\"Shooter_QuickMiddle_Coop\":\"N-ZAP '85\",\"Shooter_Gravity_00\":\".52 Gal\",\"Shooter_Gravity_01\":\".52 Gal Deco\",\"Shooter_Gravity_Coop\":\".52 Gal\",\"Shooter_Heavy_00\":\".96 Gal\",\"Shooter_Heavy_01\":\".96 Gal Deco\",\"Shooter_Heavy_Coop\":\".96 Gal\",\"Shooter_Long_00\":\"Jet Squelcher\",\"Shooter_Long_01\":\"Custom Jet Squelcher\",\"Shooter_Long_Coop\":\"Jet Squelcher\",\"Shooter_TripleQuick_00\":\"L-3 Nozzlenose\",\"Shooter_TripleQuick_01\":\"L-3 Nozzlenose D\",\"Shooter_TripleQuick_Coop\":\"L-3 Nozzlenose\",\"Shooter_TripleMiddle_00\":\"H-3 Nozzlenose\",\"Shooter_TripleMiddle_01\":\"H-3 Nozzlenose D\",\"Shooter_TripleMiddle_Coop\":\"H-3 Nozzlenose\",\"Shooter_Flash_00\":\"Squeezer\",\"Shooter_Flash_01\":\"Foil Squeezer\",\"Shooter_Flash_Coop\":\"Squeezer\",\"Roller_Bear_Coop\":\"Grizzco Roller\",\"Roller_Compact_00\":\"Carbon Roller\",\"Roller_Compact_01\":\"Carbon Roller Deco\",\"Roller_Compact_Coop\":\"Carbon Roller\",\"Roller_Normal_00\":\"Splat Roller\",\"Roller_Normal_01\":\"Krak-On Splat Roller\",\"Roller_Normal_Coop\":\"Splat Roller\",\"Roller_Normal_O\":\"Order Roller Replica\",\"Roller_Wide_00\":\"Big Swig Roller\",\"Roller_Wide_01\":\"Big Swig Roller Express\",\"Roller_Wide_Coop\":\"Big Swig Roller\",\"Roller_Hunter_00\":\"Flingza Roller\",\"Roller_Hunter_01\":\"Foil Flingza Roller\",\"Roller_Hunter_Coop\":\"Flingza Roller\",\"Roller_Heavy_00\":\"Dynamo Roller\",\"Roller_Heavy_01\":\"Gold Dynamo Roller\",\"Roller_Heavy_Coop\":\"Dynamo Roller\",\"Charger_Bear_Coop\":\"Grizzco Charger\",\"Charger_Quick_00\":\"Classic Squiffer\",\"Charger_Quick_01\":\"New Squiffer\",\"Charger_Quick_Coop\":\"Classic Squiffer\",\"Charger_Normal_00\":\"Splat Charger\",\"Charger_Normal_01\":\"Z+F Splat Charger\",\"Charger_Normal_Coop\":\"Splat Charger\",\"Charger_Normal_O\":\"Order Charger Replica\",\"Charger_NormalScope_00\":\"Splatterscope\",\"Charger_NormalScope_01\":\"Z+F Splatterscope\",\"Charger_Long_00\":\"E-liter 4K\",\"Charger_Long_01\":\"Custom E-liter 4K\",\"Charger_Long_Coop\":\"E-liter 4K\",\"Charger_LongScope_00\":\"E-liter 4K Scope\",\"Charger_LongScope_01\":\"Custom E-liter 4K Scope\",\"Charger_Light_00\":\"Bamboozler 14 Mk I\",\"Charger_Light_01\":\"Bamboozler 14 Mk II\",\"Charger_Light_Coop\":\"Bamboozler 14 Mk I\",\"Charger_Keeper_00\":\"Goo Tuber\",\"Charger_Keeper_01\":\"Custom Goo Tuber\",\"Charger_Keeper_Coop\":\"Goo Tuber\",\"Charger_Pencil_00\":\"Snipewriter 5H\",\"Charger_Pencil_01\":\"Snipewriter 5B\",\"Charger_Pencil_Coop\":\"Snipewriter 5H\",\"Slosher_Bear_Coop\":\"Grizzco Slosher\",\"Slosher_Strong_00\":\"Slosher\",\"Slosher_Strong_01\":\"Slosher Deco\",\"Slosher_Strong_Coop\":\"Slosher\",\"Slosher_Strong_O\":\"Order Slosher Replica\",\"Slosher_Diffusion_00\":\"Tri-Slosher\",\"Slosher_Diffusion_01\":\"Tri-Slosher Nouveau\",\"Slosher_Diffusion_Coop\":\"Tri-Slosher\",\"Slosher_Bathtub_00\":\"Bloblobber\",\"Slosher_Bathtub_01\":\"Bloblobber Deco\",\"Slosher_Bathtub_Coop\":\"Bloblobber\",\"Slosher_Double_00\":\"Dread Wringer\",\"Slosher_Double_01\":\"Dread Wringer D\",\"Slosher_Double_Coop\":\"Dread Wringer\",\"Slosher_Launcher_00\":\"Sloshing Machine\",\"Slosher_Launcher_01\":\"Sloshing Machine Neo\",\"Slosher_Launcher_Coop\":\"Sloshing Machine\",\"Slosher_Washtub_00\":\"Explosher\",\"Slosher_Washtub_01\":\"Custom Explosher\",\"Slosher_Washtub_Coop\":\"Explosher\",\"Spinner_Quick_00\":\"Mini Splatling\",\"Spinner_Quick_01\":\"Zink Mini Splatling\",\"Spinner_Quick_Coop\":\"Mini Splatling\",\"Spinner_Standard_00\":\"Heavy Splatling\",\"Spinner_Standard_01\":\"Heavy Splatling Deco\",\"Spinner_Standard_Coop\":\"Heavy Splatling\",\"Spinner_Standard_O\":\"Order Splatling Replica\",\"Spinner_Hyper_00\":\"Hydra Splatling\",\"Spinner_Hyper_01\":\"Custom Hydra Splatling\",\"Spinner_Hyper_Coop\":\"Hydra Splatling\",\"Spinner_Serein_00\":\"Nautilus 47\",\"Spinner_Serein_01\":\"Nautilus 79\",\"Spinner_Serein_Coop\":\"Nautilus 47\",\"Spinner_Downpour_00\":\"Ballpoint Splatling\",\"Spinner_Downpour_01\":\"Ballpoint Splatling Nouveau\",\"Spinner_Downpour_Coop\":\"Ballpoint Splatling\",\"Spinner_HyperShort_00\":\"Heavy Edit Splatling\",\"Spinner_HyperShort_01\":\"Heavy Edit Splatling Nouveau\",\"Spinner_HyperShort_Coop\":\"Heavy Edit Splatling\",\"Maneuver_Bear_Coop\":\"Grizzco Dualies\",\"Maneuver_Short_00\":\"Dapple Dualies\",\"Maneuver_Short_01\":\"Dapple Dualies Nouveau\",\"Maneuver_Short_Coop\":\"Dapple Dualies\",\"Maneuver_Normal_00\":\"Splat Dualies\",\"Maneuver_Normal_01\":\"Enperry Splat Dualies\",\"Maneuver_Normal_Coop\":\"Splat Dualies\",\"Maneuver_Normal_O\":\"Order Dualie Replicas\",\"Maneuver_Gallon_00\":\"Glooga Dualies\",\"Maneuver_Gallon_01\":\"Glooga Dualies Deco\",\"Maneuver_Gallon_Coop\":\"Glooga Dualies\",\"Maneuver_Dual_00\":\"Dualie Squelchers\",\"Maneuver_Dual_01\":\"Custom Dualie Squelchers\",\"Maneuver_Dual_Coop\":\"Dualie Squelchers\",\"Maneuver_Stepper_00\":\"Dark Tetra Dualies\",\"Maneuver_Stepper_01\":\"Light Tetra Dualies\",\"Maneuver_Stepper_Coop\":\"Dark Tetra Dualies\",\"Maneuver_Long_00\":\"Douser Dualies FF\",\"Maneuver_Long_01\":\"Custom Douser Dualies FF\",\"Maneuver_Long_Coop\":\"Douser Dualies FF\",\"Shelter_Bear_Coop\":\"Grizzco Brella\",\"Shelter_Normal_00\":\"Splat Brella\",\"Shelter_Normal_01\":\"Sorella Brella\",\"Shelter_Normal_Coop\":\"Splat Brella\",\"Shelter_Normal_O\":\"Order Brella Replica\",\"Shelter_Wide_00\":\"Tenta Brella\",\"Shelter_Wide_01\":\"Tenta Sorella Brella\",\"Shelter_Wide_Coop\":\"Tenta Brella\",\"Shelter_Compact_00\":\"Undercover Brella\",\"Shelter_Compact_01\":\"Undercover Sorella Brella\",\"Shelter_Compact_Coop\":\"Undercover Brella\",\"Shelter_Focus_00\":\"Recycled Brella 24 Mk I\",\"Shelter_Focus_01\":\"Recycled Brella 24 Mk II\",\"Shelter_Focus_Coop\":\"Recycled Brella 24 Mk I\",\"Blaster_Bear_Coop\":\"Grizzco Blaster\",\"Blaster_Short_00\":\"Luna Blaster\",\"Blaster_Short_01\":\"Luna Blaster Neo\",\"Blaster_Short_Coop\":\"Luna Blaster\",\"Blaster_Short_O\":\"Order Blaster Replica\",\"Blaster_Middle_00\":\"Blaster\",\"Blaster_Middle_01\":\"Custom Blaster\",\"Blaster_Middle_Coop\":\"Blaster\",\"Blaster_Long_00\":\"Range Blaster\",\"Blaster_Long_01\":\"Custom Range Blaster\",\"Blaster_Long_Coop\":\"Range Blaster\",\"Blaster_LightShort_00\":\"Clash Blaster\",\"Blaster_LightShort_01\":\"Clash Blaster Neo\",\"Blaster_LightShort_Coop\":\"Clash Blaster\",\"Blaster_Light_00\":\"Rapid Blaster\",\"Blaster_Light_01\":\"Rapid Blaster Deco\",\"Blaster_Light_Coop\":\"Rapid Blaster\",\"Blaster_LightLong_00\":\"Rapid Blaster Pro\",\"Blaster_LightLong_01\":\"Rapid Blaster Pro Deco\",\"Blaster_LightLong_Coop\":\"Rapid Blaster Pro\",\"Blaster_Precision_00\":\"S-BLAST '92\",\"Blaster_Precision_01\":\"S-BLAST '91\",\"Blaster_Precision_Coop\":\"S-BLAST '92\",\"Brush_Mini_00\":\"Inkbrush\",\"Brush_Mini_01\":\"Inkbrush Nouveau\",\"Brush_Mini_Coop\":\"Inkbrush\",\"Brush_Normal_00\":\"Octobrush\",\"Brush_Normal_01\":\"Octobrush Nouveau\",\"Brush_Normal_Coop\":\"Octobrush\",\"Brush_Normal_O\":\"Orderbrush Replica\",\"Brush_Heavy_00\":\"Painbrush\",\"Brush_Heavy_01\":\"Painbrush Nouveau\",\"Brush_Heavy_Coop\":\"Painbrush\",\"Stringer_Bear_Coop\":\"Grizzco Stringer\",\"Stringer_Short_00\":\"REEF-LUX 450\",\"Stringer_Short_01\":\"REEF-LUX 450 Deco\",\"Stringer_Short_Coop\":\"REEF-LUX 450\",\"Stringer_Normal_00\":\"Tri-Stringer\",\"Stringer_Normal_01\":\"Inkline Tri-Stringer\",\"Stringer_Normal_Coop\":\"Tri-Stringer\",\"Stringer_Normal_O\":\"Order Stringer Replica\",\"Stringer_Explosion_00\":\"Wellstring V\",\"Stringer_Explosion_01\":\"Custom Wellstring V\",\"Stringer_Explosion_Coop\":\"Wellstring V\",\"Saber_Bear_Coop\":\"Grizzco Splatana\",\"Saber_Lite_00\":\"Splatana Wiper\",\"Saber_Lite_01\":\"Splatana Wiper Deco\",\"Saber_Lite_Coop\":\"Splatana Wiper\",\"Saber_Normal_00\":\"Splatana Stamper\",\"Saber_Normal_01\":\"Splatana Stamper Nouveau\",\"Saber_Normal_Coop\":\"Splatana Stamper\",\"Saber_Normal_O\":\"Order Splatana Replica\",\"Saber_Heavy_00\":\"Mint Decavitator\",\"Saber_Heavy_01\":\"Charcoal Decavitator\",\"Saber_Heavy_Coop\":\"Mint Decavitator\"}");
+module.exports = JSON.parse("{\"Shooter_First_00\":\"Splattershot Jr.\",\"Shooter_First_01\":\"Custom Splattershot Jr.\",\"Shooter_First_Coop\":\"Splattershot Jr.\",\"Shooter_Normal_00\":\"Splattershot\",\"Shooter_Normal_01\":\"Tentatek Splattershot\",\"Shooter_Normal_02\":\"Glamorz Splattershot\",\"Shooter_Normal_Coop\":\"Splattershot\",\"Shooter_Normal_H\":\"Hero Shot Replica\",\"Shooter_Normal_O\":\"Order Shot Replica\",\"Shooter_Normal_Oct\":\"Octo Shot Replica\",\"Shooter_Expert_00\":\"Splattershot Pro\",\"Shooter_Expert_01\":\"Forge Splattershot Pro\",\"Shooter_Expert_02\":\"Splattershot Pro FRZ-N\",\"Shooter_Expert_Coop\":\"Splattershot Pro\",\"Shooter_QuickLong_00\":\"Splattershot Nova\",\"Shooter_QuickLong_01\":\"Annaki Splattershot Nova\",\"Shooter_QuickLong_Coop\":\"Splattershot Nova\",\"Shooter_Short_00\":\"Sploosh-o-matic\",\"Shooter_Short_01\":\"Neo Sploosh-o-matic\",\"Shooter_Short_Coop\":\"Sploosh-o-matic\",\"Shooter_Precision_00\":\"Splash-o-matic\",\"Shooter_Precision_01\":\"Neo Splash-o-matic\",\"Shooter_Precision_02\":\"Splash-o-matic GCK-O\",\"Shooter_Precision_Coop\":\"Splash-o-matic\",\"Shooter_Blaze_00\":\"Aerospray MG\",\"Shooter_Blaze_01\":\"Aerospray RG\",\"Shooter_Blaze_02\":\"Colorz Aerospray\",\"Shooter_Blaze_Coop\":\"Aerospray MG\",\"Shooter_QuickMiddle_00\":\"N-ZAP '85\",\"Shooter_QuickMiddle_01\":\"N-ZAP '89\",\"Shooter_QuickMiddle_Coop\":\"N-ZAP '85\",\"Shooter_Gravity_00\":\".52 Gal\",\"Shooter_Gravity_01\":\".52 Gal Deco\",\"Shooter_Gravity_Coop\":\".52 Gal\",\"Shooter_Heavy_00\":\".96 Gal\",\"Shooter_Heavy_01\":\".96 Gal Deco\",\"Shooter_Heavy_02\":\"Clawz .96 Gal\",\"Shooter_Heavy_Coop\":\".96 Gal\",\"Shooter_Long_00\":\"Jet Squelcher\",\"Shooter_Long_01\":\"Custom Jet Squelcher\",\"Shooter_Long_02\":\"Jet Squelcher COB-R\",\"Shooter_Long_Coop\":\"Jet Squelcher\",\"Shooter_TripleQuick_00\":\"L-3 Nozzlenose\",\"Shooter_TripleQuick_01\":\"L-3 Nozzlenose D\",\"Shooter_TripleQuick_02\":\"Glitterz L-3 Nozzlenose\",\"Shooter_TripleQuick_Coop\":\"L-3 Nozzlenose\",\"Shooter_TripleMiddle_00\":\"H-3 Nozzlenose\",\"Shooter_TripleMiddle_01\":\"H-3 Nozzlenose D\",\"Shooter_TripleMiddle_02\":\"H-3 Nozzlenose VIP-R\",\"Shooter_TripleMiddle_Coop\":\"H-3 Nozzlenose\",\"Shooter_Flash_00\":\"Squeezer\",\"Shooter_Flash_01\":\"Foil Squeezer\",\"Shooter_Flash_Coop\":\"Squeezer\",\"Roller_Bear_Coop\":\"Grizzco Roller\",\"Roller_Compact_00\":\"Carbon Roller\",\"Roller_Compact_01\":\"Carbon Roller Deco\",\"Roller_Compact_02\":\"Carbon Roller ANG-L\",\"Roller_Compact_Coop\":\"Carbon Roller\",\"Roller_Normal_00\":\"Splat Roller\",\"Roller_Normal_01\":\"Krak-On Splat Roller\",\"Roller_Normal_Coop\":\"Splat Roller\",\"Roller_Normal_O\":\"Order Roller Replica\",\"Roller_Wide_00\":\"Big Swig Roller\",\"Roller_Wide_01\":\"Big Swig Roller Express\",\"Roller_Wide_02\":\"Planetz Big Swig Roller\",\"Roller_Wide_Coop\":\"Big Swig Roller\",\"Roller_Hunter_00\":\"Flingza Roller\",\"Roller_Hunter_01\":\"Foil Flingza Roller\",\"Roller_Hunter_Coop\":\"Flingza Roller\",\"Roller_Heavy_00\":\"Dynamo Roller\",\"Roller_Heavy_01\":\"Gold Dynamo Roller\",\"Roller_Heavy_02\":\"Starz Dynamo Roller\",\"Roller_Heavy_Coop\":\"Dynamo Roller\",\"Charger_Bear_Coop\":\"Grizzco Charger\",\"Charger_Quick_00\":\"Classic Squiffer\",\"Charger_Quick_01\":\"New Squiffer\",\"Charger_Quick_Coop\":\"Classic Squiffer\",\"Charger_Normal_00\":\"Splat Charger\",\"Charger_Normal_01\":\"Z+F Splat Charger\",\"Charger_Normal_02\":\"Splat Charger CAM-O\",\"Charger_Normal_Coop\":\"Splat Charger\",\"Charger_Normal_O\":\"Order Charger Replica\",\"Charger_NormalScope_00\":\"Splatterscope\",\"Charger_NormalScope_01\":\"Z+F Splatterscope\",\"Charger_NormalScope_02\":\"Splatterscope CAM-O\",\"Charger_Long_00\":\"E-liter 4K\",\"Charger_Long_01\":\"Custom E-liter 4K\",\"Charger_Long_Coop\":\"E-liter 4K\",\"Charger_LongScope_00\":\"E-liter 4K Scope\",\"Charger_LongScope_01\":\"Custom E-liter 4K Scope\",\"Charger_Light_00\":\"Bamboozler 14 Mk I\",\"Charger_Light_01\":\"Bamboozler 14 Mk II\",\"Charger_Light_Coop\":\"Bamboozler 14 Mk I\",\"Charger_Keeper_00\":\"Goo Tuber\",\"Charger_Keeper_01\":\"Custom Goo Tuber\",\"Charger_Keeper_Coop\":\"Goo Tuber\",\"Charger_Pencil_00\":\"Snipewriter 5H\",\"Charger_Pencil_01\":\"Snipewriter 5B\",\"Charger_Pencil_Coop\":\"Snipewriter 5H\",\"Slosher_Bear_Coop\":\"Grizzco Slosher\",\"Slosher_Strong_00\":\"Slosher\",\"Slosher_Strong_01\":\"Slosher Deco\",\"Slosher_Strong_Coop\":\"Slosher\",\"Slosher_Strong_O\":\"Order Slosher Replica\",\"Slosher_Diffusion_00\":\"Tri-Slosher\",\"Slosher_Diffusion_01\":\"Tri-Slosher Nouveau\",\"Slosher_Diffusion_02\":\"Tri-Slosher ASH-N\",\"Slosher_Diffusion_Coop\":\"Tri-Slosher\",\"Slosher_Bathtub_00\":\"Bloblobber\",\"Slosher_Bathtub_01\":\"Bloblobber Deco\",\"Slosher_Bathtub_Coop\":\"Bloblobber\",\"Slosher_Double_00\":\"Dread Wringer\",\"Slosher_Double_01\":\"Dread Wringer D\",\"Slosher_Double_02\":\"Hornz Dread Wringer\",\"Slosher_Double_Coop\":\"Dread Wringer\",\"Slosher_Launcher_00\":\"Sloshing Machine\",\"Slosher_Launcher_01\":\"Sloshing Machine Neo\",\"Slosher_Launcher_Coop\":\"Sloshing Machine\",\"Slosher_Washtub_00\":\"Explosher\",\"Slosher_Washtub_01\":\"Custom Explosher\",\"Slosher_Washtub_Coop\":\"Explosher\",\"Spinner_Quick_00\":\"Mini Splatling\",\"Spinner_Quick_01\":\"Zink Mini Splatling\",\"Spinner_Quick_02\":\"Mini Splatling RTL-R\",\"Spinner_Quick_Coop\":\"Mini Splatling\",\"Spinner_Standard_00\":\"Heavy Splatling\",\"Spinner_Standard_01\":\"Heavy Splatling Deco\",\"Spinner_Standard_Coop\":\"Heavy Splatling\",\"Spinner_Standard_O\":\"Order Splatling Replica\",\"Spinner_Hyper_00\":\"Hydra Splatling\",\"Spinner_Hyper_01\":\"Custom Hydra Splatling\",\"Spinner_Hyper_02\":\"Torrentz Hydra Splatling\",\"Spinner_Hyper_Coop\":\"Hydra Splatling\",\"Spinner_Serein_00\":\"Nautilus 47\",\"Spinner_Serein_01\":\"Nautilus 79\",\"Spinner_Serein_Coop\":\"Nautilus 47\",\"Spinner_Downpour_00\":\"Ballpoint Splatling\",\"Spinner_Downpour_01\":\"Ballpoint Splatling Nouveau\",\"Spinner_Downpour_Coop\":\"Ballpoint Splatling\",\"Spinner_HyperShort_00\":\"Heavy Edit Splatling\",\"Spinner_HyperShort_01\":\"Heavy Edit Splatling Nouveau\",\"Spinner_HyperShort_Coop\":\"Heavy Edit Splatling\",\"Maneuver_Bear_Coop\":\"Grizzco Dualies\",\"Maneuver_Short_00\":\"Dapple Dualies\",\"Maneuver_Short_01\":\"Dapple Dualies Nouveau\",\"Maneuver_Short_02\":\"Dapple Dualies NOC-T\",\"Maneuver_Short_Coop\":\"Dapple Dualies\",\"Maneuver_Normal_00\":\"Splat Dualies\",\"Maneuver_Normal_01\":\"Enperry Splat Dualies\",\"Maneuver_Normal_02\":\"Twinklez Splat Dualies\",\"Maneuver_Normal_Coop\":\"Splat Dualies\",\"Maneuver_Normal_O\":\"Order Dualie Replicas\",\"Maneuver_Gallon_00\":\"Glooga Dualies\",\"Maneuver_Gallon_01\":\"Glooga Dualies Deco\",\"Maneuver_Gallon_Coop\":\"Glooga Dualies\",\"Maneuver_Dual_00\":\"Dualie Squelchers\",\"Maneuver_Dual_01\":\"Custom Dualie Squelchers\",\"Maneuver_Dual_02\":\"Hoofz Dualie Squelchers\",\"Maneuver_Dual_Coop\":\"Dualie Squelchers\",\"Maneuver_Stepper_00\":\"Dark Tetra Dualies\",\"Maneuver_Stepper_01\":\"Light Tetra Dualies\",\"Maneuver_Stepper_Coop\":\"Dark Tetra Dualies\",\"Maneuver_Long_00\":\"Douser Dualies FF\",\"Maneuver_Long_01\":\"Custom Douser Dualies FF\",\"Maneuver_Long_Coop\":\"Douser Dualies FF\",\"Shelter_Bear_Coop\":\"Grizzco Brella\",\"Shelter_Normal_00\":\"Splat Brella\",\"Shelter_Normal_01\":\"Sorella Brella\",\"Shelter_Normal_Coop\":\"Splat Brella\",\"Shelter_Normal_O\":\"Order Brella Replica\",\"Shelter_Wide_00\":\"Tenta Brella\",\"Shelter_Wide_01\":\"Tenta Sorella Brella\",\"Shelter_Wide_02\":\"Tenta Brella CRE-M\",\"Shelter_Wide_Coop\":\"Tenta Brella\",\"Shelter_Compact_00\":\"Undercover Brella\",\"Shelter_Compact_01\":\"Undercover Sorella Brella\",\"Shelter_Compact_02\":\"Patternz Undercover Brella\",\"Shelter_Compact_Coop\":\"Undercover Brella\",\"Shelter_Focus_00\":\"Recycled Brella 24 Mk I\",\"Shelter_Focus_01\":\"Recycled Brella 24 Mk II\",\"Shelter_Focus_Coop\":\"Recycled Brella 24 Mk I\",\"Blaster_Bear_Coop\":\"Grizzco Blaster\",\"Blaster_Short_00\":\"Luna Blaster\",\"Blaster_Short_01\":\"Luna Blaster Neo\",\"Blaster_Short_Coop\":\"Luna Blaster\",\"Blaster_Short_O\":\"Order Blaster Replica\",\"Blaster_Middle_00\":\"Blaster\",\"Blaster_Middle_01\":\"Custom Blaster\",\"Blaster_Middle_02\":\"Gleamz Blaster\",\"Blaster_Middle_Coop\":\"Blaster\",\"Blaster_Long_00\":\"Range Blaster\",\"Blaster_Long_01\":\"Custom Range Blaster\",\"Blaster_Long_Coop\":\"Range Blaster\",\"Blaster_LightShort_00\":\"Clash Blaster\",\"Blaster_LightShort_01\":\"Clash Blaster Neo\",\"Blaster_LightShort_Coop\":\"Clash Blaster\",\"Blaster_Light_00\":\"Rapid Blaster\",\"Blaster_Light_01\":\"Rapid Blaster Deco\",\"Blaster_Light_Coop\":\"Rapid Blaster\",\"Blaster_LightLong_00\":\"Rapid Blaster Pro\",\"Blaster_LightLong_01\":\"Rapid Blaster Pro Deco\",\"Blaster_LightLong_02\":\"Rapid Blaster Pro WNT-R\",\"Blaster_LightLong_Coop\":\"Rapid Blaster Pro\",\"Blaster_Precision_00\":\"S-BLAST '92\",\"Blaster_Precision_01\":\"S-BLAST '91\",\"Blaster_Precision_Coop\":\"S-BLAST '92\",\"Brush_Mini_00\":\"Inkbrush\",\"Brush_Mini_01\":\"Inkbrush Nouveau\",\"Brush_Mini_Coop\":\"Inkbrush\",\"Brush_Normal_00\":\"Octobrush\",\"Brush_Normal_01\":\"Octobrush Nouveau\",\"Brush_Normal_02\":\"Cometz Octobrush\",\"Brush_Normal_Coop\":\"Octobrush\",\"Brush_Normal_O\":\"Orderbrush Replica\",\"Brush_Heavy_00\":\"Painbrush\",\"Brush_Heavy_01\":\"Painbrush Nouveau\",\"Brush_Heavy_02\":\"Painbrush BRN-Z\",\"Brush_Heavy_Coop\":\"Painbrush\",\"Stringer_Bear_Coop\":\"Grizzco Stringer\",\"Stringer_Short_00\":\"REEF-LUX 450\",\"Stringer_Short_01\":\"REEF-LUX 450 Deco\",\"Stringer_Short_02\":\"REEF-LUX 450 MIL-K\",\"Stringer_Short_Coop\":\"REEF-LUX 450\",\"Stringer_Normal_00\":\"Tri-Stringer\",\"Stringer_Normal_01\":\"Inkline Tri-Stringer\",\"Stringer_Normal_02\":\"Bulbz Tri-Stringer\",\"Stringer_Normal_Coop\":\"Tri-Stringer\",\"Stringer_Normal_O\":\"Order Stringer Replica\",\"Stringer_Explosion_00\":\"Wellstring V\",\"Stringer_Explosion_01\":\"Custom Wellstring V\",\"Stringer_Explosion_Coop\":\"Wellstring V\",\"Saber_Bear_Coop\":\"Grizzco Splatana\",\"Saber_Lite_00\":\"Splatana Wiper\",\"Saber_Lite_01\":\"Splatana Wiper Deco\",\"Saber_Lite_02\":\"Splatana Wiper RUS-T\",\"Saber_Lite_Coop\":\"Splatana Wiper\",\"Saber_Normal_00\":\"Splatana Stamper\",\"Saber_Normal_01\":\"Splatana Stamper Nouveau\",\"Saber_Normal_02\":\"Stickerz Splatana Stamper\",\"Saber_Normal_Coop\":\"Splatana Stamper\",\"Saber_Normal_O\":\"Order Splatana Replica\",\"Saber_Heavy_00\":\"Mint Decavitator\",\"Saber_Heavy_01\":\"Charcoal Decavitator\",\"Saber_Heavy_Coop\":\"Mint Decavitator\"}");
 
 },{}],"if1fc":[function(require,module,exports,__globalThis) {
 module.exports = JSON.parse("[{\"tag\":\"Shooter\",\"name\":\"Shooter\",\"weapons\":[]},{\"tag\":\"Roller\",\"name\":\"Roller\",\"weapons\":[]},{\"tag\":\"Charger\",\"name\":\"Charger\",\"weapons\":[]},{\"tag\":\"Slosher\",\"name\":\"Slosher\",\"weapons\":[]},{\"tag\":\"Spinner\",\"name\":\"Splatling\",\"weapons\":[]},{\"tag\":\"Maneuver\",\"name\":\"Dualies\",\"weapons\":[]},{\"tag\":\"Shelter\",\"name\":\"Brella\",\"weapons\":[]},{\"tag\":\"Blaster\",\"name\":\"Blaster\",\"weapons\":[]},{\"tag\":\"Brush\",\"name\":\"Brush\",\"weapons\":[]},{\"tag\":\"Stringer\",\"name\":\"Stringer\",\"weapons\":[]},{\"tag\":\"Saber\",\"name\":\"Splatana\",\"weapons\":[]},{\"tag\":\"Bear\",\"name\":\"Grizzco\",\"weapons\":[]}]");
@@ -31169,7 +31190,7 @@ const useWeaponView = ({ view, timeline, timeScale = 1, reverseTimeScale })=>{
         if (view.show && view.fade) {
             if (!active) {
                 setActive(true);
-                console.log("Setting active");
+                //console.log("Setting active");
                 timeline.timeScale(timeScale).play().then(()=>{
                     view.onFade();
                 });
@@ -31177,7 +31198,7 @@ const useWeaponView = ({ view, timeline, timeScale = 1, reverseTimeScale })=>{
         } else if (!view.show && view.fade) {
             if (active) {
                 setActive(false);
-                console.log("Setting inactive");
+                //console.log("Setting inactive");
                 timeline.timeScale(reverseTimeScale ? reverseTimeScale : timeScale).reverse().then(()=>{
                     view.onFade();
                 });
@@ -32000,13 +32021,13 @@ const Container = (0, _styledComponentsDefault.default).div.withConfig({
     displayName: "ProgressBar__Container",
     componentId: "sc-pvx4t2-0"
 })([
-    "position:relative;display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-end;color:var(--text);font-size:1.75rem;width:100%;"
+    "position:relative;display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-end;color:var(--text);font-size:1.7rem;width:100%;"
 ]);
 const Background = (0, _styledComponentsDefault.default).div.withConfig({
     displayName: "ProgressBar__Background",
     componentId: "sc-pvx4t2-1"
 })([
-    "position:relative;height:60px;width:100%;background:linear-gradient(to bottom,#76723ce0,#76723ce0 15%,#44401fe0 20%,#44401fe0 45%,#150d01e0 65%,#150d01e0);border-radius:5px;"
+    "position:relative;height:60px;width:100%;background:linear-gradient(to bottom,#76723ce0,#76723ce0 15%,#44401fe0 20%,#44401fe0 45%,#150d01e0 65%,#150d01e0);border-radius:5px;overflow:hidden;"
 ]);
 const scrollingRight = (0, _styledComponents.keyframes)([
     "from{background-position:0 0;}to{background-position:60px 0;}"
@@ -32040,7 +32061,7 @@ const WeaponImage = (0, _styledComponentsDefault.default).img.withConfig({
     displayName: "ProgressBar__WeaponImage",
     componentId: "sc-pvx4t2-6"
 })([
-    "height:90%;"
+    "height:75%;"
 ]);
 
 },{"react":"bH1AQ","styled-components":"9xpRL","@parcel/transformer-js/src/esmodule-helpers.js":"hvLRG","./FittedText":"f5NVk","../../utils/WeaponDatabase":"kbTcL","gsap":"7bCJB","@gsap/react":"kELb7"}]},["lFqUV"], "lFqUV", "parcelRequire94c2")

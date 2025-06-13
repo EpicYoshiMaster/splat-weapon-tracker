@@ -169,8 +169,11 @@ function WeaponTracker() {
             weaponClasses: (0, _weaponDatabase.getWeaponClassNames)().slice(),
             firstKit: true,
             secondKit: true,
+            thirdKit: true,
             baseKit: true,
-            cosmeticKit: true
+            cosmeticKit: true,
+            seen: true,
+            unseen: true
         }
     });
     const [display, setDisplay] = (0, _useReplicant.useReplicant)('display', {
@@ -431,6 +434,23 @@ function WeaponTracker() {
         mode,
         lists
     ]);
+    const activeList = (0, _react.useMemo)(()=>{
+        if (!mode) return [];
+        if (!lists) return [];
+        switch(mode){
+            case (0, _types.WeaponMode).Standard:
+                return lists.standard;
+            case (0, _types.WeaponMode).Salmon:
+                return lists.salmon;
+            case (0, _types.WeaponMode).Grizzco:
+                return lists.grizzco;
+            case (0, _types.WeaponMode).Order:
+                return lists.order;
+        }
+    }, [
+        mode,
+        lists
+    ]);
     const weaponClasses = (0, _react.useMemo)(()=>{
         if (!mode) return [];
         let selectedClasses;
@@ -448,27 +468,11 @@ function WeaponTracker() {
                 selectedClasses = (0, _weaponDatabase.orderWeapons);
                 break;
         }
-        return (0, _weaponDatabase.filterWeaponsByProperties)(selectedClasses, filter);
+        return (0, _weaponDatabase.filterWeaponsByProperties)(selectedClasses, filter, activeList);
     }, [
         mode,
+        activeList,
         filter
-    ]);
-    const activeList = (0, _react.useMemo)(()=>{
-        if (!mode) return [];
-        if (!lists) return [];
-        switch(mode){
-            case (0, _types.WeaponMode).Standard:
-                return lists.standard;
-            case (0, _types.WeaponMode).Salmon:
-                return lists.salmon;
-            case (0, _types.WeaponMode).Grizzco:
-                return lists.grizzco;
-            case (0, _types.WeaponMode).Order:
-                return lists.order;
-        }
-    }, [
-        mode,
-        lists
     ]);
     const exportList = (0, _react.useCallback)(()=>{
         if (!mode) return;
@@ -489,7 +493,7 @@ function WeaponTracker() {
     return /*#__PURE__*/ (0, _reactDefault.default).createElement(Wrapper, {
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 304,
+            lineNumber: 307,
             columnNumber: 10
         },
         __self: this
@@ -497,14 +501,14 @@ function WeaponTracker() {
         ...getRootProps(),
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 305,
+            lineNumber: 308,
             columnNumber: 4
         },
         __self: this
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(Options, {
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 306,
+            lineNumber: 309,
             columnNumber: 5
         },
         __self: this
@@ -512,7 +516,7 @@ function WeaponTracker() {
         ...getInputProps(),
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 307,
+            lineNumber: 310,
             columnNumber: 6
         },
         __self: this
@@ -520,7 +524,7 @@ function WeaponTracker() {
         title: "Settings",
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 308,
+            lineNumber: 311,
             columnNumber: 6
         },
         __self: this
@@ -532,7 +536,7 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 309,
+            lineNumber: 312,
             columnNumber: 7
         },
         __self: this
@@ -544,7 +548,7 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 312,
+            lineNumber: 315,
             columnNumber: 7
         },
         __self: this
@@ -556,7 +560,7 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 315,
+            lineNumber: 318,
             columnNumber: 7
         },
         __self: this
@@ -564,7 +568,7 @@ function WeaponTracker() {
         title: "Controls",
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 319,
+            lineNumber: 322,
             columnNumber: 6
         },
         __self: this
@@ -577,7 +581,7 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 320,
+            lineNumber: 323,
             columnNumber: 7
         },
         __self: this
@@ -590,7 +594,7 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 323,
+            lineNumber: 326,
             columnNumber: 7
         },
         __self: this
@@ -603,7 +607,7 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 326,
+            lineNumber: 329,
             columnNumber: 7
         },
         __self: this
@@ -616,14 +620,14 @@ function WeaponTracker() {
         },
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 329,
+            lineNumber: 332,
             columnNumber: 7
         },
         __self: this
     }, "Show Rolls"))), /*#__PURE__*/ (0, _reactDefault.default).createElement(Recents, {
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 334,
+            lineNumber: 337,
             columnNumber: 5
         },
         __self: this
@@ -631,7 +635,7 @@ function WeaponTracker() {
         title: "Recents",
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 335,
+            lineNumber: 338,
             columnNumber: 6
         },
         __self: this
@@ -640,7 +644,7 @@ function WeaponTracker() {
         onClickWeapon: removeFromList,
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 336,
+            lineNumber: 339,
             columnNumber: 7
         },
         __self: this
@@ -649,7 +653,7 @@ function WeaponTracker() {
         $smallGap: mode === (0, _types.WeaponMode).Order,
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 340,
+            lineNumber: 343,
             columnNumber: 4
         },
         __self: this
@@ -658,7 +662,7 @@ function WeaponTracker() {
         $content: `Import Error: ${importError}`,
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 341,
+            lineNumber: 344,
             columnNumber: 27
         },
         __self: this
@@ -671,9 +675,10 @@ function WeaponTracker() {
         onClickWeapon: addToList,
         weaponIds: activeList,
         weaponSize: weaponSize,
+        mode: mode,
         __source: {
             fileName: "src/dashboard/WeaponTracker.tsx",
-            lineNumber: 342,
+            lineNumber: 345,
             columnNumber: 38
         },
         __self: this
@@ -686,7 +691,7 @@ function WeaponTracker() {
             weaponIds: activeList,
             __source: {
                 fileName: "src/dashboard/WeaponTracker.tsx",
-                lineNumber: 344,
+                lineNumber: 347,
                 columnNumber: 16
             },
             __self: this
@@ -739,7 +744,7 @@ const root = (0, _client.createRoot)(document.getElementById('root'));
 root.render(/*#__PURE__*/ (0, _reactDefault.default).createElement(WeaponTracker, {
     __source: {
         fileName: "src/dashboard/WeaponTracker.tsx",
-        lineNumber: 378,
+        lineNumber: 381,
         columnNumber: 13
     },
     __self: undefined
@@ -936,13 +941,12 @@ const RecentList = ({ weaponIds, onClickWeapon })=>{
         },
         __self: undefined
     }, weaponIds && weaponIds.map((id, index)=>{
-        console.log(weaponIds);
         const weapon = (0, _weaponDatabase.getWeaponById)(id);
         if (!weapon) return /*#__PURE__*/ (0, _reactDefault.default).createElement("div", {
             key: index,
             __source: {
                 fileName: "src/dashboard/components/RecentList.tsx",
-                lineNumber: 19,
+                lineNumber: 18,
                 columnNumber: 16
             },
             __self: undefined
@@ -960,7 +964,7 @@ const RecentList = ({ weaponIds, onClickWeapon })=>{
             },
             __source: {
                 fileName: "src/dashboard/components/RecentList.tsx",
-                lineNumber: 22,
+                lineNumber: 21,
                 columnNumber: 14
             },
             __self: undefined
@@ -8806,7 +8810,7 @@ var _layout = require("./Layout");
 var _weaponDatabase = require("../../utils/WeaponDatabase");
 var _utils = require("../../utils/utils");
 var _weaponButton = require("./WeaponButton");
-const RollWeapons = ({ weaponClasses, numWeaponRolls, setNumWeaponRolls, randomWeapons, setRandomWeapons, weaponIds, weaponSize, onClickWeapon })=>{
+const RollWeapons = ({ weaponClasses, numWeaponRolls, setNumWeaponRolls, randomWeapons, setRandomWeapons, weaponIds, weaponSize, onClickWeapon, mode })=>{
     const [isRolling, setIsRolling] = (0, _react.useState)(false);
     const rollWeaponsOnce = (0, _react.useCallback)(()=>{
         setRandomWeapons(Array((0, _utils.MAX_RANDOM_WEAPONS)).fill(0).map(()=>{
@@ -8820,7 +8824,7 @@ const RollWeapons = ({ weaponClasses, numWeaponRolls, setNumWeaponRolls, randomW
     (0, _react.useEffect)(()=>{
         rollWeaponsOnce();
     }, [
-        weaponClasses
+        mode
     ]);
     const rollWeapons = (0, _react.useCallback)(()=>{
         if (isRolling) return;
@@ -8837,14 +8841,14 @@ const RollWeapons = ({ weaponClasses, numWeaponRolls, setNumWeaponRolls, randomW
     return /*#__PURE__*/ (0, _reactDefault.default).createElement(Wrapper, {
         __source: {
             fileName: "src/dashboard/components/RollWeapons.tsx",
-            lineNumber: 48,
+            lineNumber: 50,
             columnNumber: 10
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement(HeadWrapper, {
         __source: {
             fileName: "src/dashboard/components/RollWeapons.tsx",
-            lineNumber: 49,
+            lineNumber: 51,
             columnNumber: 3
         },
         __self: undefined
@@ -8853,14 +8857,14 @@ const RollWeapons = ({ weaponClasses, numWeaponRolls, setNumWeaponRolls, randomW
         $content: "Weapon Rolls",
         __source: {
             fileName: "src/dashboard/components/RollWeapons.tsx",
-            lineNumber: 50,
+            lineNumber: 52,
             columnNumber: 4
         },
         __self: undefined
     }, "Weapon Rolls")), /*#__PURE__*/ (0, _reactDefault.default).createElement(RollDiv, {
         __source: {
             fileName: "src/dashboard/components/RollWeapons.tsx",
-            lineNumber: 52,
+            lineNumber: 54,
             columnNumber: 3
         },
         __self: undefined
@@ -8873,7 +8877,7 @@ const RollWeapons = ({ weaponClasses, numWeaponRolls, setNumWeaponRolls, randomW
         },
         __source: {
             fileName: "src/dashboard/components/RollWeapons.tsx",
-            lineNumber: 53,
+            lineNumber: 55,
             columnNumber: 4
         },
         __self: undefined
@@ -8886,14 +8890,14 @@ const RollWeapons = ({ weaponClasses, numWeaponRolls, setNumWeaponRolls, randomW
         onChange: (event)=>setNumWeaponRolls(Number(event.target.value)),
         __source: {
             fileName: "src/dashboard/components/RollWeapons.tsx",
-            lineNumber: 56,
+            lineNumber: 58,
             columnNumber: 4
         },
         __self: undefined
     }), /*#__PURE__*/ (0, _reactDefault.default).createElement(Rolls, {
         __source: {
             fileName: "src/dashboard/components/RollWeapons.tsx",
-            lineNumber: 57,
+            lineNumber: 59,
             columnNumber: 4
         },
         __self: undefined
@@ -8908,7 +8912,7 @@ const RollWeapons = ({ weaponClasses, numWeaponRolls, setNumWeaponRolls, randomW
             marginBottom: false,
             __source: {
                 fileName: "src/dashboard/components/RollWeapons.tsx",
-                lineNumber: 59,
+                lineNumber: 61,
                 columnNumber: 18
             },
             __self: undefined

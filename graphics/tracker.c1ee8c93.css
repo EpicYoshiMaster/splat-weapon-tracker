@@ -32,6 +32,8 @@
   --splatana-dark: #302369e0;
   --grizzco: #e8b202e0;
   --grizzco-dark: #927410e0;
+  --unknown: #999;
+  --unknown-dark: #535353;
 }
 
 @font-face {
