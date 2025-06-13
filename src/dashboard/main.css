@@ -52,6 +52,9 @@
 	--second: #8f0ecfe0;
 	--second-dark: #531374e0;
 
+	--third: #13baaee0;
+	--third-dark: #156661e0;
+
 	/* Weapon Classes */
 
 	--shooter: #e0005e;
@@ -86,6 +89,9 @@
 
 	--splatana: #6449dd;
 	--splatana-dark: #302369;
+
+	--unknown: #999999;
+	--unknown-dark: #535353;
 }
 
 body {

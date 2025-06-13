@@ -2,12 +2,15 @@ import Weapons from '../data/weapons.json'
 import Classes from '../data/classes.json'
 import { Weapon, WeaponClass, WeaponFilter, WeaponFrequency } from '../types/types'
 
+const thirdKitOffset = 10000;
+
 const createWeaponDatabase = (): [Weapon[], WeaponClass[]] =>  {
 	const weapons: Weapon[] = [];
 	const weaponClasses: WeaponClass[] = Classes;
+	let skipIndex = 0; //Third kits require some jank to remain backwards compatible OKAY??
 
 	Object.entries(Weapons).forEach(([key, value], index) => {
-		const weapon: Weapon = { id: index, key: key, name: value, image: key, weaponClass: "", coop: false, grizzco: false, order: false, firstKit: false, secondKit: false, baseKit: false, cosmeticKit: false };
+		const weapon: Weapon = { id: index - skipIndex, key: key, name: value, image: key, weaponClass: "", coop: false, grizzco: false, order: false, firstKit: false, secondKit: false, thirdKit: false, baseKit: false, cosmeticKit: false };
 
 		const coopIndex = weapon.image.indexOf("_Coop");
 
@@ -59,6 +62,18 @@ const createWeaponDatabase = (): [Weapon[], WeaponClass[]] =>  {
 			weapon.baseKit = true;
 		}
 
+		if(key.includes("_02")) {
+			//Who would have thought I'd be adding these
+			weapon.thirdKit = true;
+			weapon.baseKit = true;
+
+			//Essentially make this a very big ID (to be unique) that can still be retraced back to where it was by removing the offset
+			//if they somehow added FOURTH kits sometime later um. sorry have fun haha.
+			//this is to preserve the original ID orders
+			weapon.id += thirdKitOffset - 1;
+			skipIndex += 1;
+		}
+
 		weapon.image = `Path_Wst_${weapon.image}.png`;
 
 		if(weapon.grizzco) {
@@ -94,19 +109,22 @@ const filterWeapons = (classes: WeaponClass[], filter: WeaponFunction): WeaponCl
 	}).filter((weaponClass) => weaponClass.weapons.length > 0)
 }
 
-const weaponFilter = (weapon: Weapon, filter: WeaponFilter) => {
+const weaponFilter = (weapon: Weapon, filter: WeaponFilter, weaponIds?: number[]) => {
 	if(!weapon) return false;
 	if(!filter.weaponClasses.includes(weapon.weaponClass)) return false;
 	if(!filter.firstKit && weapon.firstKit) return false;
 	if(!filter.secondKit && weapon.secondKit) return false;
+	if(!filter.thirdKit && weapon.thirdKit) return false;
 	if(!filter.baseKit && weapon.baseKit) return false;
 	if(!filter.cosmeticKit && weapon.cosmeticKit) return false;
+	if(!filter.unseen && weaponIds && !weaponIds.includes(weapon.id)) return false;
+	if(!filter.seen && weaponIds && weaponIds.includes(weapon.id)) return false;
 
 	return true;
 }
 
-export const filterWeaponsByProperties = (classes: WeaponClass[], filter: WeaponFilter): WeaponClass[] => {
-	return filterWeapons(classes, (weapon) => weaponFilter(weapon, filter))
+export const filterWeaponsByProperties = (classes: WeaponClass[], filter: WeaponFilter, weaponIds?: number[]): WeaponClass[] => {
+	return filterWeapons(classes, (weapon) => weaponFilter(weapon, filter, weaponIds))
 }
 
 const [weapons, weaponClasses] = createWeaponDatabase();
@@ -132,6 +150,7 @@ export const defaultWeapon: Weapon = {
 	order: false,
 	firstKit: false,
 	secondKit: false,
+	thirdKit: false,
 	baseKit: false,
 	cosmeticKit: false
 }
@@ -143,9 +162,9 @@ export const getWeaponClassNames = (): string[] => {
 }
 
 export const getWeaponById = (id: number): Weapon => {
-	if(id >= 0 && id < weapons.length) {
-		return weapons[id];
-	}
+	const weapon = weapons.find((weapon) => weapon.id === id);
+
+	if(weapon) return weapon;
 
 	return defaultWeapon;
 }
@@ -209,7 +228,18 @@ export const getWeaponFrequencies = (weapons: WeaponClass[], ids: number[]): Wea
 		return weaponClass.weapons.map((weapon) => {
 			return { weapon, count: ids.filter((id) => weapon.id === id).length};
 		})
-	}).sort((a, b) => a.count === b.count ? a.weapon.id - b.weapon.id : a.count - b.count);
+	}).sort((a, b) => {
+
+		if(a.count === b.count) {
+			const compareIdA = a.weapon.thirdKit ? a.weapon.id - thirdKitOffset + 0.5 : a.weapon.id;
+			const compareIdB = b.weapon.thirdKit ? b.weapon.id - thirdKitOffset + 0.5 : b.weapon.id;
+
+			return compareIdA - compareIdB;
+		}
+		else {
+			return a.count - b.count;
+		}
+	 });
 
 	//Condense by frequency, adding in blank counts between
 	const min = frequencies.length > 0 ? frequencies[0].count : 0;

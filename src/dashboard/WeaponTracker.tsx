@@ -20,7 +20,7 @@ export function WeaponTracker() {
 	});
 
 	const [filter, setFilter] = useReplicant<WeaponFilter>('filter', {
-		defaultValue: { weaponClasses: getWeaponClassNames().slice(), firstKit: true, secondKit: true, baseKit: true, cosmeticKit: true }
+		defaultValue: { weaponClasses: getWeaponClassNames().slice(), firstKit: true, secondKit: true, thirdKit: true, baseKit: true, cosmeticKit: true, seen: true, unseen: true }
 	})
 
 	const [display, setDisplay] = useReplicant<DisplayMode>('display', {
@@ -170,6 +170,18 @@ export function WeaponTracker() {
 		}
 	}, [mode, lists]);
 
+	const activeList = useMemo(() => {
+		if(!mode) return [];
+		if(!lists) return [];
+
+		switch(mode) {
+			case WeaponMode.Standard: return lists.standard;
+			case WeaponMode.Salmon: return lists.salmon;
+			case WeaponMode.Grizzco: return lists.grizzco;
+			case WeaponMode.Order: return lists.order;
+		}
+	}, [mode, lists]);
+
 	const weaponClasses: WeaponClass[] = useMemo(() => {
 		if(!mode) return [];
 
@@ -182,20 +194,8 @@ export function WeaponTracker() {
 			case WeaponMode.Order: selectedClasses = orderWeapons; break;
 		}
 
-		return filterWeaponsByProperties(selectedClasses, filter);
-	}, [mode, filter])
-
-	const activeList = useMemo(() => {
-		if(!mode) return [];
-		if(!lists) return [];
-
-		switch(mode) {
-			case WeaponMode.Standard: return lists.standard;
-			case WeaponMode.Salmon: return lists.salmon;
-			case WeaponMode.Grizzco: return lists.grizzco;
-			case WeaponMode.Order: return lists.order;
-		}
-	}, [mode, lists]);
+		return filterWeaponsByProperties(selectedClasses, filter, activeList);
+	}, [mode, activeList, filter])
 
 	const exportList = useCallback(() => {
 		if(!mode) return;
@@ -267,6 +267,7 @@ export function WeaponTracker() {
 					onClickWeapon={addToList}
 					weaponIds={activeList}
 					weaponSize={weaponSize}
+					mode={mode}
 					 />
 			)}
 			{weaponClasses && weaponClasses.map((weaponClass, index) => {

@@ -74,7 +74,7 @@ const Container = styled.div`
 	align-items: flex-end;
 	justify-content: flex-end;
 	color: var(--text);
-	font-size: 1.75rem;
+	font-size: 1.7rem;
 	width: 100%;
 `;
 
@@ -84,6 +84,7 @@ const Background = styled.div`
 	width: 100%;
 	background: linear-gradient(to bottom, #76723ce0, #76723ce0 15%, #44401fe0 20%, #44401fe0 45%, #150d01e0 65%, #150d01e0);
 	border-radius: 5px;
+	overflow: hidden;
 `;
 
 const scrollingRight = keyframes`
@@ -144,5 +145,5 @@ const WeaponContainer = styled.div`
 `;
 
 const WeaponImage = styled.img`
-	height: 90%;	
+	height: 75%;	
 `;

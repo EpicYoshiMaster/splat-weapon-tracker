@@ -19,7 +19,7 @@ export const useWeaponView = ({ view, timeline, timeScale = 1, reverseTimeScale 
 			if(!active) {
 				setActive(true);
 
-				console.log("Setting active");
+				//console.log("Setting active");
 
 				timeline.timeScale(timeScale).play().then(() => {
 					view.onFade();
@@ -30,7 +30,7 @@ export const useWeaponView = ({ view, timeline, timeScale = 1, reverseTimeScale 
 			if(active) {
 				setActive(false);
 
-				console.log("Setting inactive");
+				//console.log("Setting inactive");
 
 				timeline.timeScale(reverseTimeScale ? reverseTimeScale : timeScale).reverse().then(() => {
 					view.onFade(); 
