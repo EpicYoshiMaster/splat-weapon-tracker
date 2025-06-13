@@ -26,6 +26,8 @@ export type WeaponFilter = {
 	secondKit: boolean;
 	baseKit: boolean;
 	cosmeticKit: boolean;
+	seen: boolean;
+	unseen: boolean;
 }
 
 export type WeaponFrequency = {

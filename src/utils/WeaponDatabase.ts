@@ -94,19 +94,21 @@ const filterWeapons = (classes: WeaponClass[], filter: WeaponFunction): WeaponCl
 	}).filter((weaponClass) => weaponClass.weapons.length > 0)
 }
 
-const weaponFilter = (weapon: Weapon, filter: WeaponFilter) => {
+const weaponFilter = (weapon: Weapon, filter: WeaponFilter, weaponIds?: number[]) => {
 	if(!weapon) return false;
 	if(!filter.weaponClasses.includes(weapon.weaponClass)) return false;
 	if(!filter.firstKit && weapon.firstKit) return false;
 	if(!filter.secondKit && weapon.secondKit) return false;
 	if(!filter.baseKit && weapon.baseKit) return false;
 	if(!filter.cosmeticKit && weapon.cosmeticKit) return false;
+	if(!filter.unseen && weaponIds && !weaponIds.includes(weapon.id)) return false;
+	if(!filter.seen && weaponIds && weaponIds.includes(weapon.id)) return false;
 
 	return true;
 }
 
-export const filterWeaponsByProperties = (classes: WeaponClass[], filter: WeaponFilter): WeaponClass[] => {
-	return filterWeapons(classes, (weapon) => weaponFilter(weapon, filter))
+export const filterWeaponsByProperties = (classes: WeaponClass[], filter: WeaponFilter, weaponIds?: number[]): WeaponClass[] => {
+	return filterWeapons(classes, (weapon) => weaponFilter(weapon, filter, weaponIds))
 }
 
 const [weapons, weaponClasses] = createWeaponDatabase();

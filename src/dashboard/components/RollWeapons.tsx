@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { OutlineButton, Input, HeadText } from './Layout';
 import { getRandomWeapon, getWeaponById, getWeaponCount } from '../../utils/WeaponDatabase';
 import { MAX_RANDOM_WEAPONS } from '../../utils/utils';
-import { WeaponClass } from '../../types/types';
+import { WeaponClass, WeaponMode } from '../../types/types';
 import { WeaponButton } from './WeaponButton';
 
 interface RollWeaponsProps {
@@ -15,9 +15,10 @@ interface RollWeaponsProps {
 	weaponIds: number[];
 	weaponSize: number;
 	onClickWeapon: (id: number) => void;
+	mode: WeaponMode;
 }
 
-export const RollWeapons: React.FC<RollWeaponsProps> = ({ weaponClasses, numWeaponRolls, setNumWeaponRolls, randomWeapons, setRandomWeapons, weaponIds, weaponSize, onClickWeapon }) => {
+export const RollWeapons: React.FC<RollWeaponsProps> = ({ weaponClasses, numWeaponRolls, setNumWeaponRolls, randomWeapons, setRandomWeapons, weaponIds, weaponSize, onClickWeapon, mode }) => {
 
 	const [isRolling, setIsRolling] = useState<boolean>(false);
 
@@ -30,7 +31,7 @@ export const RollWeapons: React.FC<RollWeaponsProps> = ({ weaponClasses, numWeap
 	//Roll once to prevent selecting weapons from different weapon modes
 	useEffect(() => {
 		rollWeaponsOnce();
-	}, [weaponClasses]);
+	}, [mode]);
 
 	const rollWeapons = useCallback(() => {
 		if(isRolling) return;

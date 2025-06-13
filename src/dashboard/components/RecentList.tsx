@@ -14,7 +14,6 @@ export const RecentList: React.FC<RecentListProps> = ({ weaponIds, onClickWeapon
 		<Column>
 		{
 			weaponIds && weaponIds.map((id, index) => {
-				console.log(weaponIds);
 				const weapon = getWeaponById(id);
 
 				if(!weapon) {

@@ -14,7 +14,7 @@ export function Settings() {
 	});
 
 	const [filter, setFilter] = useReplicant<WeaponFilter>('filter', {
-		defaultValue: { weaponClasses: weaponClassNames.slice(), firstKit: true, secondKit: true, baseKit: true, cosmeticKit: true }
+		defaultValue: { weaponClasses: weaponClassNames.slice(), firstKit: true, secondKit: true, baseKit: true, cosmeticKit: true, seen: true, unseen: true }
 	})
 
 	const setFilterWeaponClass = useCallback((weaponClass: string) => {
@@ -87,6 +87,20 @@ export function Settings() {
 						$selected={filter.cosmeticKit}
 						onClick={() => { setFilter({ ...filter, cosmeticKit: !filter.cosmeticKit }); }}>Cosmetics</SettingsButton>
 				</Row>
+				
+				<HeadText $content="Dashboard Filters">Dashboard Filters</HeadText>
+				<Row>
+					<SettingsButton
+						$content="Unseen"
+						$colorTag='reset'
+						$selected={filter.unseen}
+						onClick={() => { setFilter({ ...filter, unseen: !filter.unseen }); }}>Unseen</SettingsButton>
+					<SettingsButton
+						$content="Seen"
+						$colorTag='import'
+						$selected={filter.seen}
+						onClick={() => { setFilter({ ...filter, seen: !filter.seen }); }}>Seen</SettingsButton>
+				</Row>
 				<HeadText $content="Progress Bar">Progress Bar</HeadText>
 				<Row>
 					<SettingsButton
@@ -128,7 +142,7 @@ const Wrapper = styled.div`
 	padding: 15px 5px;
 
 	display: grid;
-	grid-template-columns: max-content 1fr;
+	grid-template-columns: 140px 1fr;
 	align-items: center;
 	text-align: right;
 	gap: 15px;

@@ -45,6 +45,9 @@
 
 	--grizzco: #e8b202e0;
 	--grizzco-dark: #927410e0;
+
+	--unknown: #999999;
+	--unknown-dark: #535353;
 }
 
 @font-face {

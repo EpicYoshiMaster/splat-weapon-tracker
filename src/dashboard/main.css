@@ -86,6 +86,9 @@
 
 	--splatana: #6449dd;
 	--splatana-dark: #302369;
+
+	--unknown: #999999;
+	--unknown-dark: #535353;
 }
 
 body {

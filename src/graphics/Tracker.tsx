@@ -25,7 +25,7 @@ export function Tracker() {
 	});
 
 	const [filter, setFilter] = useReplicant<WeaponFilter>('filter', {
-		defaultValue: { weaponClasses: getWeaponClassNames().slice(), firstKit: true, secondKit: true, baseKit: true, cosmeticKit: true }
+		defaultValue: { weaponClasses: getWeaponClassNames().slice(), firstKit: true, secondKit: true, baseKit: true, cosmeticKit: true, seen: true, unseen: true }
 	})
 
 	const [progressBar, setProgressBar] = useReplicant<boolean>('progressBar', { defaultValue: true });
@@ -64,21 +64,6 @@ export function Tracker() {
 		}
 	}, [background])
 
-	const weaponClasses: WeaponClass[] = useMemo(() => {
-		if(!mode) return [];
-
-		let selectedClasses;
-
-		switch(mode) {
-			case WeaponMode.Standard: selectedClasses = standardWeapons; break;
-			case WeaponMode.Salmon: selectedClasses = salmonWeapons; break;
-			case WeaponMode.Grizzco: selectedClasses = grizzcoWeapons; break;
-			case WeaponMode.Order: selectedClasses = orderWeapons; break;
-		}
-
-		return filterWeaponsByProperties(selectedClasses, filter);
-	}, [mode, filter])
-
 	const activeList = useMemo(() => {
 		if(!mode) return [];
 		if(!lists) return [];
@@ -94,6 +79,21 @@ export function Tracker() {
 
 		return filterWeaponIdsByProperties(weaponList, filter);
 	}, [mode, lists, filter]);
+
+	const weaponClasses: WeaponClass[] = useMemo(() => {
+		if(!mode) return [];
+
+		let selectedClasses;
+
+		switch(mode) {
+			case WeaponMode.Standard: selectedClasses = standardWeapons; break;
+			case WeaponMode.Salmon: selectedClasses = salmonWeapons; break;
+			case WeaponMode.Grizzco: selectedClasses = grizzcoWeapons; break;
+			case WeaponMode.Order: selectedClasses = orderWeapons; break;
+		}
+
+		return filterWeaponsByProperties(selectedClasses, filter);
+	}, [mode, filter])
 
 	const remainingList = useMemo(() => {
 		return invertWeaponList(weaponClasses, activeList);
