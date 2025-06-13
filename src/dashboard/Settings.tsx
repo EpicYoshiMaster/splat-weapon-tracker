@@ -14,7 +14,7 @@ export function Settings() {
 	});
 
 	const [filter, setFilter] = useReplicant<WeaponFilter>('filter', {
-		defaultValue: { weaponClasses: weaponClassNames.slice(), firstKit: true, secondKit: true, baseKit: true, cosmeticKit: true, seen: true, unseen: true }
+		defaultValue: { weaponClasses: weaponClassNames.slice(), firstKit: true, secondKit: true, thirdKit: true, baseKit: true, cosmeticKit: true, seen: true, unseen: true }
 	})
 
 	const setFilterWeaponClass = useCallback((weaponClass: string) => {
@@ -76,6 +76,11 @@ export function Settings() {
 						$colorTag='second'
 						$selected={filter.secondKit}
 						onClick={() => { setFilter({ ...filter, secondKit: !filter.secondKit }); }}>Second Kits</SettingsButton>
+					<SettingsButton
+						$content="Third Kits"
+						$colorTag='third'
+						$selected={filter.thirdKit}
+						onClick={() => { setFilter({ ...filter, thirdKit: !filter.thirdKit }); }}>Third Kits</SettingsButton>
 					<SettingsButton
 						$content="Base Kits"
 						$colorTag='standard'

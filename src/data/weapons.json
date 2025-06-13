@@ -5,6 +5,7 @@
 
     "Shooter_Normal_00": "Splattershot",
     "Shooter_Normal_01": "Tentatek Splattershot",
+    "Shooter_Normal_02": "Glamorz Splattershot",
     "Shooter_Normal_Coop": "Splattershot",
     "Shooter_Normal_H": "Hero Shot Replica",
     "Shooter_Normal_O": "Order Shot Replica",
@@ -12,6 +13,7 @@
 
     "Shooter_Expert_00": "Splattershot Pro",
     "Shooter_Expert_01": "Forge Splattershot Pro",
+    "Shooter_Expert_02": "Splattershot Pro FRZ-N",
     "Shooter_Expert_Coop": "Splattershot Pro",
 
     "Shooter_QuickLong_00": "Splattershot Nova",
@@ -24,10 +26,12 @@
 
     "Shooter_Precision_00": "Splash-o-matic",
     "Shooter_Precision_01": "Neo Splash-o-matic",
+    "Shooter_Precision_02": "Splash-o-matic GCK-O",
     "Shooter_Precision_Coop": "Splash-o-matic",
 
     "Shooter_Blaze_00": "Aerospray MG",
     "Shooter_Blaze_01": "Aerospray RG",
+    "Shooter_Blaze_02": "Colorz Aerospray",
     "Shooter_Blaze_Coop": "Aerospray MG",
 
     "Shooter_QuickMiddle_00": "N-ZAP '85",
@@ -40,18 +44,22 @@
 
     "Shooter_Heavy_00": ".96 Gal",
     "Shooter_Heavy_01": ".96 Gal Deco",
+    "Shooter_Heavy_02": "Clawz .96 Gal",
     "Shooter_Heavy_Coop": ".96 Gal",
 
     "Shooter_Long_00": "Jet Squelcher",
     "Shooter_Long_01": "Custom Jet Squelcher",
+    "Shooter_Long_02": "Jet Squelcher COB-R",
     "Shooter_Long_Coop": "Jet Squelcher",
 
     "Shooter_TripleQuick_00": "L-3 Nozzlenose",
     "Shooter_TripleQuick_01": "L-3 Nozzlenose D",
+    "Shooter_TripleQuick_02": "Glitterz L-3 Nozzlenose",
     "Shooter_TripleQuick_Coop": "L-3 Nozzlenose",
 
     "Shooter_TripleMiddle_00": "H-3 Nozzlenose",
     "Shooter_TripleMiddle_01": "H-3 Nozzlenose D",
+    "Shooter_TripleMiddle_02": "H-3 Nozzlenose VIP-R",
     "Shooter_TripleMiddle_Coop": "H-3 Nozzlenose",
 
     "Shooter_Flash_00": "Squeezer",
@@ -63,6 +71,7 @@
 
     "Roller_Compact_00": "Carbon Roller",
     "Roller_Compact_01": "Carbon Roller Deco",
+    "Roller_Compact_02": "Carbon Roller ANG-L",
     "Roller_Compact_Coop": "Carbon Roller",
 
     "Roller_Normal_00": "Splat Roller",
@@ -72,6 +81,7 @@
 
     "Roller_Wide_00": "Big Swig Roller",
     "Roller_Wide_01": "Big Swig Roller Express",
+    "Roller_Wide_02": "Planetz Big Swig Roller",
     "Roller_Wide_Coop": "Big Swig Roller",
 
     "Roller_Hunter_00": "Flingza Roller",
@@ -80,6 +90,7 @@
 
     "Roller_Heavy_00": "Dynamo Roller",
     "Roller_Heavy_01": "Gold Dynamo Roller",
+    "Roller_Heavy_02": "Starz Dynamo Roller",
     "Roller_Heavy_Coop": "Dynamo Roller",
 
 
@@ -92,11 +103,13 @@
 
     "Charger_Normal_00": "Splat Charger",
     "Charger_Normal_01": "Z+F Splat Charger",
+    "Charger_Normal_02": "Splat Charger CAM-O",
     "Charger_Normal_Coop": "Splat Charger",
     "Charger_Normal_O": "Order Charger Replica",
 
     "Charger_NormalScope_00": "Splatterscope",
     "Charger_NormalScope_01": "Z+F Splatterscope",
+    "Charger_NormalScope_02": "Splatterscope CAM-O",
 
     "Charger_Long_00": "E-liter 4K",
     "Charger_Long_01": "Custom E-liter 4K",
@@ -127,6 +140,7 @@
 
     "Slosher_Diffusion_00": "Tri-Slosher",
     "Slosher_Diffusion_01": "Tri-Slosher Nouveau",
+    "Slosher_Diffusion_02": "Tri-Slosher ASH-N",
     "Slosher_Diffusion_Coop": "Tri-Slosher",
 
     "Slosher_Bathtub_00": "Bloblobber",
@@ -135,6 +149,7 @@
 
     "Slosher_Double_00": "Dread Wringer",
     "Slosher_Double_01": "Dread Wringer D",
+    "Slosher_Double_02": "Hornz Dread Wringer",
     "Slosher_Double_Coop": "Dread Wringer",
 
     "Slosher_Launcher_00": "Sloshing Machine",
@@ -149,6 +164,7 @@
 
     "Spinner_Quick_00": "Mini Splatling",
     "Spinner_Quick_01": "Zink Mini Splatling",
+    "Spinner_Quick_02": "Mini Splatling RTL-R",
     "Spinner_Quick_Coop": "Mini Splatling",
 
     "Spinner_Standard_00": "Heavy Splatling",
@@ -158,6 +174,7 @@
 
     "Spinner_Hyper_00": "Hydra Splatling",
     "Spinner_Hyper_01": "Custom Hydra Splatling",
+    "Spinner_Hyper_02": "Torrentz Hydra Splatling",
     "Spinner_Hyper_Coop": "Hydra Splatling",
 
     "Spinner_Serein_00": "Nautilus 47",
@@ -178,10 +195,12 @@
 
     "Maneuver_Short_00": "Dapple Dualies",
     "Maneuver_Short_01": "Dapple Dualies Nouveau",
+    "Maneuver_Short_02": "Dapple Dualies NOC-T",
     "Maneuver_Short_Coop": "Dapple Dualies",
 
     "Maneuver_Normal_00": "Splat Dualies",
     "Maneuver_Normal_01": "Enperry Splat Dualies",
+    "Maneuver_Normal_02": "Twinklez Splat Dualies",
     "Maneuver_Normal_Coop": "Splat Dualies",
     "Maneuver_Normal_O": "Order Dualie Replicas",
 
@@ -191,6 +210,7 @@
 
     "Maneuver_Dual_00": "Dualie Squelchers",
     "Maneuver_Dual_01": "Custom Dualie Squelchers",
+    "Maneuver_Dual_02": "Hoofz Dualie Squelchers",
     "Maneuver_Dual_Coop": "Dualie Squelchers",
 
     "Maneuver_Stepper_00": "Dark Tetra Dualies",
@@ -212,10 +232,12 @@
 
     "Shelter_Wide_00": "Tenta Brella",
     "Shelter_Wide_01": "Tenta Sorella Brella",
+    "Shelter_Wide_02": "Tenta Brella CRE-M",
     "Shelter_Wide_Coop": "Tenta Brella",
 
     "Shelter_Compact_00": "Undercover Brella",
     "Shelter_Compact_01": "Undercover Sorella Brella",
+    "Shelter_Compact_02": "Patternz Undercover Brella",
     "Shelter_Compact_Coop": "Undercover Brella",
 
     "Shelter_Focus_00": "Recycled Brella 24 Mk I",
@@ -233,6 +255,7 @@
 
     "Blaster_Middle_00": "Blaster",
     "Blaster_Middle_01": "Custom Blaster",
+    "Blaster_Middle_02": "Gleamz Blaster",
     "Blaster_Middle_Coop": "Blaster",
 
     "Blaster_Long_00": "Range Blaster",
@@ -249,6 +272,7 @@
 
     "Blaster_LightLong_00": "Rapid Blaster Pro",
     "Blaster_LightLong_01": "Rapid Blaster Pro Deco",
+    "Blaster_LightLong_02": "Rapid Blaster Pro WNT-R",
     "Blaster_LightLong_Coop": "Rapid Blaster Pro",
 
     "Blaster_Precision_00": "S-BLAST '92",
@@ -263,11 +287,13 @@
 
     "Brush_Normal_00": "Octobrush",
     "Brush_Normal_01": "Octobrush Nouveau",
+    "Brush_Normal_02": "Cometz Octobrush",
     "Brush_Normal_Coop": "Octobrush",
     "Brush_Normal_O": "Orderbrush Replica",
 
     "Brush_Heavy_00": "Painbrush",
     "Brush_Heavy_01": "Painbrush Nouveau",
+    "Brush_Heavy_02": "Painbrush BRN-Z",
     "Brush_Heavy_Coop": "Painbrush",
 
 
@@ -276,10 +302,12 @@
 
     "Stringer_Short_00": "REEF-LUX 450",
     "Stringer_Short_01": "REEF-LUX 450 Deco",
+    "Stringer_Short_02": "REEF-LUX 450 MIL-K",
     "Stringer_Short_Coop": "REEF-LUX 450",
 
     "Stringer_Normal_00": "Tri-Stringer",
     "Stringer_Normal_01": "Inkline Tri-Stringer",
+    "Stringer_Normal_02": "Bulbz Tri-Stringer",
     "Stringer_Normal_Coop": "Tri-Stringer",
     "Stringer_Normal_O": "Order Stringer Replica",
 
@@ -293,10 +321,12 @@
 
     "Saber_Lite_00": "Splatana Wiper",
     "Saber_Lite_01": "Splatana Wiper Deco",
+    "Saber_Lite_02": "Splatana Wiper RUS-T",
     "Saber_Lite_Coop": "Splatana Wiper",
 
     "Saber_Normal_00": "Splatana Stamper",
     "Saber_Normal_01": "Splatana Stamper Nouveau",
+    "Saber_Normal_02": "Stickerz Splatana Stamper",
     "Saber_Normal_Coop": "Splatana Stamper",
     "Saber_Normal_O": "Order Splatana Replica",
 

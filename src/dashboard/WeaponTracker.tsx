@@ -20,7 +20,7 @@ export function WeaponTracker() {
 	});
 
 	const [filter, setFilter] = useReplicant<WeaponFilter>('filter', {
-		defaultValue: { weaponClasses: getWeaponClassNames().slice(), firstKit: true, secondKit: true, baseKit: true, cosmeticKit: true, seen: true, unseen: true }
+		defaultValue: { weaponClasses: getWeaponClassNames().slice(), firstKit: true, secondKit: true, thirdKit: true, baseKit: true, cosmeticKit: true, seen: true, unseen: true }
 	})
 
 	const [display, setDisplay] = useReplicant<DisplayMode>('display', {

@@ -16,6 +16,7 @@ export type Weapon = {
 	order: boolean;
 	firstKit: boolean;
 	secondKit: boolean;
+	thirdKit: boolean;
 	baseKit: boolean;
 	cosmeticKit: boolean;
 }
@@ -24,6 +25,7 @@ export type WeaponFilter = {
 	weaponClasses: string[];
 	firstKit: boolean;
 	secondKit: boolean;
+	thirdKit: boolean;
 	baseKit: boolean;
 	cosmeticKit: boolean;
 	seen: boolean;

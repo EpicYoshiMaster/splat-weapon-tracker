@@ -25,7 +25,7 @@ export function Tracker() {
 	});
 
 	const [filter, setFilter] = useReplicant<WeaponFilter>('filter', {
-		defaultValue: { weaponClasses: getWeaponClassNames().slice(), firstKit: true, secondKit: true, baseKit: true, cosmeticKit: true, seen: true, unseen: true }
+		defaultValue: { weaponClasses: getWeaponClassNames().slice(), firstKit: true, secondKit: true, thirdKit: true, baseKit: true, cosmeticKit: true, seen: true, unseen: true }
 	})
 
 	const [progressBar, setProgressBar] = useReplicant<boolean>('progressBar', { defaultValue: true });
@@ -109,12 +109,12 @@ export function Tracker() {
 		if(display !== current.active && !current.fade) {
 			//Nothing active, fade the current in
 			if(current.active === DisplayMode.None) {
-				console.log(`TRACKER - Fading In: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+				//console.log(`TRACKER - Fading In: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
 				setCurrent({ active: display, fade: true });
 			}
 			else {
 				//Something is active, fade the current out
-				console.log(`TRACKER - Fading Out Current: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+				//console.log(`TRACKER - Fading Out Current: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
 				setCurrent((current) => { return { ...current, fade: true } });
 			}
 		}
@@ -125,11 +125,11 @@ export function Tracker() {
 		if(display === DisplayMode.None) return;
 
 		if(current.active === display) {
-			console.log(`ONFADE - Fade In Complete. PREV STATE: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+			//console.log(`ONFADE - Fade In Complete. PREV STATE: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
 			setCurrent((current) => { return { ...current, fade: false } } );
 		}
 		else {
-			console.log(`ONFADE - Fading In New Current: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
+			//console.log(`ONFADE - Fading In New Current: Display: ${display}, Active: ${current.active}, Fade: ${current.fade}`);
 			setCurrent({ active: display, fade: true });
 		}
 
